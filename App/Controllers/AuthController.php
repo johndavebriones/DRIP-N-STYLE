@@ -1,18 +1,20 @@
 <?php
 session_start();
 require_once __DIR__ . '/../config/database_connect.php';
+$authConfig = require __DIR__ . '/../config/auth.php';
 
 class AuthController {
     private $conn;
+    private $config;
 
-    public function __construct() {
+    public function __construct($config) {
         $database = new Database();
         $this->conn = $database->connect();
+        $this->config = $config;
     }
 
     // USER REGISTRATION FUNCTION
     public function register($name, $email, $password) {
-        // Check if email already exists
         $query = "SELECT * FROM users WHERE email = :email LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':email', $email);
@@ -20,27 +22,28 @@ class AuthController {
 
         if ($stmt->rowCount() > 0) {
             $_SESSION['error'] = "You already have an account, try logging in.";
-            header("Location: ../../public/auth.php");
+            header("Location: " . $this->config['redirects']['on_error']);
             exit();
         }
 
         // Hash password
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($password, $this->config['password_algo']);
 
         // Insert new user
-        $insert = "INSERT INTO users (name, email, password, role) 
-                   VALUES (:name, :email, :password, 'customer')";
+        $insert = "INSERT INTO users (name, email, password, role)
+                   VALUES (:name, :email, :password, :role)";
         $stmt = $this->conn->prepare($insert);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':role', $this->config['default_role']);
 
         if ($stmt->execute()) {
             $_SESSION['success'] = "Account created successfully!";
-            header("Location: ../../public/auth.php");
+            header("Location: " . $this->config['redirects']['after_register']);
         } else {
             $_SESSION['error'] = "Registration failed. Please try again.";
-            header("Location: ../../public/auth.php");
+            header("Location: " . $this->config['redirects']['on_error']);
         }
         exit();
     }
@@ -57,25 +60,25 @@ class AuthController {
 
             if (password_verify($password, $user['password'])) {
                 // Set session
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_role'] = $user['role'];
+                $_SESSION[$this->config['session_keys']['id']] = $user['user_id'];
+                $_SESSION[$this->config['session_keys']['name']] = $user['name'];
+                $_SESSION[$this->config['session_keys']['role']] = $user['role'];
 
                 // Redirect based on role
                 if ($user['role'] === 'admin') {
-                    header("Location: ../../admin/dashboard.php");
+                    header("Location: " . $this->config['redirects']['after_login_admin']);
                 } else {
-                    header("Location: ../../public/shop.php");
+                    header("Location: " . $this->config['redirects']['after_login_customer']);
                 }
                 exit();
             } else {
                 $_SESSION['error'] = "Invalid password.";
-                header("Location: ../../public/auth.php");
+                header("Location: " . $this->config['redirects']['on_error']);
                 exit();
             }
         } else {
             $_SESSION['error'] = "Invalid credentials.";
-            header("Location: ../../public/auth.php");
+            header("Location: " . $this->config['redirects']['on_error']);
             exit();
         }
     }
@@ -83,14 +86,14 @@ class AuthController {
     // USER LOGOUT FUNCTION
     public function logout() {
         session_destroy();
-        header("Location: ../../public/index.php");
+        header("Location: " . $this->config['redirects']['after_logout']);
         exit();
     }
 }
 
 // ACTION HANDLER FUNCTION
 if (isset($_GET['action'])) {
-    $auth = new AuthController();
+    $auth = new AuthController($authConfig);
 
     switch ($_GET['action']) {
         case 'register':
