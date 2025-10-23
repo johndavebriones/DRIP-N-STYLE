@@ -1,0 +1,142 @@
+.hero {
+  background: url('../images/dripnstylelogo.png') center/cover no-repeat;
+  height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  color: var(--text-light);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2); /* default shadow */
+  transition: text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.hero-content:hover,
+.hero-content h1:hover {
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5); /* single hover color */
+  transform: scale(1.02);
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  color: var(--primary);
+  transition: text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  color: var(--text-light);
+}
+
+/* PRODUCT CARDS */
+.product-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.700);
+}
+
+.product-card img {
+  height: 260px;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+/* FADE-IN ANIMATION */
+.fade-in {
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 📱 MOBILE RESPONSIVENESS */
+@media (max-width: 992px) {
+  .hero {
+    height: 70vh;
+    background-position: center;
+  }
+
+  .hero-content h1 {
+    font-size: 2.3rem;
+  }
+
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+
+  .btn-login {
+    padding: 8px 20px;
+  }
+
+  footer {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: 60vh;
+    background-size: cover;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .product-card img {
+    height: 220px;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .nav-link {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-content h1 {
+    font-size: 1.7rem;
+  }
+
+  .hero-content p {
+    font-size: 0.95rem;
+  }
+
+  .btn-login {
+    font-size: 0.9rem;
+    padding: 6px 15px;
+  }
+
+  footer {
+    font-size: 0.85rem;
+  }
+}
