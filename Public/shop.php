@@ -1,57 +1,17 @@
 <?php
-session_start();
-require_once "../app/config/database_connect.php";
+require_once "../app/controllers/ShopController.php";
 
-$db = new Database();
-$conn = $db->connect();
+$shop = new ShopController();
 
-// FILTER HANDLERS
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$category = isset($_GET['category']) ? $_GET['category'] : '';
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
+// Handle filters
+$search = $_GET['search'] ?? '';
+$category = $_GET['category'] ?? '';
+$sort = $_GET['sort'] ?? 'newest';
 
-// Base query
-$query = "SELECT p.*, c.category_name 
-          FROM products p 
-          LEFT JOIN categories c ON p.category_id = c.category_id
-          WHERE 1";
-
-// FILTERS
-if (!empty($search)) {
-    $query .= " AND p.name LIKE :search";
-}
-if (!empty($category)) {
-    $query .= " AND c.category_id = :category";
-}
-
-// Sorting
-switch ($sort) {
-    case 'price_asc':
-        $query .= " ORDER BY p.price ASC";
-        break;
-    case 'price_desc':
-        $query .= " ORDER BY p.price DESC";
-        break;
-    default:
-        $query .= " ORDER BY p.date_added DESC"; // newest first
-}
-
-// Prepare & execute
-$stmt = $conn->prepare($query);
-if (!empty($search)) {
-    $stmt->bindValue(':search', "%$search%");
-}
-if (!empty($category)) {
-    $stmt->bindValue(':category', $category);
-}
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// FETCH CATEGORIES
-$catStmt = $conn->prepare("SELECT * FROM categories ORDER BY category_name ASC");
-$catStmt->execute();
-$categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
+$products = $shop->getProducts($search, $category, $sort);
+$categories = $shop->getCategories();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
