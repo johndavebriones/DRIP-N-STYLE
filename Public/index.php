@@ -87,33 +87,33 @@
   <!-- Footer -->
   <?php include 'Partials/footer.php'?>
 
-  <!-- LOGIN MODAL -->
-  <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Login to Drip N' Style</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form method="POST" action="../app/controllers/AuthController.php?action=login">
-            <div class="mb-3">
-              <label>Email</label>
-              <input type="email" class="form-control" name="email" required>
-            </div>
-            <div class="mb-3">
-              <label>Password</label>
-              <input type="password" class="form-control" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-dark w-100">Login</button>
-          </form>
-          <p class="text-center mt-3 mb-0">Don’t have an account? 
-            <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="text-decoration-none fw-bold text-dark">Register</a>
-          </p>
-        </div>
+  <!-- UNIVERSAL LOGIN MODAL -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Login to Drip N' Style</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="../app/controllers/AuthController.php?action=login">
+          <div class="mb-3">
+            <label>Username or Email</label>
+            <input type="text" class="form-control" name="login_id" required>
+          </div>
+          <div class="mb-3">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-dark w-100">Login</button>
+        </form>
+        <p class="text-center mt-3 mb-0">Don’t have an account?
+          <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="text-decoration-none fw-bold text-dark">Register</a>
+        </p>
       </div>
     </div>
   </div>
+</div>
 
   <!-- REGISTER MODAL -->
   <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
