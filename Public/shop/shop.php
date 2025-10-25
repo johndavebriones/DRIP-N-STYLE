@@ -1,16 +1,22 @@
 <?php
-require_once __DIR__ . '/../../app/controllers/ShopController.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../../App/Controllers/AuthController.php';
+require_once __DIR__ . '/../../App/Controllers/ShopController.php';
+
+$auth = new AuthController();
 $shop = new ShopController();
 
-// Handle filters
+// Default values
 $search = $_GET['search'] ?? '';
 $category = $_GET['category'] ?? '';
 $sort = $_GET['sort'] ?? 'newest';
 
-$products = $shop->getProducts($search, $category, $sort);
+// ✅ Get data safely
 $categories = $shop->getCategories();
+$products = $shop->getProducts($search, $category, $sort);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,12 +31,17 @@ $categories = $shop->getCategories();
 <body>
 <div id="page-container">
   <?php include '../Partials/navbar.php'; ?>
+
   <main>
     <!-- Shop Header -->
     <section class="shop-header text-center py-5 bg-dark text-warning">
       <div class="container">
         <h1 class="fw-bold">Shop Our Collection</h1>
+        <?php if(isset($_SESSION['user_name'])): ?>
+          <p class="mb-0 text-light">Welcome back, <?= htmlspecialchars($_SESSION['user_name']); ?>!</p>
+        <?php else: ?>
           <p class="mb-0 text-light">Find your next outfit — simple, stylish, and bold.</p>
+        <?php endif; ?>
       </div>
     </section>
 
