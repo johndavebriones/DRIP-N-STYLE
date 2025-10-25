@@ -1,3 +1,8 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
     <a class="navbar-brand text-warning" href="index.php">Drip N' Style</a>
@@ -19,7 +24,7 @@
             </ul>
           </li>
         <?php else: ?>
-          <li class="nav-item"><a class="nav-link" href="auth.php">Login / Register</a></li>
+          <li class="nav-item"><a class="nav-link" href="LoginPage.php">Log in</a></li>
         <?php endif; ?>
       </ul>
     </div>
