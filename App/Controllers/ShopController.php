@@ -1,7 +1,8 @@
 <?php
-// app/controllers/ShopController.php
-session_start();
-require_once "../app/config/database_connect.php";
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/database_connect.php';
 
 class ShopController {
     private $conn;
