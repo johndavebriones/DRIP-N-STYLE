@@ -9,16 +9,22 @@ class AuthController {
     private $conn;
 
     public function __construct() {
-        $database = new Database();
-        $this->conn = $database->connect();
+        $database = new Database(); // create an instance of Database class
+        $this->conn = $database->connect(); // call connect() to get $conn
     }
 
     // LOGIN FUNCTION
-    public function login($email, $password) {
+    public function login($emailOrName, $password) {
         $query = "SELECT * FROM users WHERE email = ? OR name = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute([$email, $email]); // allows email OR username login
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$stmt) {
+            die("Prepare failed: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("ss", $emailOrName, $emailOrName);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
 
         if (!$user) {
             $_SESSION['error'] = "Account not found. Please check your email or username.";
@@ -41,32 +47,30 @@ class AuthController {
         exit;
     }
 
-public function logout() {
-    // Start session if not already active
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+    // LOGOUT FUNCTION
+    public function logout() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
+        session_destroy();
+
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        header("Location: ../../Public/LoginPage.php");
+        exit;
     }
-
-    $_SESSION = [];
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
-        );
-    }
-
-    session_destroy();
-
-    header("Cache-Control: no-cache, no-store, must-revalidate");
-    header("Pragma: no-cache");
-    header("Expires: 0");
-
-    // ✅ FIXED redirect (correct relative path)
-    header("Location: ../../Public/LoginPage.php");
-    exit;
-}
-
 }
 
 // ACTION HANDLER

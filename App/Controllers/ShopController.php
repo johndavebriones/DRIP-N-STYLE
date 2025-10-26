@@ -18,11 +18,15 @@ class ShopController {
                   LEFT JOIN categories c ON p.category_id = c.category_id
                   WHERE 1";
 
+        $params = [];
+
         if (!empty($search)) {
-            $query .= " AND p.name LIKE :search";
+            $query .= " AND p.name LIKE ?";
+            $params[] = "%$search%";
         }
         if (!empty($category)) {
-            $query .= " AND c.category_id = :category";
+            $query .= " AND c.category_id = ?";
+            $params[] = $category;
         }
 
         switch ($sort) {
@@ -38,16 +42,21 @@ class ShopController {
 
         $stmt = $this->conn->prepare($query);
 
-        if (!empty($search)) $stmt->bindValue(':search', "%$search%");
-        if (!empty($category)) $stmt->bindValue(':category', $category);
+        if ($params) {
+            // Dynamically bind parameters
+            $types = str_repeat('s', count($params)); // assuming all params are strings; adjust types if needed
+            $stmt->bind_param($types, ...$params);
+        }
 
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function getCategories() {
         $stmt = $this->conn->prepare("SELECT * FROM categories ORDER BY category_name ASC");
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 }
