@@ -21,11 +21,7 @@
         <li class="nav-item"><a class="nav-link active text-warning" href="#">Home</a></li>
         <li class="nav-item"><a class="nav-link text-light" href="#">About</a></li>
         <li class="nav-item"><a class="nav-link text-light" href="#">Contact</a></li>
-        <li class="nav-item">
-          <button class="btn btn-warning text-black ms-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#loginModal">
-            Login
-          </button>
-        </li>
+        <li class="nav-item"><a href="LoginPage.php" class="btn btn-warning text-black ms-3 fw-semibold w-100">Login</a></li>
       </ul>
     </div>
   </div>
@@ -51,7 +47,7 @@
           <div class="card product-card border-0 shadow-sm">
             <img src="assets/images/565706852_1214219220724446_7902029893493702505_n.jpg" class="card-img-top" alt="Product 1">
             <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">Classic Denim Jacket</h5>
+              <h5 class="card-title fw-bold text-dark">Denim Shorts</h5>
               <p class="card-text text-muted">₱600</p>
               <button class="btn btn-warning text-black fw-semibold">View Details</button>
             </div>
@@ -61,9 +57,9 @@
         <!-- Repeat product 2–6 -->
         <div class="col-md-4">
           <div class="card product-card border-0 shadow-sm">
-            <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80" class="card-img-top" alt="Product 2">
+            <img src="assets/images/564735523_1214149110731457_2363958690448676242_n.jpg" class="card-img-top" alt="Product 2">
             <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">Summer Oversized Tee</h5>
+              <h5 class="card-title fw-bold text-dark">Y2K Tops</h5>
               <p class="card-text text-muted">₱450</p>
               <button class="btn btn-warning text-black fw-semibold">View Details</button>
             </div>
@@ -72,9 +68,9 @@
 
         <div class="col-md-4">
           <div class="card product-card border-0 shadow-sm">
-            <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80" class="card-img-top" alt="Product 3">
+            <img src="assets/images/565639940_1214149134064788_3962912159579614764_n.jpg" class="card-img-top" alt="Product 3">
             <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">Streetwear Hoodie</h5>
+              <h5 class="card-title fw-bold text-dark">GAP Basic Tops</h5>
               <p class="card-text text-muted">₱850</p>
               <button class="btn btn-warning text-black fw-semibold">View Details</button>
             </div>
@@ -86,66 +82,6 @@
 
   <!-- Footer -->
   <?php include 'Partials/footer.php'?>
-
-  <!-- UNIVERSAL LOGIN MODAL -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Login to Drip N' Style</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form method="POST" action="../app/controllers/AuthController.php?action=login">
-          <div class="mb-3">
-            <label>Username or Email</label>
-            <input type="text" class="form-control" name="login_id" required>
-          </div>
-          <div class="mb-3">
-            <label>Password</label>
-            <input type="password" class="form-control" name="password" required>
-          </div>
-          <button type="submit" class="btn btn-dark w-100">Login</button>
-        </form>
-        <p class="text-center mt-3 mb-0">Don’t have an account?
-          <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="text-decoration-none fw-bold text-dark">Register</a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-  <!-- REGISTER MODAL -->
-  <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Create Account</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form method="POST" action="../app/controllers/AuthController.php?action=register">
-            <div class="mb-3">
-              <label>Full Name</label>
-              <input type="text" class="form-control" name="name" required>
-            </div>
-            <div class="mb-3">
-              <label>Email</label>
-              <input type="email" class="form-control" name="email" required>
-            </div>
-            <div class="mb-3">
-              <label>Password</label>
-              <input type="password" class="form-control" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-dark w-100">Register</button>
-          </form>
-          <p class="text-center mt-3 mb-0">Already have an account? 
-            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal" class="text-decoration-none fw-bold text-dark">Login</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Scroll to Top Button -->
   <button id="scrollTop">↑</button>
