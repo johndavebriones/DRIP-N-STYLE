@@ -14,7 +14,7 @@ session_start();
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(180deg, #ffcc00,rgb(255, 255, 255));
+    background: linear-gradient(180deg,rgb(215, 174, 11),rgb(255, 255, 255));
     font-family: 'Poppins', sans-serif;
   }
     .login-card {
@@ -48,7 +48,7 @@ session_start();
 
   <div class="login-card">
     <!-- Left Image -->
-    <div class="login-image"></div>
+    <div class="login-image" onclick="window.location.href='index.php'" style="cursor:pointer;"></div>
 
     <!-- Right Login Form -->
     <div class="login-form">
