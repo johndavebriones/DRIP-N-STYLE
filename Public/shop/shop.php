@@ -25,6 +25,7 @@ $products = $shop->getProducts($search, $category, $sort);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shop | Drip N' Style</title>
   <link href="../assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="../assets/css/shop.css">
 </head>
@@ -48,31 +49,7 @@ $products = $shop->getProducts($search, $category, $sort);
     <!-- Filters -->
     <section class="shop-filters py-4">
       <div class="container">
-        <form method="GET" class="row g-3 align-items-center justify-content-center">
-          <div class="col-md-4">
-            <input type="text" name="search" class="form-control" placeholder="Search products..." value="<?= htmlspecialchars($search) ?>">
-          </div>
-          <div class="col-md-3">
-            <select name="category" class="form-select">
-              <option value="">All Categories</option>
-              <?php foreach ($categories as $cat): ?>
-                <option value="<?= $cat['category_id']; ?>" <?= $category == $cat['category_id'] ? 'selected' : ''; ?>>
-                  <?= htmlspecialchars($cat['category_name']); ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <select name="sort" class="form-select">
-              <option value="newest" <?= $sort == 'newest' ? 'selected' : ''; ?>>Newest</option>
-              <option value="price_asc" <?= $sort == 'price_asc' ? 'selected' : ''; ?>>Price: Low to High</option>
-              <option value="price_desc" <?= $sort == 'price_desc' ? 'selected' : ''; ?>>Price: High to Low</option>
-            </select>
-          </div>
-          <div class="col-md-2 text-center">
-            <button class="btn btn-warning w-100">Filter</button>
-          </div>
-        </form>
+        <?php include '../Partials/shopfilters.php'; ?>
       </div>
     </section>
 
