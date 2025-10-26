@@ -43,7 +43,11 @@ class AuthController {
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['role'] = $user['role'];
 
-        header("Location: ../../Public/shop/shop.php");
+        if ($user['role'] === 'admin') {
+            header("Location: ../../Public/admin/dashboard.php");// admin page
+        } else {
+            header("Location: ../../Public/shop/shop.php"); // customer page
+        }
         exit;
     }
 
