@@ -7,42 +7,9 @@ session_start();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drip N' Style | Login</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(180deg,rgb(215, 174, 11),rgb(255, 255, 255));
-    font-family: 'Poppins', sans-serif;
-  }
-    .login-card {
-      display: flex;
-      background: #fff;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 800px;
-      max-width: 100%;
-    }
-    .login-image {
-      flex: 1;
-      background: url('../public/assets/images/dripnstylelogo.png') center/cover no-repeat;
-      background-color: #fef8e6;
-    }
 
-    .login-form {
-      flex: 1;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .login-form h3 {
-      font-weight: 700;
-    }
-  </style>
+  <link href="../Public/assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/login.css">
 </head>
 <body>
 
@@ -59,9 +26,9 @@ session_start();
           <label>Email</label>
           <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
         </div>
-        <div class="mb-3">
+        <div class="mb-3 position-relative">
           <label>Password</label>
-          <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
         </div>
 
         <?php if (isset($_SESSION['error'])): ?>
@@ -74,13 +41,36 @@ session_start();
         <?php endif; ?>
 
         <div class="d-flex justify-content-between mb-3">
-          <a href="#" class="text-decoration-none">Forgot Password?</a>
+          <a href="#" class="text-decoration-none text-dark" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">
+            Forgot Password?
+          </a>
         </div>
 
         <button type="submit" class="btn btn-warning w-100">Login</button>
       </form>
     </div>
   </div>
+  <!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md"> <!-- This centers it vertically -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="forgot-password.php">
+          <div class="mb-3">
+            <label for="forgotEmail" class="form-label">Enter your email</label>
+            <input type="email" class="form-control" id="forgotEmail" name="email" placeholder="Your email" required>
+          </div>
+          <button type="submit" class="btn btn-warning w-100">Send Reset Link</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script src="../Public/assets/vendor/bootstrap5/js/bootstrap.min.js"></script>
 </body>
 </html>
