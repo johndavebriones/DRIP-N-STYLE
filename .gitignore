@@ -1,0 +1,28 @@
+# -------------------------------
+# Sensitive configuration files
+# -------------------------------
+/App/Config/email_config.php
+.env                           
+/App/Config/database_connect.php 
+
+# -------------------------------
+# Third-party libraries
+# -------------------------------
+/vendors/                       
+/node_modules/                  
+/Public/assets/PHPMailer-*/
+
+# -------------------------------
+# Logs & temporary files
+# -------------------------------
+*.log
+*.tmp
+*.cache
+
+# -------------------------------
+# OS and IDE files
+# -------------------------------
+*.DS_Store
+*.vscode/
+*.idea/
+Thumbs.db
