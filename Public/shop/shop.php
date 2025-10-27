@@ -2,10 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../../App/Controllers/AuthController.php';
 require_once __DIR__ . '/../../App/Controllers/ShopController.php';
 
-$auth = new AuthController();
 $shop = new ShopController();
 
 // Default values
