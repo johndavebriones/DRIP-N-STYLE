@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$config = require __DIR__ . '/../App/Config/config_email.php';
+$config = require __DIR__ . '/../App/Config/email_config.php';
 // Include database
 require __DIR__ . '/../App/Config/database_connect.php'; // correct relative path
 
