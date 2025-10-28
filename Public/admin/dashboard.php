@@ -8,6 +8,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require_once __DIR__ . '/../../App/Controllers/AdminController.php';
 $admin = new AdminController();
 
+$adminName = $_SESSION['user_name'] ?? 'Admin';
+
 $totalProducts = $admin->totalProducts();
 $totalOrders = $admin->totalOrders();
 $totalCustomers = $admin->totalCustomers();
@@ -32,7 +34,7 @@ $recentOrders = $admin->recentOrders();
 
     <!-- MAIN CONTENT -->
     <div class="flex-grow-1 p-4">
-      <h2 class="mb-4">Welcome, Admin 👋</h2>
+      <h2 class="mb-4">Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?> 👋</h2>
 
       <!-- STAT CARDS -->
       <div class="row g-4 mb-5">
