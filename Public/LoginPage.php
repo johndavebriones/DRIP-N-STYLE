@@ -10,6 +10,30 @@ session_start();
 
   <link href="../Public/assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/login.css">
+  <style>
+    body {
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .page-transition {
+      animation: fadeOut 0.3s ease-out forwards;
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -47,12 +71,17 @@ session_start();
         </div>
 
         <button type="submit" class="btn btn-warning w-100">Login</button>
+        
+        <div class="text-center mt-3">
+          <span class="opacity-75">Don't have an account?</span>
+          <a href="RegisterPage.php" class="text-decoration-none text-dark fw-bold">Sign Up</a>
+        </div>
       </form>
     </div>
   </div>
   <!-- Forgot Password Modal -->
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-md"> <!-- This centers it vertically -->
+  <div class="modal-dialog modal-dialog-centered modal-md">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
@@ -70,7 +99,20 @@ session_start();
     </div>
   </div>
 </div>
-
+<script>
+   // Page Transition Effect
+  document.querySelectorAll('a[href]').forEach(link => {
+    link.addEventListener('click', function(e) {
+      if (this.getAttribute('href').endsWith('.php')) {
+        e.preventDefault();
+        document.body.classList.add('page-transition');
+        setTimeout(() => {
+          window.location.href = this.getAttribute('href');
+        }, 300);
+      }
+    });
+  });
+</script>
 <script src="../Public/assets/vendor/bootstrap5/js/bootstrap.min.js"></script>
 </body>
 </html>
