@@ -36,31 +36,13 @@ dripnstyle/
 │   │   └── database_connect.php           ← MySQL connection
 │   │
 │   ├── controllers/                       ← PHP scripts that handle requests
-│   │   ├── AuthController.php             ← Login/Register/Logout
-│   │   ├── ProductController.php
-│   │   ├── OrderController.php
-│   │   ├── PaymentController.php
-│   │   ├── InquiryController.php
-│   │   └── CustomerController.php
-│   │
-│   ├── models/                            ← Database interaction layer (SQL queries)
-│   │   ├── User.php
-│   │   ├── Admin.php
-│   │   ├── Customer.php
-│   │   ├── Product.php
-│   │   ├── Order.php
-│   │   ├── Payment.php
-│   │   └── Inquiry.php
-│   │
-│   ├── utils/                             ← Helper functions
-│   │   ├── SessionHelper.php
-│   │   ├── Validator.php
-│   │   ├── Response.php
-│   │   └── UploadHandler.php
-│   │
-│   └── middleware/                        ← Access control filters
-│       ├── AuthMiddleware.php
-│       └── RoleMiddleware.php
+│       ├── AuthController.php             ← Login/Register/Logout
+│       ├── ShopController.php
+│       ├── OrderController.php
+│       ├── PaymentController.php
+│       ├── InquiryController.php
+│       └── CustomerController.php
+│   
 │
 ├── uploads/                               ← 📂 File storage
 │   ├── products/

@@ -1,3 +1,5 @@
+<!-- ONLY CUSTOMER SHOULD BE DISPLAYED IN THE NAVBAR, BUT IF THERE IS NO USER THEN LOGIN IS PLACED -->
+
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -29,7 +31,7 @@ $products = $shop->getProducts($search, $category, $sort);
 </head>
 <body>
 <div id="page-container">
-  <?php include '../Partials/navbar.php'; ?>
+  <?php include '../partials/navbar.php'; ?>
 
   <main>
     <!-- Shop Header -->
