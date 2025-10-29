@@ -52,6 +52,9 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
           </li>
         <?php else: ?>
           <li class="nav-item">
+            <a class="nav-link" href="../cart.php">Cart</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link text-warning" href="../LoginPage.php">Login</a>
           </li>
         <?php endif; ?>
