@@ -9,5 +9,5 @@
     <li><a href="inventory.php" class="nav-link">📋 Inventory</a></li>
     <li><a href="settings.php" class="nav-link">⚙️ Settings</a></li>
   </ul>
-  <a href="../../logout.php" class="btn btn-warning m-3 fw-bold">Logout</a>
+  <a href="../../App/Controllers/AuthController.php?action=logout" class="btn btn-warning m-3 fw-bold">Logout</a>
 </nav>
