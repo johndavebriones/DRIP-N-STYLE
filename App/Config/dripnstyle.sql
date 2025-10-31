@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 20, 2025 at 08:16 AM
+-- Generation Time: Oct 31, 2025 at 09:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -24,16 +24,29 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admins`
+-- Table structure for table `carts`
 --
 
-CREATE TABLE `admins` (
-  `admin_id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `name` varchar(100) DEFAULT NULL,
-  `role` enum('Manager','Staff') DEFAULT 'Staff',
-  `user_id` int(11) DEFAULT NULL
+CREATE TABLE `carts` (
+  `cart_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart_items`
+--
+
+CREATE TABLE `cart_items` (
+  `item_id` int(11) NOT NULL,
+  `cart_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `price_at_time` decimal(10,2) NOT NULL,
+  `added_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -47,38 +60,13 @@ CREATE TABLE `categories` (
   `category_name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `customers`
+-- Dumping data for table `categories`
 --
 
-CREATE TABLE `customers` (
-  `customer_id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `date_created` datetime DEFAULT current_timestamp(),
-  `user_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `guest_orders`
---
-
-CREATE TABLE `guest_orders` (
-  `guest_order_id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `total_amount` decimal(10,2) DEFAULT NULL,
-  `order_status` enum('Pending','Ready for Pickup','Completed','Cancelled') DEFAULT 'Pending',
-  `order_date` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `categories` (`category_id`, `category_name`) VALUES
+(1, 'Women Tops'),
+(2, 'Men T-shirts');
 
 -- --------------------------------------------------------
 
@@ -103,7 +91,7 @@ CREATE TABLE `inquiries` (
 
 CREATE TABLE `orders` (
   `order_id` int(11) NOT NULL,
-  `customer_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `order_date` datetime DEFAULT current_timestamp(),
   `total_amount` decimal(10,2) NOT NULL,
   `order_status` enum('Pending','Ready for Pickup','Completed','Cancelled') DEFAULT 'Pending',
@@ -159,6 +147,13 @@ CREATE TABLE `products` (
   `status` enum('Available','Out of Stock') DEFAULT 'Available'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `category_id`, `image`, `stock`, `date_added`, `status`) VALUES
+(19, 'GAP Basic Top', '', 150.00, 1, 'uploads/1761897441_565639940_1214149134064788_3962912159579614764_n.jpg', 5, '2025-10-31 15:52:42', 'Available');
+
 -- --------------------------------------------------------
 
 --
@@ -172,45 +167,43 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `role` enum('admin','customer') NOT NULL DEFAULT 'customer',
   `status` enum('active','inactive') DEFAULT 'active',
-  `date_created` datetime DEFAULT current_timestamp()
+  `date_created` datetime DEFAULT current_timestamp(),
+  `reset_token` varchar(255) DEFAULT NULL,
+  `token_expiry` datetime DEFAULT NULL,
+  `contact_number` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`, `status`, `date_created`) VALUES
-(1, 'John Dave Briones', 'johndavebriones09@gmail.com', '$2y$10$iUN3fwaiGOmzAwSO4k26H.79OrV.eLr081HkMMLfLKdKRfPXcuPjq', 'customer', 'active', '2025-10-20 14:00:22');
+INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`, `status`, `date_created`, `reset_token`, `token_expiry`, `contact_number`) VALUES
+(1, 'John Dave Briones', 'johndavebriones09@gmail.com', '$2y$10$LHVDqXuLZxr9JifN6SuViuR6NkYToHXo7B03rY43kYPebqXqzbhKi', 'admin', 'active', '2025-10-21 20:41:57', '7e7714e8ca4056fac40dc9d7fcc508fdbd0d6b738640ac0226183992ecf8b4926ca4840b819760394de2dc9f5136c1d6c41f', '2025-10-27 12:33:00', NULL);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `admins`
+-- Indexes for table `carts`
 --
-ALTER TABLE `admins`
-  ADD PRIMARY KEY (`admin_id`),
-  ADD KEY `fk_admin_user` (`user_id`);
+ALTER TABLE `carts`
+  ADD PRIMARY KEY (`cart_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  ADD PRIMARY KEY (`item_id`),
+  ADD KEY `cart_id` (`cart_id`),
+  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`category_id`);
-
---
--- Indexes for table `customers`
---
-ALTER TABLE `customers`
-  ADD PRIMARY KEY (`customer_id`),
-  ADD KEY `fk_customer_user` (`user_id`);
-
---
--- Indexes for table `guest_orders`
---
-ALTER TABLE `guest_orders`
-  ADD PRIMARY KEY (`guest_order_id`);
 
 --
 -- Indexes for table `inquiries`
@@ -223,8 +216,8 @@ ALTER TABLE `inquiries`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
-  ADD KEY `customer_id` (`customer_id`),
-  ADD KEY `payment_id` (`payment_id`);
+  ADD KEY `payment_id` (`payment_id`),
+  ADD KEY `fk_orders_user_id` (`user_id`);
 
 --
 -- Indexes for table `order_items`
@@ -260,28 +253,22 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `admins`
+-- AUTO_INCREMENT for table `carts`
 --
-ALTER TABLE `admins`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `carts`
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `cart_items`
+--
+ALTER TABLE `cart_items`
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `customers`
---
-ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `guest_orders`
---
-ALTER TABLE `guest_orders`
-  MODIFY `guest_order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `inquiries`
@@ -311,35 +298,36 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `admins`
+-- Constraints for table `carts`
 --
-ALTER TABLE `admins`
-  ADD CONSTRAINT `fk_admin_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+ALTER TABLE `carts`
+  ADD CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `customers`
+-- Constraints for table `cart_items`
 --
-ALTER TABLE `customers`
-  ADD CONSTRAINT `fk_customer_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+ALTER TABLE `cart_items`
+  ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`cart_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
+  ADD CONSTRAINT `fk_orders_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`payment_id`);
 
 --
