@@ -4,17 +4,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../config/database_connect.php';
+require_once __DIR__ . '/../DAO/userDAO.php';
 
 class AuthController {
-    private $conn;
+    private $userDAO;
 
     public function __construct() {
-        $database = new Database();
-        $this->conn = $database->connect();
+        $this->userDAO = new UserDAO();
     }
 
-    // REGISTER FUNCTION
     public function register($name, $email, $password, $confirmPassword) {
         if ($password !== $confirmPassword) {
             $_SESSION['error'] = "Passwords do not match.";
@@ -22,27 +20,22 @@ class AuthController {
             exit;
         }
 
-        // Check if email already exists
-        $check = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
-        $check->bind_param("s", $email);
-        $check->execute();
-        $result = $check->get_result();
-
-        if ($result->num_rows > 0) {
+        $existingUser = $this->userDAO->findByEmail($email);
+        if ($existingUser) {
             $_SESSION['error'] = "Email already exists.";
             header("Location: ../../Public/RegisterPage.php");
             exit;
         }
 
-        // Hash password and insert
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $insert = $this->conn->prepare("
-            INSERT INTO users (name, email, password, role, status) 
-            VALUES (?, ?, ?, 'customer', 'active')
-        ");
-        $insert->bind_param("sss", $name, $email, $hashedPassword);
+        $user = new UserModel();
+        $user->name = $name;
+        $user->email = $email;
+        $user->password = password_hash($password, PASSWORD_DEFAULT);
+        $user->role = 'customer';
+        $user->status = 'active';
+        $user->contact_number = null;
 
-        if ($insert->execute()) {
+        if ($this->userDAO->registerUser($user)) {
             $_SESSION['success'] = "Account created successfully. You can now login.";
             header("Location: ../../Public/LoginPage.php");
         } else {
@@ -52,16 +45,8 @@ class AuthController {
         exit;
     }
 
-    // LOGIN FUNCTION
     public function login($emailOrName, $password) {
-        $query = "SELECT * FROM users WHERE email = ? OR name = ?";
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) die("Prepare failed: " . $this->conn->error);
-
-        $stmt->bind_param("ss", $emailOrName, $emailOrName);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $user = $this->userDAO->findByEmailOrName($emailOrName);
 
         if (!$user) {
             $_SESSION['error'] = "Account not found. Please check your email or username.";
@@ -79,7 +64,6 @@ class AuthController {
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['role'] = $user['role'];
 
-        // Redirect by role
         if ($user['role'] === 'admin') {
             header("Location: ../../Public/admin/dashboard.php");
         } else {
@@ -108,7 +92,6 @@ class AuthController {
     }
 }
 
-// ACTION HANDLER
 if (isset($_GET['action'])) {
     $auth = new AuthController();
 
