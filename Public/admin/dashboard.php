@@ -1,15 +1,18 @@
 <?php
-require_once __DIR__ . '/../../App/Controllers/AdminController.php';
-session_start();
+require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 
+SessionHelper::requireAdminLogin();
+SessionHelper::preventCache();
+
+require_once __DIR__ . '/../../App/Controllers/AdminController.php';
 $admin = new AdminController();
+
 $title = "Dashboard";
 
-// ✅ Get dashboard statistics and recent orders
 $stats = $admin->getDashboardStats();
 $recentOrders = $admin->getRecentOrders();
 
-// ✅ Extract values for convenience
+// Extract values
 $totalProducts = $stats['totalProducts'];
 $totalOrders = $stats['totalOrders'];
 $totalCustomers = $stats['totalCustomers'];
@@ -17,6 +20,7 @@ $totalRevenue = $stats['totalRevenue'];
 
 ob_start();
 ?>
+
 <div class="page-fade">
   <h2 class="mb-4">Welcome, <?= htmlspecialchars($_SESSION['user_name'] ?? 'Admin') ?> 👋</h2>
 
