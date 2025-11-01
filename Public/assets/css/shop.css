@@ -23,6 +23,11 @@ footer {
   color: var(--primary);
 }
 
+.cart-header {
+  background: linear-gradient(to bottom right, #000, #222);
+  color: var(--primary);
+}
+
 .shop-filters {
   background-color: #fffbea;
 }
