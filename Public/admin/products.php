@@ -1,6 +1,14 @@
 <?php
+require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
+
+SessionHelper::requireAdminLogin();
+SessionHelper::preventCache();
+
 require_once __DIR__ . '/../../App/Controllers/ProductController.php';
 $productController = new ProductController();
+
+$title = "Products";
+
 $products = $productController->getProducts();
 $categories = $productController->getCategories();
 
