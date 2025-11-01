@@ -50,7 +50,7 @@ class AuthController {
 
         if (!$user) {
             $_SESSION['error'] = "Account not found. Please check your email or username.";
-            header("Location: ../../Public/LoginPage.php");
+            header("Location: ../Public/LoginPage.php");
             exit;
         }
 
@@ -84,10 +84,10 @@ class AuthController {
                 $params["secure"], $params["httponly"]
             );
         }
-
         session_destroy();
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-        header("Location: ../../Public/LoginPage.php");
+
+        // Use absolute path for redirect
+        header("Location: /Public/LoginPage.php");
         exit;
     }
 }
@@ -113,7 +113,7 @@ if (isset($_GET['action'])) {
             break;
 
         default:
-            header("Location: ../../Public/LoginPage.php");
+            header("Location: ../LoginPage.php");
             exit;
     }
 }
