@@ -1,8 +1,13 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 
+// ✅ Start session if not already started
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+// ✅ Prevent browser caching to avoid showing stale pages after logout
+SessionHelper::preventCache();
+
+// ✅ Load user name if not already in session
 if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     require_once __DIR__ . '/../../App/config/database_connect.php';
     $db = new Database();
@@ -20,6 +25,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     }
 }
 ?>  
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
     <a class="navbar-brand text-warning" href="../index.php">Drip N' Style</a>
