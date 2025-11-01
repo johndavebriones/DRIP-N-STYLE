@@ -1,3 +1,30 @@
+<?php
+require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
+
+if (session_status() === PHP_SESSION_NONE) session_start();
+SessionHelper::preventCache();
+
+// Load user name if not already in session
+if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
+    require_once __DIR__ . '/App/config/database_connect.php';
+    $db = new Database();
+    $conn = $db->connect();
+
+    $stmt = $conn->prepare("SELECT name FROM users WHERE user_id = ?");
+    if ($stmt) {
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        if ($row = $res->fetch_assoc()) {
+            $_SESSION['user_name'] = $row['name'];
+        }
+        $stmt->close();
+    }
+}
+
+// Detect current page
+$currentPage = basename($_SERVER['PHP_SELF']);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,23 +37,7 @@
 </head>
 <body>
   <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
-  <div class="container">
-    <a class="navbar-brand fw-bold text-warning" href="#">Drip N' Style</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto text-uppercase fw-semibold">
-        <li class="nav-item"><a class="nav-link active text-warning" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link text-light" href="#">About</a></li>
-        <li class="nav-item"><a class="nav-link text-light" href="#">Contact</a></li>
-        <li class="nav-item"><a href="LoginPage.php" class="btn btn-warning text-black ms-3 fw-semibold w-100">Login</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
+   <?php include 'Partials/navbar.php' ?>
 
   <!-- Hero Section -->
   <section class="hero d-flex align-items-center justify-content-center">
@@ -37,56 +48,51 @@
     </div>
   </section>
 
-  <!-- Featured Products -->
-  <section class="py-5 bg-light">
-    <div class="container text-center">
-      <h2 class="mb-4 fw-bold text-black">Featured Products</h2>
-      <div class="row g-4">
-        <!-- Product cards -->
-        <div class="col-md-4">
-          <div class="card product-card border-0 shadow-sm">
-            <img src="assets/images/565706852_1214219220724446_7902029893493702505_n.jpg" class="card-img-top" alt="Product 1">
-            <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">Denim Shorts</h5>
-              <p class="card-text text-muted">₱600</p>
-              <button class="btn btn-warning text-black fw-semibold">View Details</button>
-            </div>
+<!-- Featured Products -->
+<section class="py-5 bg-light">
+  <div class="container text-center">
+    <h2 class="mb-4 fw-bold text-black">Featured Products</h2>
+    <div class="row g-4">
+      <!-- Product cards -->
+      <div class="col-md-4">
+        <div class="card product-card border-0 shadow-sm">
+          <img src="assets/images/565706852_1214219220724446_7902029893493702505_n.jpg" class="card-img-top" alt="Denim Shorts">
+          <div class="card-body">
+            <h5 class="card-title fw-bold text-dark">Denim Shorts</h5>
+            <p class="card-text text-muted">₱600</p>
+            <button class="btn btn-warning text-black fw-semibold">View Details</button>
           </div>
         </div>
-
-        <!-- Repeat product 2–6 -->
-        <div class="col-md-4">
-          <div class="card product-card border-0 shadow-sm">
-            <img src="assets/images/564735523_1214149110731457_2363958690448676242_n.jpg" class="card-img-top" alt="Product 2">
-            <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">Y2K Tops</h5>
-              <p class="card-text text-muted">₱450</p>
-              <button class="btn btn-warning text-black fw-semibold">View Details</button>
-            </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card product-card border-0 shadow-sm">
+          <img src="assets/images/564735523_1214149110731457_2363958690448676242_n.jpg" class="card-img-top" alt="Y2K Tops">
+          <div class="card-body">
+            <h5 class="card-title fw-bold text-dark">Y2K Tops</h5>
+            <p class="card-text text-muted">₱450</p>
+            <button class="btn btn-warning text-black fw-semibold">View Details</button>
           </div>
         </div>
-
-        <div class="col-md-4">
-          <div class="card product-card border-0 shadow-sm">
-            <img src="assets/images/565639940_1214149134064788_3962912159579614764_n.jpg" class="card-img-top" alt="Product 3">
-            <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">GAP Basic Tops</h5>
-              <p class="card-text text-muted">₱850</p>
-              <button class="btn btn-warning text-black fw-semibold">View Details</button>
-            </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card product-card border-0 shadow-sm">
+          <img src="assets/images/565639940_1214149134064788_3962912159579614764_n.jpg" class="card-img-top" alt="GAP Basic Tops">
+          <div class="card-body">
+            <h5 class="card-title fw-bold text-dark">GAP Basic Tops</h5>
+            <p class="card-text text-muted">₱850</p>
+            <button class="btn btn-warning text-black fw-semibold">View Details</button>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Footer -->
-  <?php include 'Partials/footer.php'?>
+<!-- Footer -->
+<?php include 'Partials/footer.php' ?>
 
-  <!-- Scroll to Top Button -->
-  <button id="scrollTop">↑</button>
-
-  <script src="assets/vendor/bootstrap5/js/bootstrap.min.js"></script>
-  <script src="assets/js/scroll-up.js"></script>
+<!-- Scroll to Top Button -->
+<button id="scrollTop">↑</button>
+<script src="assets/js/scroll-up.js"></script>
 </body>
 </html>
