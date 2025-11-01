@@ -61,7 +61,10 @@ $products = $shop->getProducts($search, $category, $sort);
             <?php foreach ($products as $product): ?>
               <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <div class="card product-card shadow-sm fade-in">
-                  <img src="assets/images/<?= htmlspecialchars($product['image'] ?? 'placeholder.jpg'); ?>" class="card-img-top" alt="<?= htmlspecialchars($product['name']); ?>">
+                  <img src="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>" 
+                    class="card-img-top" 
+                    alt="<?= htmlspecialchars($product['name']) ?>" 
+                    style="height: 200px; object-fit: cover;">
                   <div class="card-body text-center">
                     <h5 class="card-title"><?= htmlspecialchars($product['name']); ?></h5>
                     <p class="text-muted mb-1"><?= htmlspecialchars($product['category_name']); ?></p>
@@ -70,7 +73,7 @@ $products = $shop->getProducts($search, $category, $sort);
                     <?php if (isset($_SESSION['user_id'])): ?>
                       <a href="add_to_cart.php?id=<?= $product['product_id']; ?>" class="btn btn-dark w-100">Add to Cart</a>
                     <?php else: ?>
-                      <a href="auth.php" class="btn btn-dark w-100">Log in to Order</a>
+                      <a href="../LoginPage.php" class="btn btn-dark w-100">Log in to Order</a>
                     <?php endif; ?>
                   </div>
                 </div>
