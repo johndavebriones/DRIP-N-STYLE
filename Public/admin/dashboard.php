@@ -1,13 +1,19 @@
 <?php
 require_once __DIR__ . '/../../App/Controllers/AdminController.php';
-$admin = new AdminController();
+session_start();
 
+$admin = new AdminController();
 $title = "Dashboard";
-$totalProducts = $admin->totalProducts();
-$totalOrders = $admin->totalOrders();
-$totalCustomers = $admin->totalCustomers();
-$totalRevenue = $admin->totalRevenue();
-$recentOrders = $admin->recentOrders();
+
+// ✅ Get dashboard statistics and recent orders
+$stats = $admin->getDashboardStats();
+$recentOrders = $admin->getRecentOrders();
+
+// ✅ Extract values for convenience
+$totalProducts = $stats['totalProducts'];
+$totalOrders = $stats['totalOrders'];
+$totalCustomers = $stats['totalCustomers'];
+$totalRevenue = $stats['totalRevenue'];
 
 ob_start();
 ?>
@@ -24,6 +30,7 @@ ob_start();
         </div>
       </div>
     </div>
+
     <!-- Total Orders -->
     <div class="col-md-3">
       <div class="card text-center shadow-sm border-0">
@@ -33,6 +40,7 @@ ob_start();
         </div>
       </div>
     </div>
+
     <!-- Total Customers -->
     <div class="col-md-3">
       <div class="card text-center shadow-sm border-0">
@@ -42,6 +50,7 @@ ob_start();
         </div>
       </div>
     </div>
+
     <!-- Total Revenue -->
     <div class="col-md-3">
       <div class="card text-center shadow-sm border-0">
@@ -66,29 +75,36 @@ ob_start();
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($recentOrders as $order): ?>
+        <?php if (!empty($recentOrders)): ?>
+          <?php foreach ($recentOrders as $order): ?>
+            <tr>
+              <td>#<?= $order['order_id'] ?></td>
+              <td><?= htmlspecialchars($order['customer_name']) ?></td>
+              <td><?= htmlspecialchars($order['product_name']) ?></td>
+              <td>
+                <?php
+                  $badgeClass = match($order['order_status'] ?? '') {
+                      'Completed' => 'bg-success',
+                      'Pending' => 'bg-warning text-dark',
+                      'Cancelled' => 'bg-danger',
+                      default => 'bg-secondary'
+                  };
+                ?>
+                <span class="badge <?= $badgeClass ?>"><?= $order['order_status'] ?? 'Unknown' ?></span>
+              </td>
+              <td>₱<?= number_format($order['total_amount'], 2) ?></td>
+            </tr>
+          <?php endforeach; ?>
+        <?php else: ?>
           <tr>
-            <td>#<?= $order['order_id'] ?></td>
-            <td><?= htmlspecialchars($order['customer_name']) ?></td>
-            <td><?= htmlspecialchars($order['product_name']) ?></td>
-            <td>
-              <?php
-                $badgeClass = match($order['order_status'] ?? '') {
-                    'Completed' => 'bg-success',
-                    'Pending' => 'bg-warning text-dark',
-                    'Cancelled' => 'bg-danger',
-                    default => 'bg-secondary'
-                };
-              ?>
-              <span class="badge <?= $badgeClass ?>"><?= $order['order_status'] ?? 'Unknown' ?></span>
-            </td>
-            <td>₱<?= number_format($order['total_amount'], 2) ?></td>
+            <td colspan="5" class="text-center text-muted">No recent orders found.</td>
           </tr>
-        <?php endforeach; ?>
+        <?php endif; ?>
       </tbody>
     </table>
   </div>
 </div>
+
 <style>
 .page-fade {
   opacity: 0;
@@ -106,6 +122,7 @@ ob_start();
   }
 }
 </style>
+
 <?php
 $content = ob_get_clean();
 include __DIR__ . '/assets/layout/main.php';
