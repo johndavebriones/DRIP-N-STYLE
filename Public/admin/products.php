@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../../App/Controllers/ProductController.php';
 $productController = new ProductController();
-$products = $productController->getAllProducts();
-$categories = $productController->getAllCategories();
+$products = $productController->getProducts();
+$categories = $productController->getCategories();
 
 ob_start();
 ?>
