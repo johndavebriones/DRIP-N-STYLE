@@ -150,7 +150,7 @@ $shop = new ShopController();
                         </tbody>
                     </table>
                     <div class="text-end mt-3">
-                        <a href="checkout.php" class="btn btn-warning fw-bold">Proceed to Checkout</a>
+                        <a href="test_checkout.php" class="btn btn-warning fw-bold">Proceed to Checkout</a>
                     </div>
                 </div>
             <?php endif; ?>
