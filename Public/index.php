@@ -6,7 +6,7 @@ SessionHelper::preventCache();
 
 // Load user name if not already in session
 if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
-    require_once __DIR__ . '/App/config/database_connect.php';
+    require_once __DIR__ . '/../App/Config/database_connect.php';
     $db = new Database();
     $conn = $db->connect();
 
