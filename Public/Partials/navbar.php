@@ -6,7 +6,7 @@ SessionHelper::preventCache();
 
 // Load user name if logged in
 if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
-    require_once __DIR__ . '/../config/database_connect.php';
+    require_once __DIR__ . '/../../App/config/database_connect.php';
     $db = new Database();
     $conn = $db->connect();
 
@@ -26,7 +26,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
 $currentPage = basename($_SERVER['PHP_SELF']);
 
 // Brand always links to index.php
-$brandLink = '../Public/index.php';
+$brandLink = '../index.php';
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -80,7 +80,10 @@ $brandLink = '../Public/index.php';
         <?php else: ?>
           <!-- Not logged in -->
           <li class="nav-item">
-            <a class="nav-link <?= ($currentPage === 'index.php') ? 'active' : '' ?>" href="../Public/shop/shop.php">Shop</a>
+            <a class="nav-link <?= ($currentPage === 'index.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
+              href="<?= ($currentPage === 'shop.php') ? '../index.php' : '../Public/shop/shop.php' ?>">
+              <?= ($currentPage === 'shop.php') ? 'Home' : 'Shop' ?>
+            </a>
           </li>
           <li class="nav-item">
             <a class="nav-link <?= ($currentPage === 'about.php') ? 'active' : '' ?>" href="about.php">About</a>
@@ -92,7 +95,6 @@ $brandLink = '../Public/index.php';
             <a class="btn btn-warning text-black fw-semibold" href="../Public/LoginPage.php">Login</a>
           </li>
         <?php endif; ?>
-
       </ul>
     </div>
   </div>
