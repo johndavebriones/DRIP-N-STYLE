@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../Models/cartItemModel.php';
+require_once __DIR__ . '/../Models/cartModel.php';
 
 class CartDAO {
     private $conn;
@@ -8,7 +8,7 @@ class CartDAO {
         $this->conn = $dbConnection;
     }
 
-    // Get or create cart for user
+    // ✅ Get or create cart for user
     public function getOrCreateCart($user_id) {
         $stmt = $this->conn->prepare("SELECT cart_id FROM carts WHERE user_id = ?");
         $stmt->bind_param('i', $user_id);
@@ -24,7 +24,7 @@ class CartDAO {
         }
     }
 
-    // Get a single cart item by item_id (includes stock)
+    // ✅ Get a single cart item by item_id (includes stock)
     public function getCartItemById($item_id) {
         $stmt = $this->conn->prepare("
             SELECT ci.item_id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time, p.stock
@@ -38,12 +38,12 @@ class CartDAO {
         return $result->fetch_assoc();
     }
 
-    // Get all cart items for a user (includes stock)
+    // ✅ Get all cart items for a user (includes stock)
     public function getCartItems($user_id) {
         $cart_id = $this->getOrCreateCart($user_id);
         $stmt = $this->conn->prepare("
             SELECT ci.item_id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time,
-                p.name, p.image, p.stock
+                   p.name, p.image, p.stock
             FROM cart_items ci
             JOIN products p ON ci.product_id = p.product_id
             WHERE ci.cart_id = ?
@@ -54,8 +54,7 @@ class CartDAO {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-
-    // Add item to cart
+    // ✅ Add item to cart
     public function addToCart($user_id, $product_id, $quantity, $price) {
         $cart_id = $this->getOrCreateCart($user_id);
 
@@ -64,23 +63,26 @@ class CartDAO {
         $stmt->bind_param('ii', $cart_id, $product_id);
         $stmt->execute();
         $result = $stmt->get_result();
+
         if ($row = $result->fetch_assoc()) {
-            // Update quantity
+            // Update quantity and price
             $newQty = $row['quantity'] + $quantity;
             $update = $this->conn->prepare("UPDATE cart_items SET quantity = ?, price_at_time = ? WHERE item_id = ?");
-            $update->bind_param('dii', $newQty, $price, $row['item_id']);
+            $update->bind_param('idi', $newQty, $price, $row['item_id']);
             $update->execute();
+            $this->updateCartTimestamp($cart_id);
             return $update->affected_rows;
         } else {
             // Insert new item
             $insert = $this->conn->prepare("INSERT INTO cart_items (cart_id, product_id, quantity, price_at_time) VALUES (?, ?, ?, ?)");
             $insert->bind_param('iiid', $cart_id, $product_id, $quantity, $price);
             $insert->execute();
+            $this->updateCartTimestamp($cart_id);
             return $insert->affected_rows;
         }
     }
 
-    // Remove item from cart
+    // ✅ Remove item from cart
     public function removeFromCart($item_id) {
         $stmt = $this->conn->prepare("DELETE FROM cart_items WHERE item_id = ?");
         $stmt->bind_param('i', $item_id);
@@ -88,7 +90,7 @@ class CartDAO {
         return $stmt->affected_rows;
     }
 
-    // Update quantity
+    // ✅ Update quantity
     public function updateQuantity($item_id, $quantity) {
         $stmt = $this->conn->prepare("UPDATE cart_items SET quantity = ? WHERE item_id = ?");
         $stmt->bind_param('ii', $quantity, $item_id);
@@ -96,12 +98,49 @@ class CartDAO {
         return $stmt->affected_rows;
     }
 
-    // Clear entire cart
+    // ✅ Clear entire cart
     public function clearCart($user_id) {
         $cart_id = $this->getOrCreateCart($user_id);
         $stmt = $this->conn->prepare("DELETE FROM cart_items WHERE cart_id = ?");
         $stmt->bind_param('i', $cart_id);
         $stmt->execute();
+        $this->updateCartTimestamp($cart_id);
         return $stmt->affected_rows;
+    }
+
+    /* ------------------------------------------
+       🔹 ADDITIONAL METHODS FOR CHECKOUT
+    ------------------------------------------ */
+
+    // ✅ Get total cart value (sum of quantity × price)
+    public function getCartTotal($user_id) {
+        $cart_id = $this->getOrCreateCart($user_id);
+        $stmt = $this->conn->prepare("
+            SELECT SUM(ci.quantity * ci.price_at_time) AS total
+            FROM cart_items ci
+            WHERE ci.cart_id = ?
+        ");
+        $stmt->bind_param('i', $cart_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['total'] ?? 0.0;
+    }
+
+    // ✅ Get full cart info (cart + items)
+    public function getCartDetails($user_id) {
+        $cart_id = $this->getOrCreateCart($user_id);
+        return [
+            'cart_id' => $cart_id,
+            'items' => $this->getCartItems($user_id),
+            'total' => $this->getCartTotal($user_id)
+        ];
+    }
+
+    // ✅ Update timestamp whenever cart is modified
+    private function updateCartTimestamp($cart_id) {
+        $stmt = $this->conn->prepare("UPDATE carts SET updated_at = CURRENT_TIMESTAMP WHERE cart_id = ?");
+        $stmt->bind_param('i', $cart_id);
+        $stmt->execute();
     }
 }

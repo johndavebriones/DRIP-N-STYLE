@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../DAO/CartDAO.php';
+require_once __DIR__ . '/../DAO/cartDAO.php';
 require_once __DIR__ . '/../config/database_connect.php';
 
 // Initialize DB connection and CartDAO
@@ -12,6 +12,7 @@ $action = $_POST['action'] ?? '';
 
 switch ($action) {
 
+    // ✅ ADD ITEM
     case 'add':
         $user_id = $_SESSION['user_id'] ?? 0;
         $product_id = intval($_POST['product_id'] ?? 0);
@@ -26,6 +27,7 @@ switch ($action) {
         exit;
         break;
 
+    // ✅ UPDATE QUANTITY
     case 'update':
         $item_id = intval($_POST['item_id'] ?? 0);
         $quantity_action = $_POST['quantity_action'] ?? '';
@@ -59,6 +61,7 @@ switch ($action) {
         exit;
         break;
 
+    // ✅ REMOVE ITEM
     case 'remove':
         $item_id = intval($_POST['item_id'] ?? 0);
         if ($item_id) {
@@ -69,6 +72,58 @@ switch ($action) {
         exit;
         break;
 
+    /* ---------------------------------------
+       🔹 NEW ACTIONS ADDED BELOW
+    --------------------------------------- */
+
+    // ✅ VIEW CART (for JSON or API use)
+    case 'view':
+        $user_id = $_SESSION['user_id'] ?? 0;
+        if (!$user_id) {
+            echo json_encode(['error' => 'User not logged in']);
+            exit;
+        }
+
+        $cartData = $cartDAO->getCartDetails($user_id);
+        header('Content-Type: application/json');
+        echo json_encode($cartData);
+        exit;
+        break;
+
+    // ✅ CLEAR CART
+    case 'clear':
+        $user_id = $_SESSION['user_id'] ?? 0;
+        if ($user_id) {
+            $cartDAO->clearCart($user_id);
+            $_SESSION['cart_cleared'] = true;
+        }
+
+        header("Location: ../../Public/shop/cart.php");
+        exit;
+        break;
+
+    // ✅ CHECKOUT (for PayMongo or similar)
+    case 'checkout':
+        $user_id = $_SESSION['user_id'] ?? 0;
+        if (!$user_id) {
+            echo json_encode(['error' => 'User not logged in']);
+            exit;
+        }
+
+        $total = $cartDAO->getCartTotal($user_id);
+        $cartItems = $cartDAO->getCartItems($user_id);
+
+        // Return data for API integration
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'total' => number_format($total, 2, '.', ''),
+            'items' => $cartItems
+        ]);
+        exit;
+        break;
+
+    // ✅ DEFAULT
     default:
         header("Location: ../../Public/shop/cart.php");
         exit;
