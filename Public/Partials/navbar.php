@@ -25,8 +25,14 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
 // Detect current page
 $currentPage = basename($_SERVER['PHP_SELF']);
 
-// Brand always links to index.php
-$brandLink = '../index.php';
+if ($currentPage === 'shop.php') {
+    $brandLink = '../index.php';
+} elseif ($currentPage === 'index.php') {
+    $brandLink = '../Public/index.php';
+} else {
+    $brandLink = '../Public/index.php';
+}
+
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -44,7 +50,6 @@ $brandLink = '../index.php';
           <?php
             // Logged-in user menu
             if ($currentPage === 'index.php') {
-                // On index.php: show Shop, About, Contact, Username dropdown
           ?>
               <li class="nav-item">
                 <a class="nav-link <?= ($currentPage === 'shop.php') ? 'active' : '' ?>" href="../Public/shop/shop.php">Shop</a>
@@ -57,7 +62,6 @@ $brandLink = '../index.php';
               </li>
           <?php
             } else {
-                // On other pages (shop.php, cart.php): show Shop, Cart
           ?>
               <li class="nav-item">
                 <a class="nav-link <?= ($currentPage === 'shop.php') ? 'active' : '' ?>" href="../shop/shop.php">Shop</a>
@@ -73,15 +77,14 @@ $brandLink = '../index.php';
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href=" ../App/Controllers/AuthController.php?action=logout">Logout</a></li>
+              <li><a class="dropdown-item text-danger" href="../App/Controllers/AuthController.php?action=logout">Logout</a></li>
             </ul>
           </li>
 
         <?php else: ?>
-          <!-- Not logged in -->
           <li class="nav-item">
             <a class="nav-link <?= ($currentPage === 'index.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
-              href="<?= ($currentPage === 'shop.php') ? '../index.php' : '../Public/shop/shop.php' ?>">
+              href="<?= ($currentPage === 'shop.php') ? '../../index.php' : '../Public/shop/shop.php' ?>">
               <?= ($currentPage === 'shop.php') ? 'Home' : 'Shop' ?>
             </a>
           </li>
