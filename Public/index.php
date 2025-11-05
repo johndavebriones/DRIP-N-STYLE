@@ -44,7 +44,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <div class="hero-content text-center text-white">
       <h1 class="display-4 fw-bold hero-title text-warning">Discover Your Style</h1>
       <p class="lead text-light">— Grab What You Desire 💫</p>
-      <a href="shop/shop.php" class="btn btn-warning btn-lg fw-semibold mt-3">Shop Now</a>
+      <a href="../Public/shop/shop.php" class="btn btn-warning btn-lg fw-semibold mt-3">Shop Now</a>
     </div>
   </section>
 
