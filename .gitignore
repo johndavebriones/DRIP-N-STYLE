@@ -3,6 +3,7 @@
 # -------------------------------
 /App/Config/email_config.php
 .env                           
+/Public/uploads
 /App/Config/database_connect.php 
 
 # -------------------------------
