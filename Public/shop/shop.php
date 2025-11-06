@@ -4,8 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 require_once __DIR__ . '/../../App/Controllers/ShopController.php';
-
 SessionHelper::preventCache();
+
 $shop = new ShopController();
 $search = $_GET['search'] ?? '';
 $category = $_GET['category'] ?? '';

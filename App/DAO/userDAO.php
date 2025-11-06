@@ -10,9 +10,8 @@ class UserDAO {
         $this->conn = $database->connect();
     }
 
-    // Find user by email or username
     public function findByEmailOrName($emailOrName) {
-        $query = "SELECT * FROM users WHERE email = ? OR name = ?";
+        $query = "SELECT * FROM users WHERE (email = ? OR name = ?) AND status = 'active' LIMIT 1";
         $stmt = $this->conn->prepare($query);
         if (!$stmt) return null;
 
@@ -22,9 +21,8 @@ class UserDAO {
         return $result->fetch_assoc();
     }
 
-    // Find user by email only
     public function findByEmail($email) {
-        $query = "SELECT * FROM users WHERE email = ?";
+        $query = "SELECT * FROM users WHERE email = ? AND status = 'active' LIMIT 1";
         $stmt = $this->conn->prepare($query);
         if (!$stmt) return null;
 
@@ -34,7 +32,6 @@ class UserDAO {
         return $result->fetch_assoc();
     }
 
-    // Register new user
     public function registerUser(UserModel $user) {
         $query = "
             INSERT INTO users (name, email, password, role, status, contact_number)
@@ -54,5 +51,16 @@ class UserDAO {
         );
 
         return $stmt->execute();
+    }
+
+    public function findById($user_id) {
+        $query = "SELECT * FROM users WHERE user_id = ? LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) return null;
+
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 }

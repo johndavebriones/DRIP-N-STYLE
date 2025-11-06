@@ -1,5 +1,8 @@
 <?php 
-session_start();
+ini_set('session.cookie_path', '/');
+require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+SessionHelper::redirectIfLoggedIn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +48,7 @@ session_start();
     <div class="login-form">
       <h3 class="text-center mb-1">Welcome Back!</h3>
       <p class="text-center mb-4 opacity-75">Start Your Drip with a Style</p>
-      <form method="POST" action="../app/controllers/AuthController.php?action=login">
+      <form method="POST" action="/Websites/DRIP-N-STYLE/App/Controllers/AuthController.php?action=login">
         <div class="mb-3">
           <label>Email</label>
           <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
@@ -79,6 +82,7 @@ session_start();
       </form>
     </div>
   </div>
+  
   <!-- Forgot Password Modal -->
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-md">
@@ -99,8 +103,8 @@ session_start();
     </div>
   </div>
 </div>
+
 <script>
-   // Page Transition Effect
   document.querySelectorAll('a[href]').forEach(link => {
     link.addEventListener('click', function(e) {
       if (this.getAttribute('href').endsWith('.php')) {

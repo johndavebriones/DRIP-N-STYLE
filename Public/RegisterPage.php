@@ -1,5 +1,8 @@
 <?php 
-session_start();
+ini_set('session.cookie_path', '/');
+require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+SessionHelper::redirectIfLoggedIn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,8 +11,8 @@ session_start();
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drip N' Style | Register</title>
 
-  <link href="../Public/assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/login.css">
+  <link href="../assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/register.css">
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -32,32 +35,36 @@ session_start();
 </head>
 <body>
 
-  <div class="login-card">
-    <div class="login-image" onclick="window.location.href='index.php'" style="cursor:pointer;"></div>
-
-    <div class="login-form">
+  <div class="register-card">
+    <div class="register-form">
       <h3 class="text-center mb-1">Create Account</h3>
       <p class="text-center mb-4 opacity-75">Join Us and Start Your Drip</p>
-      <form method="POST" action="../app/controllers/AuthController.php?action=register">
+      <form method="POST" action="/Websites/DRIP-N-STYLE/App/Controllers/AuthController.php?action=register">
         <div class="mb-3">
-          <label>Full Name</label>
-          <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+          <label>Name</label>
+          <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
         </div>
         <div class="mb-3">
           <label>Email</label>
           <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
         </div>
-        <div class="mb-3 position-relative">
+        <div class="mb-3">
           <label>Password</label>
-          <input type="password" name="password" id="password" class="form-control" placeholder="Create a password" required>
+          <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
         </div>
-        <div class="mb-3 position-relative">
+        <div class="mb-3">
           <label>Confirm Password</label>
-          <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Re-enter your password" required>
+          <input type="password" name="confirm_password" class="form-control" placeholder="Confirm your password" required>
         </div>
-
-        <button type="submit" class="btn btn-warning w-100">Create Account</button>
-        
+        <?php if (isset($_SESSION['error'])): ?>
+          <div class="card border-warning bg-warning-subtle mb-3">
+            <div class="card-body p-2 text-center text-dark">
+              ⚠️ <?= htmlspecialchars($_SESSION['error']) ?>
+            </div>
+          </div>
+          <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+        <button type="submit" class="btn btn-warning w-100">Register</button>
         <div class="text-center mt-3">
           <span class="opacity-75">Already have an account?</span>
           <a href="LoginPage.php" class="text-decoration-none text-dark fw-bold">Login</a>
@@ -66,20 +73,7 @@ session_start();
     </div>
   </div>
 
-<script src="../Public/assets/vendor/bootstrap5/js/bootstrap.min.js"></script>
-
-<?php if (isset($_SESSION['error'])): ?>
-
-<script>
-  Swal.fire({
-    icon: 'error',
-    title: 'Registration Error',
-    text: '<?= addslashes($_SESSION['error']) ?>',
-    confirmButtonColor: '#ffc107',
-  });
-  </script>
-
-  <?php unset($_SESSION['error']); endif; ?>
+  <script src="../assets/vendor/bootstrap5/js/bootstrap.min.js"></script>
 
   <?php if (isset($_SESSION['success'])): ?>
 

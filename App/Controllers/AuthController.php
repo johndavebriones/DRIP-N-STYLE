@@ -5,6 +5,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../DAO/userDAO.php';
+require_once __DIR__ . '/../Models/userModel.php';
+require_once __DIR__ . '/../Helpers/SessionHelper.php';
 
 class AuthController {
     private $userDAO;
@@ -13,15 +15,20 @@ class AuthController {
         $this->userDAO = new UserDAO();
     }
 
+// REGISTER NEW USER
     public function register($name, $email, $password, $confirmPassword) {
+        $name  = trim($name);
+        $email = trim($email);
+        $password = trim($password);
+        $confirmPassword = trim($confirmPassword);
+
         if ($password !== $confirmPassword) {
             $_SESSION['error'] = "Passwords do not match.";
             header("Location: ../../Public/RegisterPage.php");
             exit;
         }
 
-        $existingUser = $this->userDAO->findByEmail($email);
-        if ($existingUser) {
+        if ($this->userDAO->findByEmail($email)) {
             $_SESSION['error'] = "Email already exists.";
             header("Location: ../../Public/RegisterPage.php");
             exit;
@@ -36,8 +43,10 @@ class AuthController {
         $user->contact_number = null;
 
         if ($this->userDAO->registerUser($user)) {
-            $_SESSION['success'] = "Account created successfully. You can now login.";
-            header("Location: ../../Public/LoginPage.php");
+            $_SESSION['user_id'] = $this->userDAO->findByEmail($email)['user_id'];
+            $_SESSION['user_name'] = $name;
+            $_SESSION['role'] = 'customer';
+            header("Location: ../../Public/shop/shop.php");
         } else {
             $_SESSION['error'] = "Registration failed. Please try again.";
             header("Location: ../../Public/RegisterPage.php");
@@ -45,34 +54,38 @@ class AuthController {
         exit;
     }
 
-    public function login($emailOrName, $password) {
-        $user = $this->userDAO->findByEmailOrName($emailOrName);
+// LOGIN USER
+    public function login($email, $password) {
+    $email = trim($email);
+    $password = trim($password);
 
-        if (!$user) {
-            $_SESSION['error'] = "Account not found. Please check your email or username.";
-            header("Location: ../Public/LoginPage.php");
-            exit;
-        }
+    $user = $this->userDAO->findByEmail($email);
 
-        if (!password_verify($password, $user['password'])) {
-            $_SESSION['error'] = "Incorrect password. Please try again.";
-            header("Location: ../../Public/LoginPage.php");
-            exit;
-        }
-
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['user_name'] = $user['name'];
-        $_SESSION['role'] = $user['role'];
-
-        if ($user['role'] === 'admin') {
-            header("Location: ../../Public/admin/dashboard.php");
-        } else {
-            header("Location: ../../Public/shop/shop.php");
-        }
+    if (!$user) {
+        $_SESSION['error'] = "Account not found. Please check your email.";
+        header("Location: ../../Public/LoginPage.php");
         exit;
     }
 
-    // LOGOUT FUNCTION
+    if (!password_verify($password, $user['password'])) {
+        $_SESSION['error'] = "Incorrect password. Please try again.";
+        header("Location: ../../Public/LoginPage.php");
+        exit;
+    }
+
+    $_SESSION['user_id']   = $user['user_id'];
+    $_SESSION['user_name'] = $user['name'];
+    $_SESSION['role']      = $user['role'];
+
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        header("Location: ../../Public/admin/dashboard.php");
+    } else {
+        header("Location: ../../Public/shop/shop.php");
+    }
+    exit;
+}
+
+// LOGOUT USER
     public function logout() {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
@@ -86,19 +99,24 @@ class AuthController {
         }
         session_destroy();
 
-        // Use absolute path for redirect
         header("Location: ../../Public/LoginPage.php");
         exit;
     }
 }
 
+// HANDLE ACTION
 if (isset($_GET['action'])) {
     $auth = new AuthController();
 
     switch ($_GET['action']) {
         case 'register':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $auth->register($_POST['name'], $_POST['email'], $_POST['password'], $_POST['confirm_password']);
+                $auth->register(
+                    $_POST['name'],
+                    $_POST['email'],
+                    $_POST['password'],
+                    $_POST['confirm_password']
+                );
             }
             break;
 
@@ -113,7 +131,7 @@ if (isset($_GET['action'])) {
             break;
 
         default:
-            header("Location: ../LoginPage.php");
+            header("Location: ../../Public/LoginPage.php");
             exit;
     }
 }

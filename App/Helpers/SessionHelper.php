@@ -4,35 +4,38 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 class SessionHelper {
-    // Require login for admin pages
+
     public static function requireAdminLogin() {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-            header("Location: ../../Public/LoginPage.php");
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+            header("Location: /Websites/DRIP-N-STYLE/Public/LoginPage.php");
             exit;
         }
     }
 
-    // Require login for customer pages
     public static function requireCustomerLogin() {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer') {
-            header("Location: ../../Public/LoginPage.php");
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'customer') {
+            header("Location: /Websites/DRIP-N-STYLE/Public/LoginPage.php");
             exit;
         }
     }
 
-    // Prevent logged-in users from accessing login/register again
     public static function redirectIfLoggedIn() {
         if (isset($_SESSION['user_id'])) {
-            if ($_SESSION['role'] === 'admin') {
-                header("Location: ../../Public/admin/dashboard.php");
-            } else {
-                header("Location: ../../Public/shop/shop.php");
+            switch ($_SESSION['role'] ?? '') {
+                case 'admin':
+                    header("Location: /Websites/DRIP-N-STYLE/Public/admin/dashboard.php");
+                    break;
+                case 'customer':
+                    header("Location: /Websites/DRIP-N-STYLE/Public/shop/shop.php");
+                    break;
+                default:
+                    header("Location: /Websites/DRIP-N-STYLE/Public/LoginPage.php");
+                    break;
             }
             exit;
         }
     }
 
-    // Prevent page caching after logout
     public static function preventCache() {
         header("Cache-Control: no-cache, no-store, must-revalidate");
         header("Pragma: no-cache");

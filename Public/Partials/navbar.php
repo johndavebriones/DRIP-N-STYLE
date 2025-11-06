@@ -2,22 +2,9 @@
 require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 
 if (session_status() === PHP_SESSION_NONE) session_start();
-SessionHelper::preventCache();
 
-// === FORCE LOGOUT CONDITION ===
-// Example: force logout if a certain condition is met
-// Here we check if the current page is "shop.php" and user is logged in
-if (isset($_SESSION['user_id']) && $currentPage === 'shop.php') {
-    // End session
-    session_unset();
-    session_destroy();
+$currentPage = basename($_SERVER['PHP_SELF']);
 
-    // Redirect to LoginPage
-    header("Location: ../../Public/LoginPage.php");
-    exit;
-}
-
-// Load user name if logged in
 if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     require_once __DIR__ . '/../../App/config/database_connect.php';
     $db = new Database();
@@ -34,9 +21,6 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
         $stmt->close();
     }
 }
-
-// Detect current page
-$currentPage = basename($_SERVER['PHP_SELF']);
 
 if ($currentPage === 'shop.php') {
     $brandLink = '../index.php';
@@ -60,7 +44,6 @@ if ($currentPage === 'shop.php') {
 
         <?php if (isset($_SESSION['user_id'])): ?>
           <?php
-            // Logged-in user menu
             if ($currentPage === 'index.php') {
           ?>
               <li class="nav-item">
@@ -74,9 +57,10 @@ if ($currentPage === 'shop.php') {
               </li>
           <?php
             } else {
+                $shopLink = ($currentPage === 'cart.php' || $currentPage === 'shop.php') ? '../shop/shop.php' : '../Public/shop/shop.php';
           ?>
               <li class="nav-item">
-                <a class="nav-link <?= ($currentPage === 'shop.php') ? 'active' : '' ?>" href="../shop/shop.php">Shop</a>
+                <a class="nav-link <?= ($currentPage === 'shop.php') ? 'active' : '' ?>" href="<?= $shopLink ?>">Shop</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link <?= ($currentPage === 'cart.php') ? 'active' : '' ?>" href="../shop/cart.php">Cart</a>
@@ -89,7 +73,7 @@ if ($currentPage === 'shop.php') {
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="../../App/Controllers/AuthController.php?action=logout">Logout</a></li>
+              <li><a class="dropdown-item text-danger" href="../App/Controllers/AuthController.php?action=logout">Logout</a></li>
             </ul>
           </li>
 
@@ -108,7 +92,7 @@ if ($currentPage === 'shop.php') {
           </li>
           <li class="nav-item ms-3">
               <a class="btn btn-warning text-black fw-semibold <?= ($currentPage === 'LoginPage.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
-                href="<?= ($currentPage === 'shop.php') ? '../../Public/LoginPage.php' : '../Public/LoginPage.php' ?>"
+                href="<?= ($currentPage === 'shop.php') ? '../LoginPage.php' : '../Public/LoginPage.php' ?>"
                 style="color: black; background-color: #ffc107; border-color: #ffc107;">
                 Login
               </a>
