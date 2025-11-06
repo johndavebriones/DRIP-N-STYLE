@@ -87,7 +87,7 @@ class AuthController {
         session_destroy();
 
         // Use absolute path for redirect
-        header("Location: /Public/LoginPage.php");
+        header("Location: ../../Public/LoginPage.php");
         exit;
     }
 }

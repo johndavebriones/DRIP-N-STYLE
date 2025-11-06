@@ -1,4 +1,8 @@
 <?php
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/Websites/DRIP-N-STYLE/'); // or '/DRIP-N-STYLE/' if directly under htdocs
+}
+
 return [
     // SESSION KEYS
     'session_keys' => [

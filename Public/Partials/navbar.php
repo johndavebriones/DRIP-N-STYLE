@@ -4,6 +4,19 @@ require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::preventCache();
 
+// === FORCE LOGOUT CONDITION ===
+// Example: force logout if a certain condition is met
+// Here we check if the current page is "shop.php" and user is logged in
+if (isset($_SESSION['user_id']) && $currentPage === 'shop.php') {
+    // End session
+    session_unset();
+    session_destroy();
+
+    // Redirect to LoginPage
+    header("Location: ../../Public/LoginPage.php");
+    exit;
+}
+
 // Load user name if logged in
 if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     require_once __DIR__ . '/../../App/config/database_connect.php';
@@ -32,7 +45,6 @@ if ($currentPage === 'shop.php') {
 } else {
     $brandLink = '../Public/index.php';
 }
-
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -77,14 +89,14 @@ if ($currentPage === 'shop.php') {
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="../App/Controllers/AuthController.php?action=logout">Logout</a></li>
+              <li><a class="dropdown-item text-danger" href="../../App/Controllers/AuthController.php?action=logout">Logout</a></li>
             </ul>
           </li>
 
         <?php else: ?>
           <li class="nav-item">
             <a class="nav-link <?= ($currentPage === 'index.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
-              href="<?= ($currentPage === 'shop.php') ? '../../index.php' : '../Public/shop/shop.php' ?>">
+              href="<?= ($currentPage === 'shop.php') ? '../index.php' : '../Public/shop/shop.php' ?>">
               <?= ($currentPage === 'shop.php') ? 'Home' : 'Shop' ?>
             </a>
           </li>
@@ -95,7 +107,11 @@ if ($currentPage === 'shop.php') {
             <a class="nav-link <?= ($currentPage === 'contact.php') ? 'active' : '' ?>" href="contact.php">Contact</a>
           </li>
           <li class="nav-item ms-3">
-            <a class="btn btn-warning text-black fw-semibold" href="../Public/LoginPage.php">Login</a>
+              <a class="btn btn-warning text-black fw-semibold <?= ($currentPage === 'LoginPage.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
+                href="<?= ($currentPage === 'shop.php') ? '../../Public/LoginPage.php' : '../Public/LoginPage.php' ?>"
+                style="color: black; background-color: #ffc107; border-color: #ffc107;">
+                Login
+              </a>
           </li>
         <?php endif; ?>
       </ul>
