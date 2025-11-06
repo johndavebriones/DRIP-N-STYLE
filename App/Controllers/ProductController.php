@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../DAO/ProductDAO.php';
+require_once __DIR__ . '/../DAO/productDAO.php';
 
 class ProductController {
     private $productDAO;
@@ -8,72 +8,39 @@ class ProductController {
         $this->productDAO = new ProductDAO();
     }
 
-    public function getProducts() {
-        return $this->productDAO->getAllProducts();
+    public function getFilteredProducts($search, $category, $status) {
+        return $this->productDAO->getFilteredProducts($search, $category, $status);
     }
 
     public function getCategories() {
-        return $this->productDAO->getAllCategories();
+        return $this->productDAO->getCategories();
     }
 
-    public function addProduct($data, $file) {
-        $imagePath = $this->handleImageUpload($file);
-        $this->productDAO->insertProduct($data, $imagePath);
-        header("Location: ../../Public/admin/products.php?success=add");
-        exit;
+    public function getStatuses() {
+        return $this->productDAO->getStatuses();
     }
 
-    public function editProduct($data, $file) {
-        $imagePath = null;
-        if (!empty($file['name'])) {
-            $imagePath = $this->handleImageUpload($file);
-        }
-        $this->productDAO->updateProduct($data, $imagePath);
-        header("Location: ../../Public/admin/products.php?success=edit");
-        exit;
+    public function addProduct($data) {
+        return $this->productDAO->addProduct($data);
     }
 
-    public function deleteProduct($id) {
-        $this->productDAO->deleteProduct($id);
-        header("Location: ../../Public/admin/products.php?success=delete");
-        exit;
+    public function updateProduct($data) {
+        return $this->productDAO->updateProduct($data);
     }
 
-    private function handleImageUpload($file) {
-        if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = __DIR__ . '/../../Public/uploads/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-            $fileName = time() . '_' . basename($file['name']);
-            $filePath = $uploadDir . $fileName;
-            move_uploaded_file($file['tmp_name'], $filePath);
-            return 'uploads/' . $fileName;
-        }
-        return null;
+    public function getProductById($id) {
+        return $this->productDAO->getProductById($id);
+    }
+
+    public function softDelete($id) {
+        return $this->productDAO->softDelete($id);
+    }
+
+    public function permanentDelete($id) {
+        return $this->productDAO->permanentDelete($id);
+    }
+
+    public function getDeletedProducts() {
+        return $this->productDAO->getDeletedProducts();
     }
 }
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller = new ProductController();
-    $action = $_POST['action'] ?? '';
-
-    switch ($action) {
-        case 'add':
-            $controller->addProduct($_POST, $_FILES['image']);
-            break;
-
-        case 'edit':
-            $controller->editProduct($_POST, $_FILES['image']);
-            break;
-
-        case 'delete':
-            $controller->deleteProduct($_POST['product_id']);
-            break;
-
-        default:
-            header("Location: ../../Public/admin/products.php");
-            exit;
-    }
-}
-?>

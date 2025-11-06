@@ -106,3 +106,24 @@ body {
     margin-left: 0;
   }
 }
+
+/* Sticky Filters */
+.sticky-filters {
+  position: sticky;
+  top: 75px; /* adjust based on your navbar height */
+  z-index: 100;
+}
+
+#searchBar,
+#filterCategory,
+#filterStatus {
+  border-radius: 8px;
+}
+
+.product-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
