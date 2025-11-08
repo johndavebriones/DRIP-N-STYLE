@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2025 at 08:27 AM
+-- Generation Time: Nov 08, 2025 at 08:23 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -39,7 +39,7 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`cart_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(6, 5, '2025-11-01 12:52:03', '2025-11-05 11:48:50');
+(6, 5, '2025-11-01 12:52:03', '2025-11-08 09:20:20');
 
 -- --------------------------------------------------------
 
@@ -55,6 +55,13 @@ CREATE TABLE `cart_items` (
   `price_at_time` decimal(10,2) NOT NULL,
   `added_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart_items`
+--
+
+INSERT INTO `cart_items` (`item_id`, `cart_id`, `product_id`, `quantity`, `price_at_time`, `added_at`) VALUES
+(18, 6, 6, 1, 150.00, '2025-11-08 09:20:18');
 
 -- --------------------------------------------------------
 
@@ -106,14 +113,6 @@ CREATE TABLE `orders` (
   `payment_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`, `pickup_date`, `payment_id`) VALUES
-(1, 5, '2025-11-05 09:06:49', 300.00, 'Pending', NULL, 1),
-(2, 5, '2025-11-05 11:48:50', 300.00, 'Pending', NULL, 2);
-
 -- --------------------------------------------------------
 
 --
@@ -134,7 +133,8 @@ CREATE TABLE `order_items` (
 
 INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
 (1, 1, 22, 2, 150.00),
-(2, 2, 23, 2, 150.00);
+(2, 2, 23, 2, 150.00),
+(3, 3, 6, 1, 150.00);
 
 -- --------------------------------------------------------
 
@@ -158,7 +158,8 @@ CREATE TABLE `payments` (
 
 INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `payment_ref`, `amount`, `payment_date`, `payment_status`) VALUES
 (1, 1, '', 'paid', 300.00, '2025-11-05 09:06:49', 'Pending'),
-(2, 2, '', 'Paid', 300.00, '2025-11-05 11:48:50', 'Pending');
+(2, 2, '', 'Paid', 300.00, '2025-11-05 11:48:50', 'Pending'),
+(3, 3, '', 'Paid', 150.00, '2025-11-07 19:03:40', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -212,7 +213,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`, `status`, `date_created`, `reset_token`, `token_expiry`, `contact_number`) VALUES
 (1, 'John Dave Briones', 'johndavebriones09@gmail.com', '$2y$10$LHVDqXuLZxr9JifN6SuViuR6NkYToHXo7B03rY43kYPebqXqzbhKi', 'admin', 'active', '2025-10-21 20:41:57', '7e7714e8ca4056fac40dc9d7fcc508fdbd0d6b738640ac0226183992ecf8b4926ca4840b819760394de2dc9f5136c1d6c41f', '2025-10-27 12:33:00', NULL),
-(5, 'John Kiervin', 'johnkiervinbriones@gmail.com', '$2y$10$dzxnRC7TSdfh11//jxCxTeo1KvF0/nOp1TTuTyXesHEDrlwyhWxQy', 'customer', 'active', '2025-11-01 09:19:41', NULL, NULL, NULL);
+(5, 'John Kiervin', 'johnkiervinbriones@gmail.com', '$2y$10$dzxnRC7TSdfh11//jxCxTeo1KvF0/nOp1TTuTyXesHEDrlwyhWxQy', 'customer', 'active', '2025-11-01 09:19:41', NULL, NULL, NULL),
+(6, 'LinuxAdona', 'linuxadona@gmail.com', '$2y$10$fm/Po/Gzb7zziofhW1i3Yu4tD.IOlg0gvQ5FF4bYScd/M7EstCpD6', 'customer', 'active', '2025-11-06 16:42:18', NULL, NULL, NULL),
+(7, 'John Dave B', 'johndavebriones009@gmail.com', '$2y$10$t3HxanbmLU39h2WauiQgkOrIvMDBzPTln1S14nEKsl6C.OcFiWmxi', 'customer', 'active', '2025-11-06 22:01:16', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -296,7 +299,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -314,19 +317,19 @@ ALTER TABLE `inquiries`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -338,7 +341,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
