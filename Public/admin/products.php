@@ -221,12 +221,19 @@ ob_start();
 <!-- Styles -->
 <style>
 .page-fade {
-    opacity: 0;
-    animation: fadeIn 0.6s ease-in-out forwards;
+  opacity: 0;
+  animation: fadeIn 0.6s ease-in-out forwards;
 }
+
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
 
