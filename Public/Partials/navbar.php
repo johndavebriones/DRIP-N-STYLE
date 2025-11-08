@@ -26,6 +26,8 @@ if ($currentPage === 'shop.php') {
     $brandLink = '../index.php';
 } elseif ($currentPage === 'index.php') {
     $brandLink = '../Public/index.php';
+} elseif($currentPage === 'cart.php'){
+    $brandLink = '../index.php';
 } else {
     $brandLink = '../Public/index.php';
 }
@@ -73,7 +75,11 @@ if ($currentPage === 'shop.php') {
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="../App/Controllers/AuthController.php?action=logout">Logout</a></li>
+              <li>
+              <a class="dropdown-item text-danger" href="<?= ($currentPage === 'index.php') ? '../App/Controllers/AuthController.php?action=logout' : '../../App/Controllers/AuthController.php?action=logout' ?>">
+                Logout
+              </a>
+              </li>
             </ul>
           </li>
 

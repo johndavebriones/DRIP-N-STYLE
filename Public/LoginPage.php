@@ -61,7 +61,7 @@ SessionHelper::redirectIfLoggedIn();
         <?php if (isset($_SESSION['error'])): ?>
           <div class="card border-warning bg-warning-subtle mb-3">
             <div class="card-body p-2 text-center text-dark">
-              ⚠️ <?= htmlspecialchars($_SESSION['error']) ?>
+              <?= htmlspecialchars($_SESSION['error']) ?>
             </div>
           </div>
           <?php unset($_SESSION['error']); ?>
