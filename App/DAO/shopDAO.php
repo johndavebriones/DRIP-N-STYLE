@@ -20,8 +20,15 @@ class ShopDAO {
 
     // ✅ Fetch products with optional search, category, and sorting
     public function fetchProducts($search = '', $category = '', $sort = 'newest') {
-        $sql = "SELECT p.product_id, p.name, p.description, p.price, p.image, p.stock, 
-                       p.status, p.date_added, c.category_name
+        $sql = "SELECT 
+                    p.product_id, 
+                    p.name, 
+                    p.price, 
+                    p.image, 
+                    p.stock, 
+                    p.status, 
+                    p.date_added, 
+                    c.category_name
                 FROM products p
                 LEFT JOIN categories c ON p.category_id = c.category_id
                 WHERE 1=1";
@@ -29,13 +36,12 @@ class ShopDAO {
         $params = [];
         $types = '';
 
-        // 🔍 Search
+        // 🔍 Search (name only)
         if (!empty($search)) {
-            $sql .= " AND (p.name LIKE ? OR p.description LIKE ?)";
+            $sql .= " AND p.name LIKE ?";
             $searchTerm = '%' . $search . '%';
             $params[] = $searchTerm;
-            $params[] = $searchTerm;
-            $types .= 'ss';
+            $types .= 's';
         }
 
         // 🏷️ Category filter
@@ -73,11 +79,17 @@ class ShopDAO {
 
     // ✅ Fetch cart items for a user
     public function fetchCartItems($userId) {
-        $sql = "SELECT ci.item_id, ci.quantity, ci.price_at_time AS price, p.name, p.image
+        $sql = "SELECT 
+                    ci.item_id, 
+                    ci.quantity, 
+                    ci.price_at_time AS price, 
+                    p.name, 
+                    p.image
                 FROM cart_items ci
                 JOIN carts c ON ci.cart_id = c.cart_id
                 JOIN products p ON ci.product_id = p.product_id
                 WHERE c.user_id = ?";
+                    
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $userId);
         $stmt->execute();
