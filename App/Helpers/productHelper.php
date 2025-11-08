@@ -27,8 +27,8 @@ switch ($action) {
             'status' => $_POST['status']
         ];
 
-        $success = $productController->addProduct($data);
-        echo json_encode(['success' => $success, 'message' => $success ? 'Product added successfully!' : 'Failed to add product']);
+        $result = $productController->addProduct($data);
+        echo json_encode($result);
         break;
 
     case 'edit':
@@ -56,13 +56,13 @@ switch ($action) {
             'status' => $_POST['status']
         ];
 
-        $success = $productController->updateProduct($data);
-        echo json_encode(['success' => $success, 'message' => $success ? 'Product updated successfully!' : 'Failed to update product']);
+        $result = $productController->updateProduct($data);
+        echo json_encode($result);
         break;
 
     case 'delete':
-        $success = $productController->softDelete($_POST['product_id']);
-        echo json_encode(['success' => $success, 'message' => $success ? 'Product deleted successfully!' : 'Failed to delete product']);
+        $result = $productController->softDelete($_POST['product_id']);
+        echo json_encode($result);
         break;
 
     case 'permanentDelete':

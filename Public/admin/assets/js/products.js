@@ -1,5 +1,8 @@
 // File: Public/admin/assets/js/products.js
 document.addEventListener("DOMContentLoaded", () => {
+    // ================================
+    // 🔹 Modal Elements
+    // ================================
     const productModalEl = document.getElementById('product_modal');
     const productModal = new bootstrap.Modal(productModalEl);
     const historyModalEl = document.getElementById('history_modal');
@@ -8,29 +11,43 @@ document.addEventListener("DOMContentLoaded", () => {
     const addBtn = document.getElementById('product_modal_btn');
     const historyBtn = document.getElementById('history_modal_btn');
     const productForm = document.getElementById('productForm');
-
     const imagePreview = document.getElementById('image_preview');
     const fileInput = document.getElementById('product_image');
     const stockInput = document.getElementById('product_stock');
     const statusSelect = document.getElementById('product_status');
 
-    // ============================================================
-    // 🟢 AUTO-REFRESH FILTERS
-    // ============================================================
-    const filterForm = document.getElementById('filterForm');
-    [document.getElementById("searchBar"), document.getElementById("filterCategory"), document.getElementById("filterStatus")]
-        .forEach(el => {
-            if (!el) return;
-            el.addEventListener('input', () => {
-                clearTimeout(el._timeout);
-                el._timeout = setTimeout(() => filterForm.submit(), 400);
-            });
-            el.addEventListener('change', () => filterForm.submit());
-        });
+    // ================================
+    // 🔹 Helper: POST Request
+    // ================================
+    const postData = async (url, formData) => {
+        try {
+            const res = await fetch(url, { method: 'POST', body: formData });
+            const text = await res.text();
+            try { return JSON.parse(text); }
+            catch { throw new Error("Invalid JSON: " + text); }
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Error!', err.message, 'error');
+            return null;
+        }
+    };
 
-    // ============================================================
-    // 🟡 ADD PRODUCT
-    // ============================================================
+    // ================================
+    // 🟢 Auto-Refresh Filters
+    // ================================
+    const filterForm = document.getElementById('filterForm');
+    ['searchBar', 'filterCategory', 'filterStatus'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', () => {
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(() => filterForm.submit(), 400);
+        });
+    });
+
+    // ================================
+    // 🟡 Add Product
+    // ================================
     addBtn?.addEventListener('click', () => {
         productForm.reset();
         imagePreview.style.display = "none";
@@ -40,9 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
         productModal.show();
     });
 
-    // ============================================================
-    // 🟣 IMAGE PREVIEW (Add + Edit)
-    // ============================================================
+    // ================================
+    // 🟣 Image Preview
+    // ================================
     if (fileInput && imagePreview) {
         fileInput.addEventListener('change', e => {
             const file = e.target.files[0];
@@ -57,61 +74,51 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ============================================================
-    // 🟠 EDIT PRODUCT
-    // ============================================================
+    // ================================
+    // 🟠 Edit Product
+    // ================================
     document.querySelectorAll('.edit-product-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const productId = btn.dataset.productId;
             if (!productId) return;
 
-            try {
-                const formData = new FormData();
-                formData.append('action', 'getProductById');
-                formData.append('product_id', productId);
+            const formData = new FormData();
+            formData.append('action', 'getProductById');
+            formData.append('product_id', productId);
+            const result = await postData('../../App/Helpers/productHelper.php', formData);
 
-                const res = await fetch('../../App/Helpers/productHelper.php', { method: 'POST', body: formData });
-                const data = await res.json();
-
-                if (!data.success || !data.product) {
-                    Swal.fire('Error!', 'Product not found', 'error');
-                    return;
-                }
-
-                const p = data.product;
-                productForm.reset();
-
-                productForm.querySelector('[name="action"]').value = 'edit';
-                document.getElementById('product_id').value = p.product_id;
-                document.getElementById('product_name').value = p.name;
-                document.getElementById('product_price').value = p.price;
-                document.getElementById('product_size').value = p.size || '';
-                document.getElementById('product_stock').value = p.stock;
-                document.getElementById('product_status').value = p.status;
-                document.getElementById('product_category').value = p.category_id;
-                document.getElementById('existing_image').value = p.image || '';
-
-                // 🖼️ Show existing image
-                if (p.image) {
-                    imagePreview.src = `../../Public/${p.image}`;
-                    imagePreview.style.display = "block";
-                } else {
-                    imagePreview.style.display = "none";
-                }
-
-                document.getElementById('productModalLabel').textContent = 'Edit Product';
-                productModal.show();
-
-            } catch (err) {
-                console.error(err);
-                Swal.fire('Error!', 'Failed to fetch product data', 'error');
+            if (!result?.success || !result.product) {
+                Swal.fire('Error!', 'Product not found', 'error');
+                return;
             }
+
+            const p = result.product;
+            productForm.reset();
+            productForm.querySelector('[name="action"]').value = 'edit';
+            document.getElementById('product_id').value = p.product_id;
+            document.getElementById('product_name').value = p.name;
+            document.getElementById('product_price').value = p.price;
+            document.getElementById('product_size').value = p.size || '';
+            document.getElementById('product_stock').value = p.stock;
+            document.getElementById('product_status').value = p.status;
+            document.getElementById('product_category').value = p.category_id;
+            document.getElementById('existing_image').value = p.image || '';
+
+            if (p.image) {
+                imagePreview.src = `../../Public/${p.image}`;
+                imagePreview.style.display = "block";
+            } else {
+                imagePreview.style.display = "none";
+            }
+
+            document.getElementById('productModalLabel').textContent = 'Edit Product';
+            productModal.show();
         });
     });
 
-    // ============================================================
-    // 🔵 AUTO UPDATE STATUS BASED ON STOCK
-    // ============================================================
+    // ================================
+    // 🔵 Auto Update Status Based on Stock
+    // ================================
     if (stockInput && statusSelect) {
         stockInput.addEventListener('input', () => {
             const stock = parseInt(stockInput.value, 10);
@@ -119,110 +126,58 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ============================================================
-    // 🟢 SAVE PRODUCT (ADD + EDIT)
-    // ============================================================
+    // ================================
+    // 🟢 Save Product (Add + Edit) with Duplicate Check
+    // ================================
     productForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(productForm);
-
         const stock = parseInt(formData.get('stock') || 0, 10);
         formData.set('status', stock > 0 ? 'Available' : 'Out of Stock');
 
-        Swal.fire({
-            title: 'Saving...',
-            text: 'Please wait',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
+        Swal.fire({ title: 'Saving...', text: 'Please wait', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-        try {
-            const res = await fetch('../../App/Helpers/productHelper.php', {
-                method: 'POST',
-                body: formData
-            });
-            const text = await res.text();
-            let data;
-            try { data = JSON.parse(text); }
-            catch { throw new Error("Invalid JSON response: " + text); }
+        const data = await postData('../../App/Helpers/productHelper.php', formData);
+        if (!data) return;
 
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: data.message || 'Success!',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-                productModal.hide();
-                setTimeout(() => location.reload(), 800);
+        Swal.close();
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: data.message, timer: 1500, showConfirmButton: false });
+            productModal.hide();
+            setTimeout(() => location.reload(), 800);
+        } else {
+            // 🔹 Handle duplicate product
+            if (data.message?.includes('duplicate')) {
+                Swal.fire('Warning!', data.message, 'warning');
             } else {
                 Swal.fire('Error!', data.message || 'Something went wrong', 'error');
             }
-        } catch (err) {
-            console.error(err);
-            Swal.fire('Server Error', err.message, 'error');
         }
     });
 
-    // ============================================================
-    // 🔴 SOFT DELETE PRODUCT
-    // ============================================================
+    // ================================
+    // 🔴 Soft Delete Product
+    // ================================
     document.querySelectorAll('.delete-product-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const productId = btn.dataset.productId;
-            if (!productId) return;
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This product will be marked as deleted.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete!'
-            }).then(result => {
-                if (result.isConfirmed) {
-                    const formData = new FormData();
-                    formData.append('action', 'delete');
-                    formData.append('product_id', productId);
-
-                    fetch('../../App/Helpers/productHelper.php', { method: 'POST', body: formData })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire('Deleted!', data.message, 'success');
-                                setTimeout(() => location.reload(), 800);
-                            } else {
-                                Swal.fire('Error!', data.message, 'error');
-                            }
-                        })
-                        .catch(() => Swal.fire('Error!', 'Server error', 'error'));
-                }
-            });
-        });
+        btn.addEventListener('click', () => handleDelete(btn.dataset.productId, 'delete', 'This product will be marked as deleted.'));
     });
 
-    // ============================================================
-    // 🕘 HISTORY MODAL
-    // ============================================================
+    // ================================
+    // 🕘 History Modal
+    // ================================
     historyBtn?.addEventListener('click', fetchDeletedProducts);
 
     async function fetchDeletedProducts() {
         const formData = new FormData();
         formData.append('action', 'getDeletedProducts');
-        try {
-            const res = await fetch('../../App/Helpers/productHelper.php', { method: 'POST', body: formData });
-            const data = await res.json();
+        const data = await postData('../../App/Helpers/productHelper.php', formData);
+        if (!data) return;
 
-            if (data.success) {
-                renderHistoryTable(data.deletedProducts);
-                historyModal.show();
-            } else {
-                Swal.fire('Error!', 'Could not fetch deleted products', 'error');
-            }
-        } catch (err) {
-            console.error(err);
-            Swal.fire('Error!', 'Server error', 'error');
+        if (data.success) {
+            renderHistoryTable(data.deletedProducts);
+            historyModal.show();
+        } else {
+            Swal.fire('Error!', 'Could not fetch deleted products', 'error');
         }
     }
 
@@ -254,36 +209,41 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         tbody.querySelectorAll('.permanent-delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const productId = btn.dataset.productId;
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This product will be permanently deleted!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete permanently!'
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        const formData = new FormData();
-                        formData.append('action', 'permanentDelete');
-                        formData.append('product_id', productId);
-
-                        fetch('../../App/Helpers/productHelper.php', { method: 'POST', body: formData })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire('Deleted!', data.message, 'success');
-                                    setTimeout(() => fetchDeletedProducts(), 800);
-                                } else {
-                                    Swal.fire('Error!', data.message, 'error');
-                                }
-                            })
-                            .catch(() => Swal.fire('Error!', 'Server error', 'error'));
-                    }
-                });
-            });
+            btn.addEventListener('click', () => handleDelete(btn.dataset.productId, 'permanentDelete', 'This product will be permanently deleted!'));
         });
+    }
+
+    // ================================
+    // 🔴 Handle Delete (Soft & Permanent)
+    // ================================
+    async function handleDelete(productId, action, message) {
+        if (!productId) return;
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes'
+        });
+
+        if (!result.isConfirmed) return;
+
+        const formData = new FormData();
+        formData.append('action', action);
+        formData.append('product_id', productId);
+
+        const data = await postData('../../App/Helpers/productHelper.php', formData);
+        if (!data) return;
+
+        if (data.success) {
+            Swal.fire('Deleted!', data.message, 'success');
+            if (action === 'permanentDelete') fetchDeletedProducts();
+            else setTimeout(() => location.reload(), 800);
+        } else {
+            Swal.fire('Error!', data.message, 'error');
+        }
     }
 });

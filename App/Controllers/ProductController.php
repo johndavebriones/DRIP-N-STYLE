@@ -21,19 +21,51 @@ class ProductController {
     }
 
     public function addProduct($data) {
-        return $this->productDAO->addProduct($data);
+        if ($this->productDAO->checkDuplicateProduct($data)) {
+            return [
+                'success' => false,
+                'message' => 'A product with the same name, category, and size already exists!'
+            ];
+        }
+
+        $result = $this->productDAO->addProduct($data);
+        return [
+            'success' => $result,
+            'message' => $result ? 'Product added successfully' : 'Failed to add product'
+        ];
     }
 
     public function updateProduct($data) {
-        return $this->productDAO->updateProduct($data);
+        $product_id = $data['product_id'] ?? null;
+        if (!$product_id) {
+            return ['success' => false, 'message' => 'Product ID is missing'];
+        }
+
+        if ($this->productDAO->checkDuplicateProductForUpdate($data, $product_id)) {
+            return [
+                'success' => false,
+                'message' => 'Another product with the same name, category, and size already exists!'
+            ];
+        }
+
+        $result = $this->productDAO->updateProduct($data);
+        return [
+            'success' => $result,
+            'message' => $result ? 'Product updated successfully' : 'Failed to update product'
+        ];
     }
 
     public function getProductById($id) {
         return $this->productDAO->getProductById($id);
     }
 
-    public function softDelete($id) {
-        return $this->productDAO->softDelete($id);
+    public function softDelete($productId) {
+        if ($this->productDAO->hasActiveOrders($productId)) {
+            return ['success' => false, 'message' => 'Cannot delete this product because it has active orders.'];
+        }
+
+        $success = $this->productDAO->softDelete($productId);
+        return ['success' => $success, 'message' => $success ? 'Product deleted successfully!' : 'Failed to delete product'];
     }
 
     public function permanentDelete($id) {

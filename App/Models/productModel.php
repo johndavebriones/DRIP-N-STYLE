@@ -9,6 +9,7 @@ class Product {
     private $image;
     private $stock;
     private $status;
+    private $description; // 🆕 Added description field
     private $date_added;
     private $deleted_at;
 
@@ -20,6 +21,7 @@ class Product {
         $image = null,
         $stock = 0,
         $status = 'Available',
+        $description = null, // 🆕 Added to constructor
         $id = null,
         $date_added = null,
         $deleted_at = null
@@ -32,6 +34,7 @@ class Product {
         $this->image = $image;
         $this->stock = $stock;
         $this->status = $status;
+        $this->description = $description; // 🆕
         $this->date_added = $date_added;
         $this->deleted_at = $deleted_at;
     }
@@ -45,9 +48,11 @@ class Product {
     public function getImage() { return $this->image; }
     public function getStock() { return $this->stock; }
     public function getStatus() { return $this->status; }
+    public function getDescription() { return $this->description; } // 🆕
     public function getDateAdded() { return $this->date_added; }
     public function getDeletedAt() { return $this->deleted_at; }
 
     // Setters
     public function setImage($image) { $this->image = $image; }
+    public function setDescription($description) { $this->description = $description; } // 🆕
 }

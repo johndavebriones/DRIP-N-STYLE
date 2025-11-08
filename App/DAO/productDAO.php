@@ -61,12 +61,13 @@ class ProductDAO {
     // 🔹 Add product
     public function addProduct($data) {
         $stmt = $this->conn->prepare("
-            INSERT INTO products (name, price, category_id, size, image, stock, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO products (name, description, price, category_id, size, image, stock, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->bind_param(
-            "sdissis",
+            "ssdissis",
             $data['name'],
+            $data['description'],
             $data['price'],
             $data['category_id'],
             $data['size'],
@@ -82,12 +83,13 @@ class ProductDAO {
         if (!empty($data['image'])) {
             $stmt = $this->conn->prepare("
                 UPDATE products 
-                SET name=?, price=?, category_id=?, size=?, image=?, stock=?, status=? 
+                SET name=?, description=?, price=?, category_id=?, size=?, image=?, stock=?, status=? 
                 WHERE product_id=?
             ");
             $stmt->bind_param(
-                "sdissisi",
+                "ssdissisi",
                 $data['name'],
+                $data['description'],
                 $data['price'],
                 $data['category_id'],
                 $data['size'],
@@ -99,12 +101,13 @@ class ProductDAO {
         } else {
             $stmt = $this->conn->prepare("
                 UPDATE products 
-                SET name=?, price=?, category_id=?, size=?, stock=?, status=? 
+                SET name=?, description=?, price=?, category_id=?, size=?, stock=?, status=? 
                 WHERE product_id=?
             ");
             $stmt->bind_param(
-                "sdisssi",
+                "ssdisssi",
                 $data['name'],
+                $data['description'],
                 $data['price'],
                 $data['category_id'],
                 $data['size'],
@@ -154,4 +157,63 @@ class ProductDAO {
     public function getStatuses() {
         return ['Available', 'Out of Stock'];
     }
+
+    // 🔹 Check duplicate before adding
+    public function checkDuplicateProduct($data) {
+        $stmt = $this->conn->prepare("
+            SELECT COUNT(*) AS count 
+            FROM products 
+            WHERE name = ? 
+              AND category_id = ? 
+              AND size = ? 
+              AND deleted_at IS NULL
+        ");
+        $stmt->bind_param(
+            "sis",
+            $data['name'],
+            $data['category_id'],
+            $data['size']
+        );
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['count'] > 0;
+    }
+
+    // 🔹 Check duplicate before updating (skip current product)
+    public function checkDuplicateProductForUpdate($data, $product_id) {
+        $stmt = $this->conn->prepare("
+            SELECT COUNT(*) AS count 
+            FROM products 
+            WHERE name = ? 
+              AND category_id = ? 
+              AND size = ? 
+              AND product_id != ? 
+              AND deleted_at IS NULL
+        ");
+        $stmt->bind_param(
+            "sisi",
+            $data['name'],
+            $data['category_id'],
+            $data['size'],
+            $product_id
+        );
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['count'] > 0;
+    }
+
+    // 🔹 Check if product has active orders
+    public function hasActiveOrders($productId) {
+        $stmt = $this->conn->prepare("
+            SELECT COUNT(*) AS count 
+            FROM order_items oi
+            INNER JOIN orders o ON oi.order_id = o.order_id
+            WHERE oi.product_id = ? AND o.status IN ('Pending', 'Processing')
+        ");
+        $stmt->bind_param('i', $productId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['count'] > 0;
+    }
+
 }
