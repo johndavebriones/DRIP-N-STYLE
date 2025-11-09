@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../../../../App/config/auth.php';
-require_once __DIR__ . '/../../../../../App/Helpers/SessionHelper.php';
+require_once __DIR__ . '/../../../../App/config/auth.php';
+require_once __DIR__ . '/../../../../App/Helpers/SessionHelper.php';
 SessionHelper::requireAdminLogin();
 SessionHelper::preventCache();
 
