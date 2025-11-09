@@ -1,99 +1,213 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../App/config/database_connect.php';
 require_once __DIR__ . '/../../App/Controllers/OrderController.php';
+require_once __DIR__ . '/../../App/Config/database_connect.php';
 
 $db = new Database();
 $conn = $db->connect();
 $orderController = new OrderController($conn);
 
-$title = "Orders Management";
 $orders = $orderController->getAllOrders();
+$title = "Orders Management";
 
 ob_start();
 ?>
-<div class="container py-4">
-  <h2 class="fw-bold mb-4"><i class="bi bi-bag-check"></i> Orders Management</h2>
 
-  <?php if (empty($orders)): ?>
-    <div class="alert alert-warning text-center">No orders yet.</div>
-  <?php else: ?>
-    <div class="table-responsive">
-      <table class="table table-striped align-middle text-center shadow-sm">
-        <thead class="table-dark">
-          <tr>
-            <th>#</th>
-            <th>Customer</th>
-            <th>Total</th>
-            <th>Pickup Date</th>
-            <th>Payment</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($orders as $o): ?>
+<style>
+  .page-header {
+    background: linear-gradient(90deg, #343a40, #495057);
+    color: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  }
+
+  .sticky-filters {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .table thead {
+    background-color: #343a40;
+    color: #fff;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f0f0f0;
+    transition: 0.2s;
+  }
+
+  .btn-modern {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.2s ease;
+  }
+
+  .btn-modern:hover {
+    transform: translateY(-2px);
+  }
+
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.45em 0.6em;
+    border-radius: 10px;
+  }
+
+  .filter-card {
+    border: 1px solid #dee2e6;
+    background: #fff;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .table-wrapper {
+    background: white;
+    border-radius: 10px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+</style>
+
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold mb-0">📦 Orders Management</h2>
+  <button class="btn btn-outline-light btn-modern" id="refreshOrdersBtn">
+    <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+  </button>
+</div>
+
+<!-- 🔹 Filters -->
+<form method="GET" id="filterForm" class="sticky-filters filter-card mb-4">
+  <div class="row g-3 align-items-center">
+    <div class="col-md-4">
+      <input type="text" name="search" class="form-control shadow-sm"
+             placeholder="🔍 Search by Order ID or Customer...">
+    </div>
+    <div class="col-md-4">
+      <select name="status" class="form-select shadow-sm">
+        <option value="">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Ready for Pickup">Ready for Pickup</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select name="payment" class="form-select shadow-sm">
+        <option value="">All Payment Methods</option>
+        <option value="GCash">GCash</option>
+        <option value="Cash on Pickup">Cash on Pickup</option>
+      </select>
+    </div>
+  </div>
+</form>
+
+<!-- 🔹 Orders Table -->
+<div class="table-wrapper">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Payment Method</th>
+          <th>Payment Status</th>
+          <th>Order Status</th>
+          <th>Order Date</th>
+          <th>Pickup Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if (!empty($orders)): ?>
+          <?php foreach ($orders as $order): ?>
             <tr>
-              <td><?= $o['order_id'] ?></td>
-              <td><?= htmlspecialchars($o['customer_name'] ?? 'Guest') ?></td>
-              <td>₱<?= number_format($o['total'], 2) ?></td>
-              <td><?= $o['pickup_date'] ? date('M d, Y h:i A', strtotime($o['pickup_date'])) : 'N/A' ?></td>
+              <td class="fw-semibold">#<?= htmlspecialchars($order['order_id']) ?></td>
+              <td><?= htmlspecialchars($order['customer_name'] ?? 'Guest') ?></td>
+              <td class="fw-bold text-success">₱<?= number_format($order['total_amount'], 2) ?></td>
+              <td><?= htmlspecialchars($order['payment_method'] ?? 'N/A') ?></td>
               <td>
-                <?= htmlspecialchars($o['payment_method'] ?? '—') ?><br>
-                <small class="text-muted"><?= htmlspecialchars($o['payment_status'] ?? '—') ?></small>
+                <span class="badge bg-<?= $order['payment_status'] === 'Paid' ? 'success' : 'secondary' ?>">
+                  <?= htmlspecialchars($order['payment_status']) ?>
+                </span>
               </td>
               <td>
-                <form method="POST" action="update_order_status.php" class="d-inline">
-                  <input type="hidden" name="order_id" value="<?= $o['order_id'] ?>">
-                  <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <?php
-                    $statuses = ['Pending','Confirmed','Ready for Pickup','Completed','Cancelled'];
-                    foreach ($statuses as $s):
-                      $sel = $s === $o['status'] ? 'selected' : '';
-                      echo "<option value='$s' $sel>$s</option>";
-                    endforeach;
-                    ?>
-                  </select>
-                </form>
+                <span class="badge 
+                  <?php
+                  echo match($order['order_status']) {
+                    'Pending' => 'bg-warning text-dark',
+                    'Confirmed' => 'bg-info text-dark',
+                    'Ready for Pickup' => 'bg-primary',
+                    'Completed' => 'bg-success',
+                    'Cancelled' => 'bg-danger',
+                    default => 'bg-secondary'
+                  };
+                  ?>">
+                  <?= htmlspecialchars($order['order_status']) ?>
+                </span>
               </td>
+              <td><?= date('Y-m-d', strtotime($order['order_date'])) ?></td>
+              <td><?= htmlspecialchars($order['pickup_date'] ?? '-') ?></td>
               <td>
-                <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal"
-                        data-bs-target="#orderModal" 
-                        data-orderid="<?= $o['order_id'] ?>">
-                  <i class="bi bi-eye"></i> View
-                </button>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-dark btn-modern view-order-btn"
+                          data-order-id="<?= $order['order_id'] ?>"
+                          title="View Order">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-success btn-modern update-status-btn"
+                          data-order-id="<?= $order['order_id'] ?>"
+                          title="Update Status">
+                    <i class="bi bi-arrow-repeat"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
-  <?php endif; ?>
+        <?php else: ?>
+          <tr>
+            <td colspan="9" class="text-center text-muted py-4">
+              <i class="bi bi-inbox fs-4 d-block mb-2"></i>No orders found.
+            </td>
+          </tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- Modal for Order Details -->
+<!-- 🔹 View Order Modal -->
 <div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-light">
-        <h5 class="modal-title"><i class="bi bi-receipt"></i> Order Details</h5>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-gradient text-white" style="background: linear-gradient(90deg, #ffc107, #ffca2c);">
+        <h5 class="modal-title fw-bold"><i class="bi bi-receipt me-2"></i>Order Details</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body" id="orderDetails">Loading...</div>
+      <div class="modal-body" id="orderDetailsBody">
+        <div class="text-center text-muted">Loading order details...</div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-document.getElementById('orderModal').addEventListener('show.bs.modal', event => {
-  const btn = event.relatedTarget;
-  const id = btn.getAttribute('data-orderid');
-  fetch('view_order_details.php?id=' + id)
-    .then(res => res.text())
-    .then(html => document.getElementById('orderDetails').innerHTML = html);
+document.querySelectorAll('.view-order-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.orderId;
+    fetch(`view_order.php?id=${id}`)
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('orderDetailsBody').innerHTML = html;
+        new bootstrap.Modal(document.getElementById('orderModal')).show();
+      });
+  });
 });
 </script>
+
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/assets/layout/main.php';
+include __DIR__ . '/layout/main.php';
 ?>

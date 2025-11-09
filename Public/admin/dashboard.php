@@ -129,4 +129,4 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/assets/layout/main.php';
+include __DIR__ . '/layout/main.php';

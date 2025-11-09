@@ -20,18 +20,28 @@ $title = "Products";
 ob_start();
 ?>
 
+<style>
+.page-header {
+    background: linear-gradient(90deg, #343a40, #495057);
+    color: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+</style>
+
 <!-- 🔶 Header Bar -->
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+<div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
   <div>
-    <h2 class="fw-bold text-dark mb-0">🛍️ Product Management</h2>
+    <h2 class="fw-bold text-light mb-0">🛍️ Product Management</h2>
   </div>
 
   <div class="d-flex gap-2">
-    <button class="btn btn-outline-secondary fw-semibold" id="history_modal_btn">
-      <i class="bi bi-clock-history me-1"></i> History
+    <button class="btn btn-success fw-semibold" id="history_modal_btn">
+      <i class="bi me-1"></i> History
     </button>
     <button class="btn btn-warning fw-semibold shadow-sm" id="product_modal_btn">
-      <i class="bi bi-plus-lg me-1"></i> Add Product
+      <i class="bi me-1"></i> Add Product
     </button>
   </div>
 </div>
@@ -85,7 +95,7 @@ ob_start();
                         <img src="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>"
                              class="card-img-top product-image"
                              alt="<?= htmlspecialchars($product['name']) ?>">
-                        <span class="badge bg-<?= $product['status'] === 'Available' ? 'success' : 'secondary' ?> position-absolute top-0 end-0 m-2">
+                        <span class="badge bg-<?= $product['status'] === 'Available' ? 'success' : 'danger' ?> position-absolute top-0 end-0 m-2">
                             <?= htmlspecialchars($product['status']) ?>
                         </span>
                     </div>
@@ -270,5 +280,5 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/assets/layout/main.php';
+include __DIR__ . '/layout/main.php';
 ?>
