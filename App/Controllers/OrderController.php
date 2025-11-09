@@ -11,15 +11,6 @@ class OrderController {
         $this->cartDAO = new CartDAO($conn);
     }
 
-    /**
-     * ✅ Process a new order:
-     * - Get all cart items
-     * - Create order record
-     * - Add items to order_items
-     * - Create payment record
-     * - Link payment to order
-     * - Clear the cart
-     */
     public function processOrder($user_id, $payment_method, $payment_ref = null, $payment_status = 'Pending') {
         // 1️⃣ Get user's cart
         $cartItems = $this->cartDAO->getCartItems($user_id);
@@ -58,31 +49,28 @@ class OrderController {
     }
 
     /**
-     * ✅ Update order after payment gateway callback (e.g., PayMongo success)
+     * Update order after payment gateway callback (e.g., PayMongo success)
      */
     public function confirmPayment($order_id, $payment_ref, $status = 'Paid') {
         $this->orderDAO->updateOrderStatus($order_id, 'Ready for Pickup');
         $this->orderDAO->createPayment($order_id, 'GCash', $payment_ref, 0, $status);
     }
 
-    /**
-     * ✅ Retrieve all orders for a specific user
-     */
     public function getUserOrders($user_id) {
-        return $this->orderDAO->getUserOrders($user_id);
+    return $this->orderDAO->getUserOrders($user_id);
     }
 
-    // ✅ Fetch all orders (Admin View)
+    // Add this new method
     public function getAllOrders() {
         return $this->orderDAO->getAllOrders();
     }
 
-    // ✅ Fetch single order items
+    // Fetch single order items
     public function getOrderItems($order_id) {
         return $this->orderDAO->getOrderItems($order_id);
     }
 
-    // ✅ Update status (Admin change)
+    // Update status (Admin change)
     public function updateStatus($order_id, $status) {
         $this->orderDAO->updateOrderStatus($order_id, $status);
     }

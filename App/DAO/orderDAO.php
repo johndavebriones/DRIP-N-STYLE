@@ -8,7 +8,7 @@ class OrderDAO {
         $this->conn = $conn;
     }
 
-    // ✅ Create a new order record
+    // Create a new order record
     public function createOrder($user_id, $total_amount) {
         $stmt = $this->conn->prepare("
             INSERT INTO orders (user_id, total_amount, order_status)
@@ -24,7 +24,7 @@ class OrderDAO {
         return $this->conn->insert_id;
     }
 
-    // ✅ Insert order items from cart
+    // Insert order items from cart
     public function addOrderItems($order_id, $cartItems) {
         $stmt = $this->conn->prepare("
             INSERT INTO order_items (order_id, product_id, quantity, price)
@@ -40,7 +40,7 @@ class OrderDAO {
         }
     }
 
-    // ✅ Create a payment record (Cash or GCash)
+    // Create a payment record (Cash or GCash)
     public function createPayment($order_id, $method, $ref, $amount, $status = 'Pending') {
         $stmt = $this->conn->prepare("
             INSERT INTO payments (order_id, payment_method, payment_ref, amount, payment_status)
@@ -56,7 +56,7 @@ class OrderDAO {
         return $this->conn->insert_id;
     }
 
-    // ✅ Link payment_id to order
+    // Link payment_id to order
     public function linkPaymentToOrder($order_id, $payment_id) {
         $stmt = $this->conn->prepare("
             UPDATE orders SET payment_id = ? WHERE order_id = ?
@@ -69,7 +69,7 @@ class OrderDAO {
         $stmt->execute();
     }
 
-    // ✅ Update order status (e.g. after payment confirmation)
+    // Update order status (e.g. after payment confirmation)
     public function updateOrderStatus($order_id, $status) {
         $stmt = $this->conn->prepare("
             UPDATE orders SET order_status = ? WHERE order_id = ?
@@ -82,7 +82,7 @@ class OrderDAO {
         $stmt->execute();
     }
 
-    // ✅ Fetch all orders of a user
+    // Fetch all orders of a user
     public function getUserOrders($user_id) {
         $stmt = $this->conn->prepare("
             SELECT o.*, p.payment_method, p.payment_status, p.amount
@@ -100,31 +100,16 @@ class OrderDAO {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    // ✅ Fetch all orders for admin
     public function getAllOrders() {
-        $sql = "
-            SELECT 
-                o.order_id,
-                o.user_id,
-                u.name AS customer_name,
-                o.total_amount AS total,
-                o.order_status AS status,
-                o.pickup_date,
-                o.order_date,
-                p.payment_method,
-                p.payment_status,
-                p.payment_ref,
-                p.amount AS paid_amount
+    $sql = "SELECT o.*, u.name AS customer_name, p.payment_method, p.payment_status 
             FROM orders o
             LEFT JOIN users u ON o.user_id = u.user_id
             LEFT JOIN payments p ON o.payment_id = p.payment_id
-            ORDER BY o.order_date DESC
-        ";
-        $result = $this->conn->query($sql);
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
-    }
+            ORDER BY o.order_date DESC";
+    return $this->conn->query($sql)->fetch_all(MYSQLI_ASSOC);
+}
 
-    // ✅ Fetch items inside one specific order
+    // Fetch items inside one specific order
     public function getOrderItems($order_id) {
         $stmt = $this->conn->prepare("
             SELECT 
