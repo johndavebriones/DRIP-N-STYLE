@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../DAO/shopDAO.php';
+require_once __DIR__ . '/../DAO/ShopDAO.php';
 
 class ShopController {
     private $dao;
@@ -16,10 +16,5 @@ class ShopController {
     // ✅ Get all products (with search, filter, and sort)
     public function getProducts($search = '', $category = '', $sort = 'newest') {
         return $this->dao->fetchProducts($search, $category, $sort);
-    }
-
-    // ✅ Get cart items for a user
-    public function getCartItems($userId) {
-        return $this->dao->fetchCartItems($userId);
     }
 }

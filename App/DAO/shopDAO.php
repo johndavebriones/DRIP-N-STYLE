@@ -36,7 +36,6 @@ class ShopDAO {
         $params = [];
         $types = '';
 
-        // 🔍 Search (name only)
         if (!empty($search)) {
             $sql .= " AND p.name LIKE ?";
             $searchTerm = '%' . $search . '%';
@@ -44,14 +43,12 @@ class ShopDAO {
             $types .= 's';
         }
 
-        // 🏷️ Category filter
         if (!empty($category)) {
             $sql .= " AND p.category_id = ?";
             $params[] = $category;
             $types .= 'i';
         }
 
-        // 🔽 Sorting
         switch ($sort) {
             case 'price_asc':
                 $sql .= " ORDER BY p.price ASC";
@@ -72,26 +69,6 @@ class ShopDAO {
             $stmt->bind_param($types, ...$params);
         }
 
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
-
-    // ✅ Fetch cart items for a user
-    public function fetchCartItems($userId) {
-        $sql = "SELECT 
-                    ci.item_id, 
-                    ci.quantity, 
-                    ci.price_at_time AS price, 
-                    p.name, 
-                    p.image
-                FROM cart_items ci
-                JOIN carts c ON ci.cart_id = c.cart_id
-                JOIN products p ON ci.product_id = p.product_id
-                WHERE c.user_id = ?";
-                    
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
