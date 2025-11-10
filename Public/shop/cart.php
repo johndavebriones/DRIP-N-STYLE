@@ -1,11 +1,7 @@
 <?php
-require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 require_once __DIR__ . '/../../App/DAO/cartDAO.php';
 require_once __DIR__ . '/../../App/config/database_connect.php';
 
-SessionHelper::preventCache();
-
-// Initialize DB connection and CartDAO
 $db = new Database();
 $conn = $db->connect();
 $cart = new CartDAO($conn);
@@ -121,7 +117,7 @@ $cart = new CartDAO($conn);
                 <tbody>
                   <?php $total = 0; ?>
                   <?php foreach ($cartItems as $item): ?>
-                    <?php $subtotal = $item['price'] * $item['quantity']; ?>
+                    <?php $subtotal = $item['price_at_time'] * $item['quantity']; ?>
                     <?php $total += $subtotal; ?>
                     <tr>
                       <td>
@@ -144,7 +140,7 @@ $cart = new CartDAO($conn);
                           <button type="submit" name="quantity_action" value="increase" class="btn btn-sm btn-outline-secondary">+</button>
                         </form>
                       </td>
-                      <td>₱<?= number_format($item['price'], 2) ?></td>
+                      <td>₱<?= number_format($item['price_at_time'], 2) ?></td>
                       <td>₱<?= number_format($subtotal, 2) ?></td>
                       <td>
                         <form method="POST" action="../../App/Controllers/CartController.php">

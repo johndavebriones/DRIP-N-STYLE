@@ -56,7 +56,6 @@ class OrderDAO {
         return $this->conn->insert_id;
     }
 
-    // Link payment_id to order
     public function linkPaymentToOrder($order_id, $payment_id) {
         $stmt = $this->conn->prepare("
             UPDATE orders SET payment_id = ? WHERE order_id = ?
@@ -69,7 +68,6 @@ class OrderDAO {
         $stmt->execute();
     }
 
-    // Update order status (e.g. after payment confirmation)
     public function updateOrderStatus($order_id, $status) {
         $stmt = $this->conn->prepare("
             UPDATE orders SET order_status = ? WHERE order_id = ?
@@ -82,7 +80,6 @@ class OrderDAO {
         $stmt->execute();
     }
 
-    // Fetch all orders of a user
     public function getUserOrders($user_id) {
         $stmt = $this->conn->prepare("
             SELECT o.*, p.payment_method, p.payment_status, p.amount
@@ -109,7 +106,6 @@ class OrderDAO {
     return $this->conn->query($sql)->fetch_all(MYSQLI_ASSOC);
 }
 
-    // Fetch items inside one specific order
     public function getOrderItems($order_id) {
         $stmt = $this->conn->prepare("
             SELECT 

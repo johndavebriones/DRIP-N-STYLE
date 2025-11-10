@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2025 at 08:23 AM
+-- Generation Time: Nov 10, 2025 at 12:20 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,7 +39,7 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`cart_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(6, 5, '2025-11-01 12:52:03', '2025-11-08 09:20:20');
+(6, 5, '2025-11-01 12:52:03', '2025-11-09 14:22:08');
 
 -- --------------------------------------------------------
 
@@ -55,13 +55,6 @@ CREATE TABLE `cart_items` (
   `price_at_time` decimal(10,2) NOT NULL,
   `added_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `cart_items`
---
-
-INSERT INTO `cart_items` (`item_id`, `cart_id`, `product_id`, `quantity`, `price_at_time`, `added_at`) VALUES
-(18, 6, 6, 1, 150.00, '2025-11-08 09:20:18');
 
 -- --------------------------------------------------------
 
@@ -113,6 +106,16 @@ CREATE TABLE `orders` (
   `payment_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`, `pickup_date`, `payment_id`) VALUES
+(1, 5, '2025-11-10 17:24:17', 150.00, 'Pending', NULL, 4),
+(2, 5, '2025-11-10 17:36:53', 150.00, 'Pending', NULL, 5),
+(3, 5, '2025-11-10 17:41:25', 150.00, 'Pending', NULL, 6),
+(4, 5, '2025-11-10 18:25:02', 150.00, 'Pending', NULL, 7);
+
 -- --------------------------------------------------------
 
 --
@@ -132,9 +135,10 @@ CREATE TABLE `order_items` (
 --
 
 INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
-(1, 1, 22, 2, 150.00),
-(2, 2, 23, 2, 150.00),
-(3, 3, 6, 1, 150.00);
+(1, 1, 7, 1, 150.00),
+(2, 2, 7, 1, 150.00),
+(3, 3, 7, 1, 150.00),
+(4, 4, 7, 1, 150.00);
 
 -- --------------------------------------------------------
 
@@ -149,17 +153,22 @@ CREATE TABLE `payments` (
   `payment_ref` varchar(100) DEFAULT NULL,
   `amount` decimal(10,2) NOT NULL,
   `payment_date` datetime DEFAULT current_timestamp(),
-  `payment_status` enum('Pending','Paid','Failed') DEFAULT 'Pending'
+  `payment_status` enum('Pending','Paid','Failed') DEFAULT 'Pending',
+  `proof_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `payment_ref`, `amount`, `payment_date`, `payment_status`) VALUES
-(1, 1, '', 'paid', 300.00, '2025-11-05 09:06:49', 'Pending'),
-(2, 2, '', 'Paid', 300.00, '2025-11-05 11:48:50', 'Pending'),
-(3, 3, '', 'Paid', 150.00, '2025-11-07 19:03:40', 'Pending');
+INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `payment_ref`, `amount`, `payment_date`, `payment_status`, `proof_image`) VALUES
+(1, 1, '', 'paid', 300.00, '2025-11-05 09:06:49', 'Pending', NULL),
+(2, 2, '', 'Paid', 300.00, '2025-11-05 11:48:50', 'Pending', NULL),
+(3, 3, '', 'Paid', 150.00, '2025-11-07 19:03:40', 'Pending', NULL),
+(4, 1, '', '', 150.00, '2025-11-10 17:24:17', '', NULL),
+(5, 2, '', '', 150.00, '2025-11-10 17:36:53', '', NULL),
+(6, 3, '', '', 150.00, '2025-11-10 17:41:25', '', NULL),
+(7, 4, '', '', 150.00, '2025-11-10 18:25:02', '', NULL);
 
 -- --------------------------------------------------------
 
@@ -170,6 +179,7 @@ INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `payment_ref
 CREATE TABLE `products` (
   `product_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
   `size` enum('Small','Medium','Large') NOT NULL,
@@ -184,9 +194,9 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `name`, `price`, `category_id`, `size`, `image`, `stock`, `date_added`, `status`, `deleted_at`) VALUES
-(5, 'Y2K Tops', 150.00, 1, 'Medium', 'uploads/1762401698_564735523_1214149110731457_2363958690448676242_n.jpg', 5, '2025-11-06 12:01:38', 'Available', NULL),
-(6, 'GAP Basic Top', 150.00, 1, 'Medium', 'uploads/1762408878_565639940_1214149134064788_3962912159579614764_n.jpg', 1, '2025-11-06 14:01:18', 'Available', NULL);
+INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `category_id`, `size`, `image`, `stock`, `date_added`, `status`, `deleted_at`) VALUES
+(7, 'Y2K Tops', NULL, 150.00, 1, 'Medium', 'uploads/1762587441_564735523_1214149110731457_2363958690448676242_n.jpg', 1, '2025-11-08 15:37:21', 'Available', NULL),
+(9, 'Y2K Tops', NULL, 150.00, 1, 'Small', 'uploads/1762603857_564735523_1214149110731457_2363958690448676242_n.jpg', 2, '2025-11-08 20:10:57', 'Available', NULL);
 
 -- --------------------------------------------------------
 
@@ -212,7 +222,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`, `status`, `date_created`, `reset_token`, `token_expiry`, `contact_number`) VALUES
-(1, 'John Dave Briones', 'johndavebriones09@gmail.com', '$2y$10$LHVDqXuLZxr9JifN6SuViuR6NkYToHXo7B03rY43kYPebqXqzbhKi', 'admin', 'active', '2025-10-21 20:41:57', '7e7714e8ca4056fac40dc9d7fcc508fdbd0d6b738640ac0226183992ecf8b4926ca4840b819760394de2dc9f5136c1d6c41f', '2025-10-27 12:33:00', NULL),
+(1, 'John Dave Briones', 'johndavebriones09@gmail.com', '$2y$10$QJRSukWHEDGy1suuAQhWBexB6OA9mIRRwYoCdHzJP6o.gYUmhCDya', 'admin', 'active', '2025-10-21 20:41:57', NULL, NULL, NULL),
 (5, 'John Kiervin', 'johnkiervinbriones@gmail.com', '$2y$10$dzxnRC7TSdfh11//jxCxTeo1KvF0/nOp1TTuTyXesHEDrlwyhWxQy', 'customer', 'active', '2025-11-01 09:19:41', NULL, NULL, NULL),
 (6, 'LinuxAdona', 'linuxadona@gmail.com', '$2y$10$fm/Po/Gzb7zziofhW1i3Yu4tD.IOlg0gvQ5FF4bYScd/M7EstCpD6', 'customer', 'active', '2025-11-06 16:42:18', NULL, NULL, NULL),
 (7, 'John Dave B', 'johndavebriones009@gmail.com', '$2y$10$t3HxanbmLU39h2WauiQgkOrIvMDBzPTln1S14nEKsl6C.OcFiWmxi', 'customer', 'active', '2025-11-06 22:01:16', NULL, NULL, NULL);
@@ -299,7 +309,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -317,25 +327,25 @@ ALTER TABLE `inquiries`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `users`

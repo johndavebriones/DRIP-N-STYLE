@@ -1,5 +1,16 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+SessionHelper::preventCache();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../Public/LoginPage.php");
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+
 require_once __DIR__ . '/../../App/Config/database_connect.php';
 require_once __DIR__ . '/../../App/DAO/cartDAO.php';
 
@@ -7,15 +18,12 @@ $db = new Database();
 $conn = $db->connect();
 $cartDAO = new CartDAO($conn);
 
-$user_id = $_SESSION['user_id'] ?? 0;
-if (!$user_id) {
-    header("Location: ../LoginPage.php");
-    exit;
-}
-
 $cartItems = $cartDAO->getCartItems($user_id);
 $total = $cartDAO->getCartTotal($user_id);
+
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,45 +35,13 @@ $total = $cartDAO->getCartTotal($user_id);
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/shop.css">
   <style>
-    body {
-      background-color: #f8f9fa;
-      font-family: 'Poppins', sans-serif;
-    }
-    .checkout-container {
-      max-width: 900px;
-      margin: 60px auto;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    .checkout-header {
-      background: #111827;
-      color: #ffc107;
-      padding: 1.5rem;
-      text-align: center;
-      font-weight: 700;
-      font-size: 1.5rem;
-    }
-    .table img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    .summary-box {
-      background: #fff8e1;
-      border-radius: 8px;
-      padding: 1.2rem;
-      border: 1px solid #ffe082;
-    }
-    .btn-warning {
-      font-weight: 600;
-      width: 100%;
-    }
-    .form-label {
-      font-weight: 600;
-    }
+    body { background-color: #f8f9fa; font-family: 'Poppins', sans-serif; }
+    .checkout-container { max-width: 900px; margin: 60px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+    .checkout-header { background: #111827; color: #ffc107; padding: 1.5rem; text-align: center; font-weight: 700; font-size: 1.5rem; }
+    .table img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+    .summary-box { background: #fff8e1; border-radius: 8px; padding: 1.2rem; border: 1px solid #ffe082; }
+    .btn-warning { font-weight: 600; width: 100%; }
+    .form-label { font-weight: 600; }
   </style>
 </head>
 <body>
@@ -92,26 +68,26 @@ $total = $cartDAO->getCartTotal($user_id);
               <th>Subtotal</th>
             </tr>
           </thead>
-            <tbody>
-              <?php foreach ($cartItems as $item): ?>
-                  <tr>
-                      <td>
-                          <div class="d-flex align-items-center">
-                              <img src="../../Public/<?= htmlspecialchars($item['image'] ?: 'uploads/no-image.png') ?>" 
-                                  alt="<?= htmlspecialchars($item['name']) ?>" class="card-img-top">
-                              <div class="ms-3">
-                                  <strong><?= htmlspecialchars($item['name']) ?></strong><br>
-                                  <small class="text-muted">Size: <?= htmlspecialchars($item['size'] ?? '-') ?></small><br>
-                                  <small class="text-muted">Description: <?= htmlspecialchars($item['description'] ?? '-') ?></small>
-                              </div>
-                          </div>
-                      </td>
-                      <td><?= (int)$item['quantity'] ?></td>
-                      <td>₱<?= number_format($item['price_at_time'], 2) ?></td>
-                      <td>₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></td>
-                  </tr>
-              <?php endforeach; ?>
-            </tbody>
+          <tbody>
+            <?php foreach ($cartItems as $item): ?>
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <img src="../../Public/<?= htmlspecialchars($item['image'] ?: 'uploads/no-image.png') ?>" 
+                       alt="<?= htmlspecialchars($item['name']) ?>" class="card-img-top">
+                  <div class="ms-3">
+                    <strong><?= htmlspecialchars($item['name']) ?></strong><br>
+                    <small class="text-muted">Size: <?= htmlspecialchars($item['size'] ?? '-') ?></small><br>
+                    <small class="text-muted">Description: <?= htmlspecialchars($item['description'] ?? '-') ?></small>
+                  </div>
+                </div>
+              </td>
+              <td><?= (int)$item['quantity'] ?></td>
+              <td>₱<?= number_format($item['price_at_time'], 2) ?></td>
+              <td>₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
         </table>
       </div>
 

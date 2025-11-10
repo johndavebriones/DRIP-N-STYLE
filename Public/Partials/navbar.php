@@ -55,7 +55,7 @@ if (in_array($currentPage, ['shop.php', 'cart.php', 'checkout.php'])) {
                 <?= htmlspecialchars($_SESSION['user_name']) ?>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
+                <li><a class="dropdown-item" href="../customer/profile.php">Profile</a></li>
                 <li><hr class="dropdown-divider"></li>
                   <li>
                     <a class="dropdown-item text-danger" href="../../App/Controllers/AuthController.php?action=logout">
@@ -95,7 +95,7 @@ if (in_array($currentPage, ['shop.php', 'cart.php', 'checkout.php'])) {
                 <?= htmlspecialchars($_SESSION['user_name']) ?>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
+                <li><a class="dropdown-item" href="../customer/profile.php">Profile</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <?php
