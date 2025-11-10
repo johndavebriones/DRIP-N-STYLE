@@ -2,9 +2,11 @@
 require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 
 if (session_status() === PHP_SESSION_NONE) session_start();
+SessionHelper::preventCache();
 
 $currentPage = basename($_SERVER['PHP_SELF']);
 
+// Load user name if logged in
 if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     require_once __DIR__ . '/../../App/config/database_connect.php';
     $db = new Database();
@@ -22,12 +24,11 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     }
 }
 
-if ($currentPage === 'shop.php') {
+// Determine brand link
+if (in_array($currentPage, ['shop.php', 'cart.php', 'checkout.php'])) {
     $brandLink = '../index.php';
 } elseif ($currentPage === 'index.php') {
     $brandLink = '../Public/index.php';
-} elseif($currentPage === 'cart.php'){
-    $brandLink = '../index.php';
 } else {
     $brandLink = '../Public/index.php';
 }
@@ -45,9 +46,28 @@ if ($currentPage === 'shop.php') {
       <ul class="navbar-nav ms-auto align-items-center">
 
         <?php if (isset($_SESSION['user_id'])): ?>
-          <?php
-            if ($currentPage === 'index.php') {
-          ?>
+
+          <?php if ($currentPage === 'checkout.php'): ?>
+            <!-- Minimal navbar for checkout: only dropdown -->
+            <li class="nav-item dropdown ms-3">
+              <a class="nav-link dropdown-toggle text-warning" href="#" id="userDropdown" role="button"
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                <?= htmlspecialchars($_SESSION['user_name']) ?>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item text-danger" href="../../App/Controllers/AuthController.php?action=logout">
+                      Logout
+                    </a>
+                  </li>
+              </ul>
+            </li>
+
+          <?php else: ?>
+            <!-- Full navbar for other pages -->
+            <?php if ($currentPage === 'index.php'): ?>
               <li class="nav-item">
                 <a class="nav-link <?= ($currentPage === 'shop.php') ? 'active' : '' ?>" href="../Public/shop/shop.php">Shop</a>
               </li>
@@ -57,37 +77,42 @@ if ($currentPage === 'shop.php') {
               <li class="nav-item">
                 <a class="nav-link <?= ($currentPage === 'contact.php') ? 'active' : '' ?>" href="contact.php">Contact</a>
               </li>
-          <?php
-            } else {
-                $shopLink = ($currentPage === 'cart.php' || $currentPage === 'shop.php') ? '../shop/shop.php' : '../Public/shop/shop.php';
-          ?>
+            <?php else: ?>
+              <?php
+                // Applies to cart.php, shop.php, etc.
+                $shopLink = (in_array($currentPage, ['cart.php', 'shop.php', 'checkout.php'])) ? '../shop/shop.php' : '../Public/shop/shop.php';
+              ?>
               <li class="nav-item">
                 <a class="nav-link <?= ($currentPage === 'shop.php') ? 'active' : '' ?>" href="<?= $shopLink ?>">Shop</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link <?= ($currentPage === 'cart.php') ? 'active' : '' ?>" href="../shop/cart.php">Cart</a>
               </li>
-          <?php } ?>
-          <li class="nav-item dropdown ms-3">
-            <a class="nav-link dropdown-toggle text-warning" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <?= htmlspecialchars($_SESSION['user_name']) ?>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-              <a class="dropdown-item text-danger" href="<?= ($currentPage === 'index.php') ? '../App/Controllers/AuthController.php?action=logout' : '../../App/Controllers/AuthController.php?action=logout' ?>">
-                Logout
+            <?php endif; ?>
+
+            <li class="nav-item dropdown ms-3">
+              <a class="nav-link dropdown-toggle text-warning" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <?= htmlspecialchars($_SESSION['user_name']) ?>
               </a>
-              </li>
-            </ul>
-          </li>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="../profile.php">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <?php
+                    $logoutLink = (in_array($currentPage, ['cart.php', 'shop.php', 'checkout.php'])) ? '../../App/Controllers/AuthController.php?action=logout' : '../App/Controllers/AuthController.php?action=logout';
+                  ?>
+                  <a class="dropdown-item text-danger" href="<?= $logoutLink ?>">Logout</a>
+                </li>
+              </ul>
+            </li>
+          <?php endif; ?>
 
         <?php else: ?>
+          <!-- For guests -->
           <li class="nav-item">
             <a class="nav-link <?= ($currentPage === 'index.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
-              href="<?= ($currentPage === 'shop.php') ? '../index.php' : '../Public/shop/shop.php' ?>">
-              <?= ($currentPage === 'shop.php') ? 'Home' : 'Shop' ?>
+               href="<?= ($currentPage === 'shop.php') ? '../index.php' : '../Public/shop/shop.php' ?>">
+               <?= ($currentPage === 'shop.php') ? 'Home' : 'Shop' ?>
             </a>
           </li>
           <li class="nav-item">
@@ -97,13 +122,14 @@ if ($currentPage === 'shop.php') {
             <a class="nav-link <?= ($currentPage === 'contact.php') ? 'active' : '' ?>" href="contact.php">Contact</a>
           </li>
           <li class="nav-item ms-3">
-              <a class="btn btn-warning text-black fw-semibold <?= ($currentPage === 'LoginPage.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
-                href="<?= ($currentPage === 'shop.php') ? '../LoginPage.php' : '../Public/LoginPage.php' ?>"
-                style="color: black; background-color: #ffc107; border-color: #ffc107;">
-                Login
-              </a>
+            <a class="btn btn-warning text-black fw-semibold <?= ($currentPage === 'LoginPage.php' || $currentPage === 'shop.php') ? 'active' : '' ?>"
+               href="<?= ($currentPage === 'shop.php') ? '../LoginPage.php' : '../Public/LoginPage.php' ?>"
+               style="color: black; background-color: #ffc107; border-color: #ffc107;">
+               Login
+            </a>
           </li>
         <?php endif; ?>
+
       </ul>
     </div>
   </div>
