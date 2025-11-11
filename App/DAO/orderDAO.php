@@ -9,16 +9,16 @@ class OrderDAO {
     }
 
     // Create a new order record
-    public function createOrder($user_id, $total_amount) {
+    public function createOrder($user_id, $total_amount, $pickup_date) {
         $stmt = $this->conn->prepare("
-            INSERT INTO orders (user_id, total_amount, order_status)
-            VALUES (?, ?, 'Pending')
+            INSERT INTO orders (user_id, total_amount, order_status, pickup_date)
+            VALUES (?, ?, 'Pending', ?)
         ");
         if (!$stmt) {
             die("SQL Error (createOrder): " . $this->conn->error);
         }
 
-        $stmt->bind_param("id", $user_id, $total_amount);
+        $stmt->bind_param("ids", $user_id, $total_amount, $pickup_date);
         $stmt->execute();
 
         return $this->conn->insert_id;
