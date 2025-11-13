@@ -27,6 +27,8 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
 // Determine brand link
 if (in_array($currentPage, ['shop.php', 'cart.php', 'checkout.php'])) {
     $brandLink = '../index.php';
+} elseif ($currentPage === 'profile.php') {
+    $brandLink = '../index.php';
 } elseif ($currentPage === 'index.php') {
     $brandLink = '../Public/index.php';
 } else {
@@ -99,7 +101,7 @@ if (in_array($currentPage, ['shop.php', 'cart.php', 'checkout.php'])) {
                 <li><hr class="dropdown-divider"></li>
                 <li>
                   <?php
-                    $logoutLink = (in_array($currentPage, ['cart.php', 'shop.php', 'checkout.php'])) ? '../../App/Controllers/AuthController.php?action=logout' : '../App/Controllers/AuthController.php?action=logout';
+                    $logoutLink = (in_array($currentPage, ['cart.php', 'shop.php', 'checkout.php', 'success.php', 'profile.php'])) ? '../../App/Controllers/AuthController.php?action=logout' : '../App/Controllers/AuthController.php?action=logout';
                   ?>
                   <a class="dropdown-item text-danger" href="<?= $logoutLink ?>">Logout</a>
                 </li>

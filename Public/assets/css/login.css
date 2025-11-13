@@ -1,57 +1,99 @@
-body {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(180deg,rgb(215, 174, 11),rgb(255, 255, 255));
-  font-family: 'Poppins', sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-.login-card {
-  display: flex;
-  background: #fff;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  width: 800px;
-  max-width: 100%;
-}
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
 
-.login-image {
-  flex: 1;
-  background: url('../images/dripnstylelogo.png') center/cover no-repeat;
-  background-color: #fef8e6;
-}
+    body {
+      background: linear-gradient(to bottom, #d4a017, #fff6d6);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.5s ease-in;
+    }
 
-.login-form {
-  flex: 1;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .page-transition { animation: fadeOut 0.3s ease-out forwards; }
+    @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
 
-.login-form h3 {
-  font-weight: 700;
-}
-.login-form input[type="text"],
-.login-form input[type="password"],
-.login-form input[type="email"] {
-  width: 100%;
-  padding: 12px 15px;
-  margin: 10px 0;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
+    /* Card layout */
+    .auth-container {
+      display: flex;
+      width: 700px;
+      max-width: 95%;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
 
-.login-form input[type="password"]:hover,
-.login-form input[type="email"]:hover,
-.login-form input[type="text"]:hover,
-.login-form input[type="password"]:focus,
-.login-form input[type="email"]:focus,
-.login-form input[type="text"]:focus {
-  border-color: #ffd700;
-  box-shadow: 0 0 8px #ffd700;
-  outline: none;
-}
+    .auth-left {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 300px;
+      flex-shrink: 0;
+      background-color: #f9d342;
+    }
+    .auth-left img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      max-width: 100%;
+    }
+
+    /* Right form panel */
+    .auth-right {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px 30px;
+    }
+
+    .auth-right h3 { font-size: 1.8rem; font-weight: 700; color: #222; margin-bottom: 8px; text-align: center; }
+    .auth-right p { font-size: 0.95rem; color: #666; margin-bottom: 25px; text-align: center; }
+
+    .form-control {
+      border-radius: 8px;
+      padding: 10px;
+      border: 1.5px solid #ccc;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .form-control:focus { border-color: #f5b400; box-shadow: none; }
+
+    .input-group .form-control { border-right: none; }
+    .input-group-text {
+      background: transparent;
+      border-left: none;
+      cursor: pointer;
+    }
+    .input-group-text i { color: #666; font-size: 1rem; transition: color 0.2s; }
+    .input-group-text:hover i { color: #222; }
+
+    .btn-warning {
+      background-color: #f5b400;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: 0.3s;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .btn-warning:hover { background-color: #e2a700; }
+
+    .card.border-warning { margin-top: 10px; font-size: 0.9rem; }
+
+    .text-link { text-align: center; font-size: 0.9rem; margin-top: 12px; }
+    .text-link a { color: #f5b400; font-weight: 600; text-decoration: none; }
+    .text-link a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .auth-container { flex-direction: column; width: 90%; }
+      .auth-left, .auth-right { padding: 25px; }
+    }
