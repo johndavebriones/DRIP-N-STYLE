@@ -65,4 +65,15 @@ class OrderController {
         $this->orderDAO->updateOrderStatus($order_id, $status);
     }
 
+    public function updatePaymentProof($order_id, $proof_image_path) {
+        $stmt = $this->orderDAO->conn->prepare("
+            UPDATE payments p
+            JOIN orders o ON o.payment_id = p.payment_id
+            SET p.proof_image = ?
+            WHERE o.order_id = ?
+        ");
+        $stmt->bind_param("si", $proof_image_path, $order_id);
+        $stmt->execute();
+    }
+
 }

@@ -8,6 +8,12 @@ $sort = $_GET['sort'] ?? 'newest';
 
 $categories = $shop->getCategories();
 $products = $shop->getProducts($search, $category, $sort);
+
+if (!empty($_SESSION['order_canceled'])) {
+      echo "<script>alert('Your order has been canceled.');</script>";
+      unset($_SESSION['order_canceled']);      // Remove the flag after showing
+      unset($_SESSION['checkout_blocked']);    // Allow checkout for next order
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
