@@ -11,3 +11,4 @@ class UserModel {
     public $token_expiry;
     public $contact_number;
 }
+?>

@@ -82,7 +82,7 @@ $addresses = $addressController->index($user_id);
       </div>
       <h3 class="fw-bold"><?= htmlspecialchars($user['name'] ?? 'Guest User') ?></h3>
       <p class="text-muted mb-0"><?= htmlspecialchars($user['email'] ?? 'No email') ?></p>
-      <p class="text-muted"><?= htmlspecialchars($user['contact_number'] ?? 'No phone') ?></p>
+      <p class="text-muted"><?= htmlspecialchars($user['contact_number'] ?? 'No phone number') ?></p>
     </div>
 
     <div class="tab-btns">

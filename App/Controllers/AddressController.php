@@ -30,7 +30,7 @@ class AddressController {
         return $this->dao->delete($address_id, $user_id);
     }
 
-
+    // Set default
     public function makeDefault($address_id, $user_id) {
         return $this->dao->setDefault($address_id, $user_id);
     }
