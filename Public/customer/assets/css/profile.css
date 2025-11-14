@@ -1,0 +1,198 @@
+/* ===== Base Layout (Sticky Footer Setup) ===== */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fa;
+}
+
+#page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  padding-bottom: 100px; /* Prevent content overlap with footer */
+}
+
+footer {
+  background-color: #212529;
+  color: #ffc107;
+  text-align: center;
+  padding: 1rem 0;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+}
+
+/* ===== Profile Container ===== */
+.profile-container {
+  max-width: 1000px;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  animation: fadeIn 0.7s ease-in-out;
+}
+
+/* ===== Tabs Styling ===== */
+.nav-tabs {
+  border-bottom: 2px solid #ffc107;
+}
+
+.nav-tabs .nav-link {
+  color: #555;
+  font-weight: 500;
+  border: none;
+  border-radius: 0;
+  transition: all 0.2s;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #000000;
+  background-color: rgba(99, 99, 99, 0.1);
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #63636325;
+  color: #111827;
+  font-weight: 600;
+  border-bottom: 2px solid #ffc107;
+}
+
+.tab-content {
+  margin-top: 1.5rem;
+}
+
+/* ===== Card Styling ===== */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.card h5 {
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ===== Form Inputs ===== */
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #212529;
+}
+
+/* ===== Buttons ===== */
+.btn-warning {
+  background-color: #ffc107;
+  color: #111827;
+  border: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-warning:hover {
+  background-color: #ffcd39;
+  color: #000;
+  transform: translateY(-2px);
+}
+
+.btn-outline-dark {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn-outline-dark:hover {
+  background-color: #111827;
+  color: #ffc107;
+}
+
+/* ===== Address Cards ===== */
+.address-card {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  padding: 1rem;
+  transition: all 0.3s;
+}
+
+.address-card:hover {
+  background-color: #fff8e1;
+  border-color: #ffd54f;
+}
+
+.address-card p {
+  margin: 0;
+  color: #212529;
+}
+
+.address-card .badge {
+  font-size: 0.8rem;
+}
+
+/* ===== Order Table ===== */
+.order-table th,
+.order-table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.order-table th {
+  background-color: #111827;
+  color: #ffc107;
+}
+
+.order-table td {
+  background-color: #fff;
+}
+
+.order-table tr:hover {
+  background-color: #fffbea;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1.5rem;
+  }
+
+  .nav-tabs {
+    flex-direction: column;
+  }
+
+  .order-table th, .order-table td {
+    font-size: 0.85rem;
+  }
+
+  footer {
+    font-size: 0.9rem;
+  }
+}
