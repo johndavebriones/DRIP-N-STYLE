@@ -15,7 +15,7 @@ class AuthController {
         $this->userDAO = new UserDAO();
     }
 
-// REGISTER NEW USER
+
     public function register($name, $email, $password, $confirmPassword) {
         $name  = trim($name);
         $email = trim($email);
@@ -46,7 +46,7 @@ class AuthController {
             $_SESSION['user_id'] = $this->userDAO->findByEmail($email)['user_id'];
             $_SESSION['user_name'] = $name;
             $_SESSION['role'] = 'customer';
-            header("Location: ../../Public/shop/shop.php");
+            header("Location: ../../Public/LoginPage.php");
         } else {
             $_SESSION['error'] = "Registration failed. Please try again.";
             header("Location: ../../Public/RegisterPage.php");
@@ -54,7 +54,7 @@ class AuthController {
         exit;
     }
 
-// LOGIN USER
+
     public function login($email, $password) {
     $email = trim($email);
     $password = trim($password);
@@ -85,7 +85,6 @@ class AuthController {
     exit;
 }
 
-// LOGOUT USER
     public function logout() {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
@@ -104,7 +103,6 @@ class AuthController {
     }
 }
 
-// HANDLE ACTION
 if (isset($_GET['action'])) {
     $auth = new AuthController();
 

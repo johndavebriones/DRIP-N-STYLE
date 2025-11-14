@@ -10,57 +10,77 @@ class UserDAO {
         $this->conn = $database->connect();
     }
 
-    public function findByEmailOrName($emailOrName) {
-        $query = "SELECT * FROM users WHERE (email = ? OR name = ?) AND status = 'active' LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) return null;
-
-        $stmt->bind_param("ss", $emailOrName, $emailOrName);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
-
-    public function findByEmail($email) {
-        $query = "SELECT * FROM users WHERE email = ? AND status = 'active' LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) return null;
-
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
-
-    public function registerUser(UserModel $user) {
-        $query = "
-            INSERT INTO users (name, email, password, role, status, contact_number)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ";
+    private function prepareAndExecute($query, $types = '', ...$params) {
         $stmt = $this->conn->prepare($query);
         if (!$stmt) return false;
 
-        $stmt->bind_param(
-            "ssssss",
+        if (!empty($types)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        if (!$stmt->execute()) return false;
+
+        return $stmt;
+    }
+
+    private function fetchSingle($query, $types = '', ...$params) {
+        $stmt = $this->prepareAndExecute($query, $types, ...$params);
+        if (!$stmt) return null;
+
+        return $stmt->get_result()->fetch_assoc();
+    }
+
+    public function findById($user_id) {
+        return $this->fetchSingle("SELECT * FROM users WHERE user_id = ? LIMIT 1", "i", $user_id);
+    }
+
+    public function findByEmail($email) {
+        return $this->fetchSingle("SELECT * FROM users WHERE email = ? AND status = 'active' LIMIT 1", "s", $email);
+    }
+
+    public function findByEmailOrName($emailOrName) {
+        return $this->fetchSingle(
+            "SELECT * FROM users WHERE (email = ? OR name = ?) AND status = 'active' LIMIT 1",
+            "ss",
+            $emailOrName,
+            $emailOrName
+        );
+    }
+
+    public function registerUser(UserModel $user) {
+        $query = "INSERT INTO users (name, email, password, role, status) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->prepareAndExecute(
+            $query,
+            "sssss",
             $user->name,
             $user->email,
             $user->password,
             $user->role,
-            $user->status,
-            $user->contact_number
+            $user->status
         );
-
-        return $stmt->execute();
+        return $stmt !== false;
     }
 
-    public function findById($user_id) {
-        $query = "SELECT * FROM users WHERE user_id = ? LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) return null;
+    public function updateUserFields($user_id, array $fields) {
+        $setParts = [];
+        $types = '';
+        $values = [];
 
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        foreach ($fields as $column => $value) {
+            $setParts[] = "$column = ?";
+            $types .= is_int($value) ? 'i' : 's';
+            $values[] = $value;
+        }
+
+        $query = "UPDATE users SET " . implode(', ', $setParts) . " WHERE user_id = ?";
+        $types .= 'i';
+        $values[] = $user_id;
+
+        $stmt = $this->prepareAndExecute($query, $types, ...$values);
+        return $stmt !== false;
+    }
+
+    public function updatePassword($user_id, $hashedPassword) {
+        return $this->updateUserFields($user_id, ['password' => $hashedPassword]);
     }
 }
