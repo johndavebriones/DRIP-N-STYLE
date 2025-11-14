@@ -208,7 +208,7 @@ class ProductDAO {
             SELECT COUNT(*) AS count 
             FROM order_items oi
             INNER JOIN orders o ON oi.order_id = o.order_id
-            WHERE oi.product_id = ? AND o.status IN ('Pending', 'Processing')
+            WHERE oi.product_id = ? AND o.order_status IN ('Pending', 'Processing')
         ");
         $stmt->bind_param('i', $productId);
         $stmt->execute();
