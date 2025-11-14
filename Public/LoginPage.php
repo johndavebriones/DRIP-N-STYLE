@@ -11,9 +11,9 @@ SessionHelper::redirectIfLoggedIn();
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drip N' Style | Login</title>
 
-  <link href="../Public/assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="stylesheet" href="assets/css/login.css?v=2">
 </head>
 <body>
 
@@ -107,6 +107,6 @@ SessionHelper::redirectIfLoggedIn();
   toggle.addEventListener('mouseup', () => { input.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); });
   toggle.addEventListener('mouseleave', () => { input.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); });
 </script>
-<script src="../Public/assets/vendor/bootstrap5/js/bootstrap.min.js"></script>
+<script src="assets/vendor/bootstrap5/js/bootstrap.min.js"></script>
 </body>
 </html>
