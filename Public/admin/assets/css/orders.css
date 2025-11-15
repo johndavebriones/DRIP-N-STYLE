@@ -1,0 +1,183 @@
+.page-header {
+    background: linear-gradient(90deg, #343a40, #495057);
+    color: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.sticky-filters {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.filter-card {
+    border: 1px solid #dee2e6;
+    background: #fff;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* ---------------------------
+   🌟 NEW & IMPROVED TABLE UI
+---------------------------- */
+
+.table-wrapper {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* Rounded + spaced rows */
+.table {
+    border-collapse: separate !important;
+    border-spacing: 0 10px; /* Space between rows */
+}
+
+.table thead {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.table thead th {
+    padding: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    border: none !important;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* Row container */
+.table tbody tr {
+    background: #ffffff;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+
+/* Round the first + last cell */
+.table tbody tr td:first-child {
+    border-radius: 10px 0 0 10px;
+}
+
+.table tbody tr td:last-child {
+    border-radius: 0 10px 10px 0;
+}
+
+/* Modern badge look */
+.badge {
+    font-size: 0.8rem;
+    padding: 0.45em 0.75em;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* Optional: soften 'Pending' yellow */
+.badge.bg-warning.text-dark {
+    background-color: #ffe9a3 !important;
+    color: #5c4b00 !important;
+}
+
+/* Action icon buttons */
+.btn-modern,
+.btn-icon {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.btn-icon {
+    padding: 6px 10px;
+    background: #f1f3f5;
+    border: none;
+    margin: 0 2px;
+}
+
+.btn-icon:hover {
+    background: #e4e7ea;
+    transform: translateY(-2px);
+}
+
+/* Modern eye + refresh icons */
+.btn-icon i {
+    font-size: 1rem;
+    color: #333;
+}
+
+.table-wrapper {
+    background: white;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12); /* Stronger shadow */
+}
+
+/* PAYMENT STATUS COLORS */
+.badge.payment-paid {
+    background: #d4f8df;
+    color: #0f7c28;
+}
+
+.badge.payment-unpaid {
+    background: #ffe2e2;
+    color: #a60000;
+}
+
+.badge.payment-pending {
+    background: #ffe9ae;
+    color: #906c00;
+}
+
+/* ORDER STATUS COLORS */
+.badge.status-pending {
+    background: #ffe9ae;
+    color: #665200;
+}
+
+.badge.status-confirmed {
+    background: #c6eaff;
+    color: #005c7c;
+}
+
+.badge.status-ready-for-pickup {
+    background: #d6d8ff;
+    color: #2a2f85;
+}
+
+.badge.status-completed {
+    background: #d4f8df;
+    color: #0f7c28;
+}
+
+.badge.status-cancelled {
+    background: #ffd2d2;
+    color: #8b0000;
+}
+
+.table {
+    border-collapse: separate !important;
+    border-spacing: 0 10px;
+}
+
+.table thead {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.table tbody tr {
+    background: #fff;
+    transition: 0.25s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+/* Rounded first/last cells */
+.table tbody tr td:first-child {
+    border-radius: 10px 0 0 10px;
+}
+.table tbody tr td:last-child {
+    border-radius: 0 10px 10px 0;
+}

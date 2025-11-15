@@ -11,63 +11,7 @@ $title = "Orders Management";
 
 ob_start();
 ?>
-
-<style>
-  .page-header {
-    background: linear-gradient(90deg, #343a40, #495057);
-    color: white;
-    padding: 1.2rem 1.5rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-  }
-
-  .sticky-filters {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  .table thead {
-    background-color: #343a40;
-    color: #fff;
-  }
-
-  .table-hover tbody tr:hover {
-    background-color: #f0f0f0;
-    transition: 0.2s;
-  }
-
-  .btn-modern {
-    border-radius: 10px;
-    font-weight: 600;
-    transition: 0.2s ease;
-  }
-
-  .btn-modern:hover {
-    transform: translateY(-2px);
-  }
-
-  .badge {
-    font-size: 0.85rem;
-    padding: 0.45em 0.6em;
-    border-radius: 10px;
-  }
-
-  .filter-card {
-    border: 1px solid #dee2e6;
-    background: #fff;
-    border-radius: 10px;
-    padding: 1rem 1.5rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  }
-
-  .table-wrapper {
-    background: white;
-    border-radius: 10px;
-    padding: 1.25rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  }
-</style>
+<link rel="stylesheet" href="assets/css/orders.css">
 
 <div class="page-header d-flex justify-content-between align-items-center mb-4">
   <h2 class="fw-bold mb-0">📦 Orders Management</h2>
@@ -117,22 +61,27 @@ ob_start();
           <th>Order Status</th>
           <th>Order Date</th>
           <th>Pickup Date</th>
-          <th>Actions</th>
         </tr>
       </thead>
+
       <tbody>
         <?php if (!empty($orders)): ?>
           <?php foreach ($orders as $order): ?>
-            <tr>
+            <tr class="order-row"
+                onclick="window.location='view_order.php?order_id=<?= urlencode($order['order_id']) ?>'"
+                style="cursor:pointer;">
+
               <td class="fw-semibold">#<?= htmlspecialchars($order['order_id']) ?></td>
               <td><?= htmlspecialchars($order['customer_name'] ?? 'Guest') ?></td>
               <td class="fw-bold text-success">₱<?= number_format($order['total_amount'], 2) ?></td>
               <td><?= htmlspecialchars($order['payment_method'] ?? 'N/A') ?></td>
+
               <td>
                 <span class="badge bg-<?= $order['payment_status'] === 'Paid' ? 'success' : 'secondary' ?>">
                   <?= htmlspecialchars($order['payment_status']) ?>
                 </span>
               </td>
+
               <td>
                 <span class="badge 
                   <?php
@@ -148,37 +97,27 @@ ob_start();
                   <?= htmlspecialchars($order['order_status']) ?>
                 </span>
               </td>
+
               <td><?= date('Y-m-d', strtotime($order['order_date'])) ?></td>
               <td><?= htmlspecialchars($order['pickup_date'] ?? '-') ?></td>
-              <td>
-                <div class="d-flex gap-2">
-                  <button class="btn btn-sm btn-outline-dark btn-modern view-order-btn"
-                          data-order-id="<?= $order['order_id'] ?>"
-                          title="View Order">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-success btn-modern update-status-btn"
-                          data-order-id="<?= $order['order_id'] ?>"
-                          title="Update Status">
-                    <i class="bi bi-arrow-repeat"></i>
-                  </button>
-                </div>
-              </td>
+
             </tr>
           <?php endforeach; ?>
+
         <?php else: ?>
           <tr>
-            <td colspan="9" class="text-center text-muted py-4">
+            <td colspan="8" class="text-center text-muted py-4">
               <i class="bi bi-inbox fs-4 d-block mb-2"></i>No orders found.
             </td>
           </tr>
         <?php endif; ?>
-      </tbody>
+        </tbody>
+
     </table>
   </div>
 </div>
 
-<!-- 🔹 View Order Modal -->
+<!-- 🔹 Order Details Modal -->
 <div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
@@ -193,19 +132,7 @@ ob_start();
   </div>
 </div>
 
-<script>
-document.querySelectorAll('.view-order-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const id = btn.dataset.orderId;
-    fetch(`view_order.php?id=${id}`)
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById('orderDetailsBody').innerHTML = html;
-        new bootstrap.Modal(document.getElementById('orderModal')).show();
-      });
-  });
-});
-</script>
+<script src="assets/js/orders.js"></script>
 
 <?php
 $content = ob_get_clean();

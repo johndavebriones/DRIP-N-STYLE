@@ -23,7 +23,6 @@ class OrderController {
             $total_amount += $item['price_at_time'] * $item['quantity'];
         }
 
-        // Create order with pickup date
         $order_id = $this->orderDAO->createOrder($user_id, $total_amount, $pickup_date);
 
         $this->orderDAO->addOrderItems($order_id, $cartItems);
@@ -61,10 +60,6 @@ class OrderController {
         return $this->orderDAO->getOrderItems($order_id);
     }
 
-    public function updateStatus($order_id, $status) {
-        $this->orderDAO->updateOrderStatus($order_id, $status);
-    }
-
     public function updatePaymentProof($order_id, $proof_image_path) {
         $stmt = $this->orderDAO->conn->prepare("
             UPDATE payments p
@@ -74,6 +69,14 @@ class OrderController {
         ");
         $stmt->bind_param("si", $proof_image_path, $order_id);
         $stmt->execute();
+    }
+
+    public function getOrderById($order_id) {
+        return $this->orderDAO->getOrderById($order_id);
+    }
+
+    public function updateOrderAndPaymentStatus($order_id, $order_status, $payment_status = null) {
+        return $this->orderDAO->updateOrderAndPaymentStatus($order_id, $order_status, $payment_status);
     }
 
 }
