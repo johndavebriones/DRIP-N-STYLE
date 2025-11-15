@@ -1,53 +1,44 @@
 <?php
 require_once __DIR__ . '/../../App/Config/database_connect.php';
-require_once __DIR__ . '/../../App/DAO/OrderDAO.php';
+require_once __DIR__ . '/../../App/Controllers/OrderController.php';
 
 if (!isset($_GET['order_id'])) die("No order ID provided.");
 
 $order_id = intval($_GET['order_id']);
 $db = new Database();
 $conn = $db->connect();
-$orderDao = new OrderDAO($conn);
-$order = $orderDao->getOrderById($order_id);
-$orderItems = $orderDao->getOrderItems($order_id);
+$orderController = new OrderController($conn);
+
+$order = $orderController->getOrderById($order_id);
+$orderItems = $orderController->getOrderItems($order_id);
 
 if (!$order) die("Order not found.");
 
 $swal = null;
 
-if (isset($_POST['update_status'])) {
-    $newOrderStatus = $_POST['order_status'] ?? $order['order_status'];
-    $newPaymentStatus = $_POST['payment_status'] ?? $order['payment_status'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
+    $newOrderStatus = $_POST['order_status'] ?? null;
+    $newPaymentStatus = $_POST['payment_status'] ?? null;
 
-    // Sync rules
-    if ($newOrderStatus === 'Cancelled') $newPaymentStatus = 'Failed';
-    if ($newPaymentStatus === 'Failed') $newOrderStatus = 'Cancelled';
+    $result = $orderController->updateOrderAndPaymentStatus($order_id, $newOrderStatus, $newPaymentStatus);
 
-    // Prevent Completed if payment is Pending
-    if ($newOrderStatus === 'Completed' && $newPaymentStatus === 'Pending') {
-        $swal = [
-            'icon' => 'error',
-            'title' => 'Cannot Complete Order',
-            'text' => 'Order cannot be marked as Completed while payment is Pending.'
-        ];
-    } else {
-        // Update payment
-        if (!empty($order['payment_id'])) {
-            $stmt = $conn->prepare("UPDATE payments SET payment_status = ? WHERE payment_id = ?");
-            $stmt->execute([$newPaymentStatus, $order['payment_id']]);
-        }
-        // Update order
-        $stmt2 = $conn->prepare("UPDATE orders SET order_status = ? WHERE order_id = ?");
-        $stmt2->execute([$newOrderStatus, $order_id]);
-
+    if ($result['success']) {
         $swal = [
             'icon' => 'success',
             'title' => 'Updated',
-            'text' => 'Order and payment statuses updated successfully.'
+            'text' => $result['message']
         ];
-
-        $order = $orderDao->getOrderById($order_id);
+    } else {
+        $swal = [
+            'icon' => 'error',
+            'title' => 'Error',
+            'text' => $result['message']
+        ];
     }
+
+    // reload order data after update
+    $order = $orderController->getOrderById($order_id);
+    $orderItems = $orderController->getOrderItems($order_id);
 }
 ?>
 <!DOCTYPE html>
@@ -147,8 +138,17 @@ if (isset($_POST['update_status'])) {
 </div>
 
 <script>
-window.swalData = <?= json_encode($swal) ?>;
+const swalData = <?= json_encode($swal) ?>;
+if (swalData) {
+    Swal.fire({
+        icon: swalData.icon,
+        title: swalData.title,
+        text: swalData.text,
+        confirmButtonColor: '#3085d6'
+    });
+}
 </script>
+
 <script src="../assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/view_order.js"></script>
 </body>

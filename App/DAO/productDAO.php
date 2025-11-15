@@ -4,9 +4,13 @@ require_once __DIR__ . '/../Config/database_connect.php';
 class ProductDAO {
     private $conn;
 
-    public function __construct() {
-        $db = new Database();
-        $this->conn = $db->connect();
+    public function __construct($conn = null) {
+        if ($conn) {
+            $this->conn = $conn;
+        } else {
+            $db = new Database();
+            $this->conn = $db->connect();
+        }
     }
 
     // 🔹 Fetch filtered products
@@ -80,6 +84,9 @@ class ProductDAO {
 
     // 🔹 Update product
     public function updateProduct($data) {
+    // Determine status automatically based on stock
+        $status = $data['stock'] <= 0 ? 'Out of Stock' : 'Available';
+
         if (!empty($data['image'])) {
             $stmt = $this->conn->prepare("
                 UPDATE products 
@@ -95,7 +102,7 @@ class ProductDAO {
                 $data['size'],
                 $data['image'],
                 $data['stock'],
-                $data['status'],
+                $status,
                 $data['product_id']
             );
         } else {
@@ -105,19 +112,21 @@ class ProductDAO {
                 WHERE product_id=?
             ");
             $stmt->bind_param(
-                "ssdisssi",
+                "ssdissi",
                 $data['name'],
                 $data['description'],
                 $data['price'],
                 $data['category_id'],
                 $data['size'],
                 $data['stock'],
-                $data['status'],
+                $status,
                 $data['product_id']
             );
         }
+
         return $stmt->execute();
     }
+
 
     // 🔹 Soft delete
     public function softDelete($id) {
@@ -216,4 +225,59 @@ class ProductDAO {
         return $result['count'] > 0;
     }
 
+    // 🔹 Reduce stock and auto-update status if needed
+    public function reduceStock($productId, $quantity) {
+        $stmt = $this->conn->prepare("
+            UPDATE products 
+            SET stock = GREATEST(stock - ?, 0)
+            WHERE product_id = ?
+        ");
+        $stmt->bind_param("ii", $quantity, $productId);
+        if (!$stmt->execute()) {
+            return ['success' => false, 'error' => $stmt->error];
+        }
+
+        // If stock reached 0 update status
+        $stmtCheck = $this->conn->prepare("SELECT stock FROM products WHERE product_id = ?");
+        $stmtCheck->bind_param("i", $productId);
+        $stmtCheck->execute();
+        $stockRow = $stmtCheck->get_result()->fetch_assoc();
+        $stock = $stockRow['stock'] ?? 0;
+
+        if ($stock <= 0) {
+            $stmtStatus = $this->conn->prepare("UPDATE products SET status = 'Out of Stock' WHERE product_id = ?");
+            $stmtStatus->bind_param("i", $productId);
+            $stmtStatus->execute();
+        }
+
+        return ['success' => true];
+    }
+
+    // Increase stock and update status if needed
+    public function increaseStock($productId, $quantity) {
+        $stmt = $this->conn->prepare("
+            UPDATE products 
+            SET stock = stock + ?
+            WHERE product_id = ?
+        ");
+        $stmt->bind_param("ii", $quantity, $productId);
+        if (!$stmt->execute()) {
+            return ['success' => false, 'error' => $stmt->error];
+        }
+
+        // If stock > 0 set status to Available
+        $stmtCheck = $this->conn->prepare("SELECT stock FROM products WHERE product_id = ?");
+        $stmtCheck->bind_param("i", $productId);
+        $stmtCheck->execute();
+        $stockRow = $stmtCheck->get_result()->fetch_assoc();
+        $stock = $stockRow['stock'] ?? 0;
+
+        if ($stock > 0) {
+            $stmtStatus = $this->conn->prepare("UPDATE products SET status = 'Available' WHERE product_id = ?");
+            $stmtStatus->bind_param("i", $productId);
+            $stmtStatus->execute();
+        }
+
+        return ['success' => true];
+    }
 }

@@ -12,7 +12,6 @@ class OrderController {
     }
 
     public function processOrder($user_id, $pickup_date, $payment_method, $payment_ref = null, $payment_status = 'Pending') {
-
         $cartItems = $this->cartDAO->getCartItems($user_id);
         if (empty($cartItems)) {
             return false;
@@ -24,7 +23,6 @@ class OrderController {
         }
 
         $order_id = $this->orderDAO->createOrder($user_id, $total_amount, $pickup_date);
-
         $this->orderDAO->addOrderItems($order_id, $cartItems);
 
         $payment_id = $this->orderDAO->createPayment(
@@ -36,20 +34,18 @@ class OrderController {
         );
 
         $this->orderDAO->linkPaymentToOrder($order_id, $payment_id);
-
         $this->cartDAO->clearCart($user_id);
 
         return $order_id;
     }
 
-
     public function confirmPayment($order_id, $payment_ref, $status = 'Paid') {
-        $this->orderDAO->updateOrderStatus($order_id, 'Ready for Pickup');
-        $this->orderDAO->createPayment($order_id, 'GCash', $payment_ref, 0, $status);
+        // convenience function: mark payment and order appropriately
+        return $this->orderDAO->updateOrderAndPaymentStatus($order_id, 'Ready for Pickup', $status);
     }
 
     public function getUserOrders($user_id) {
-    return $this->orderDAO->getUserOrders($user_id);
+        return $this->orderDAO->getUserOrders($user_id);
     }
 
     public function getAllOrders() {
@@ -68,15 +64,15 @@ class OrderController {
             WHERE o.order_id = ?
         ");
         $stmt->bind_param("si", $proof_image_path, $order_id);
-        $stmt->execute();
+        return $stmt->execute();
     }
 
     public function getOrderById($order_id) {
         return $this->orderDAO->getOrderById($order_id);
     }
 
-    public function updateOrderAndPaymentStatus($order_id, $order_status, $payment_status = null) {
+    // Main status update wrapper for views
+    public function updateOrderAndPaymentStatus($order_id, $order_status = null, $payment_status = null) {
         return $this->orderDAO->updateOrderAndPaymentStatus($order_id, $order_status, $payment_status);
     }
-
 }
