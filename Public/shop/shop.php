@@ -26,6 +26,9 @@ if (!empty($_SESSION['order_canceled'])) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="assets/css/shop.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
+  <link rel="stylesheet" href="../assets/css/footer.css">
+  <link rel="stylesheet" href="assets/css/shopFilter.css">
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -47,7 +50,7 @@ if (!empty($_SESSION['order_canceled'])) {
     </section>
 
     <!-- Filters -->
-    <section class="shop-filters container my-4">
+    <section class="shop-filters container my-4 ">
       <?php include '../Partials/shopfilters.php'; ?>
     </section>
 

@@ -31,13 +31,19 @@ $currentPage = basename($_SERVER['PHP_SELF']);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Drip N' Style | Home</title>
-  <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/home.css">
+  <link rel="stylesheet" href="assets/css/navbar.css">
+  <link rel="stylesheet" href="assets/css/footer.css">
 </head>
 <body>
   <!-- Navbar -->
-   <?php include 'Partials/navbar.php' ?>
+  <?php include '../Public/partials/navbar.php'; ?>
 
   <!-- Hero Section -->
   <section class="hero d-flex align-items-center justify-content-center">
@@ -48,51 +54,54 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     </div>
   </section>
 
-<!-- Featured Products -->
-<section class="py-5 bg-light">
-  <div class="container text-center">
-    <h2 class="mb-4 fw-bold text-black">Featured Products</h2>
-    <div class="row g-4">
-      <!-- Product cards -->
-      <div class="col-md-4">
-        <div class="card product-card border-0 shadow-sm">
-          <img src="assets/images/565706852_1214219220724446_7902029893493702505_n.jpg" class="card-img-top" alt="Denim Shorts">
-          <div class="card-body">
-            <h5 class="card-title fw-bold text-dark">Denim Shorts</h5>
-            <p class="card-text text-muted">₱600</p>
-            <button class="btn btn-warning text-black fw-semibold">View Details</button>
+  <!-- Featured Products -->
+  <section class="py-5 bg-light">
+    <div class="container text-center">
+      <h2 class="mb-4 fw-bold text-black">Featured Products</h2>
+      <div class="row g-4">
+        <!-- Product cards -->
+        <div class="col-md-4">
+          <div class="card product-card border-0 shadow-sm">
+            <img src="assets/images/565706852_1214219220724446_7902029893493702505_n.jpg" class="card-img-top" alt="Denim Shorts">
+            <div class="card-body">
+              <h5 class="card-title fw-bold text-dark">Denim Shorts</h5>
+              <p class="card-text text-muted">₱600</p>
+              <button class="btn btn-warning text-black fw-semibold">View Details</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card product-card border-0 shadow-sm">
-          <img src="assets/images/564735523_1214149110731457_2363958690448676242_n.jpg" class="card-img-top" alt="Y2K Tops">
-          <div class="card-body">
-            <h5 class="card-title fw-bold text-dark">Y2K Tops</h5>
-            <p class="card-text text-muted">₱450</p>
-            <button class="btn btn-warning text-black fw-semibold">View Details</button>
+        <div class="col-md-4">
+          <div class="card product-card border-0 shadow-sm">
+            <img src="assets/images/564735523_1214149110731457_2363958690448676242_n.jpg" class="card-img-top" alt="Y2K Tops">
+            <div class="card-body">
+              <h5 class="card-title fw-bold text-dark">Y2K Tops</h5>
+              <p class="card-text text-muted">₱450</p>
+              <button class="btn btn-warning text-black fw-semibold">View Details</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card product-card border-0 shadow-sm">
-          <img src="assets/images/565639940_1214149134064788_3962912159579614764_n.jpg" class="card-img-top" alt="GAP Basic Tops">
-          <div class="card-body">
-            <h5 class="card-title fw-bold text-dark">GAP Basic Tops</h5>
-            <p class="card-text text-muted">₱850</p>
-            <button class="btn btn-warning text-black fw-semibold">View Details</button>
+        <div class="col-md-4">
+          <div class="card product-card border-0 shadow-sm">
+            <img src="assets/images/565639940_1214149134064788_3962912159579614764_n.jpg" class="card-img-top" alt="GAP Basic Tops">
+            <div class="card-body">
+              <h5 class="card-title fw-bold text-dark">GAP Basic Tops</h5>
+              <p class="card-text text-muted">₱850</p>
+              <button class="btn btn-warning text-black fw-semibold">View Details</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Footer -->
-<?php include 'Partials/footer.php' ?>
+  <!-- Footer -->
+  <?php include '../Public/partials/footer.php'; ?>
 
-<!-- Scroll to Top Button -->
-<button id="scrollTop">↑</button>
-<script src="assets/js/scroll-up.js"></script>
+  <!-- Scroll to Top Button -->
+  <button id="scrollTop">↑</button>
+
+  <!-- Bootstrap JS Bundle CDN (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/scroll-up.js"></script>
 </body>
 </html>
