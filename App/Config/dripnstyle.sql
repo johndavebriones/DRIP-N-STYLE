@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2025 at 12:20 PM
+-- Generation Time: Nov 16, 2025 at 10:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,27 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `addresses`
+--
+
+CREATE TABLE `addresses` (
+  `address_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `address` text NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `province` varchar(255) DEFAULT NULL,
+  `country` varchar(255) NOT NULL,
+  `postal_code` varchar(50) DEFAULT NULL,
+  `phone_number` varchar(50) DEFAULT NULL,
+  `is_default` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `carts`
 --
 
@@ -39,7 +60,7 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`cart_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(6, 5, '2025-11-01 12:52:03', '2025-11-09 14:22:08');
+(7, 8, '2025-11-13 14:12:34', '2025-11-13 14:12:34');
 
 -- --------------------------------------------------------
 
@@ -111,10 +132,9 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `order_date`, `total_amount`, `order_status`, `pickup_date`, `payment_id`) VALUES
-(1, 5, '2025-11-10 17:24:17', 150.00, 'Pending', NULL, 4),
-(2, 5, '2025-11-10 17:36:53', 150.00, 'Pending', NULL, 5),
-(3, 5, '2025-11-10 17:41:25', 150.00, 'Pending', NULL, 6),
-(4, 5, '2025-11-10 18:25:02', 150.00, 'Pending', NULL, 7);
+(1, 8, '2025-11-15 21:57:01', 150.00, 'Completed', '2025-11-16', 1),
+(2, 8, '2025-11-16 07:41:56', 150.00, 'Completed', '2025-11-17', 2),
+(3, 8, '2025-11-16 17:28:26', 150.00, 'Ready for Pickup', '2025-11-16', 3);
 
 -- --------------------------------------------------------
 
@@ -137,8 +157,10 @@ CREATE TABLE `order_items` (
 INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
 (1, 1, 7, 1, 150.00),
 (2, 2, 7, 1, 150.00),
-(3, 3, 7, 1, 150.00),
-(4, 4, 7, 1, 150.00);
+(3, 3, 9, 1, 150.00),
+(4, 1, 7, 1, 150.00),
+(5, 2, 7, 1, 150.00),
+(6, 3, 9, 1, 150.00);
 
 -- --------------------------------------------------------
 
@@ -162,13 +184,9 @@ CREATE TABLE `payments` (
 --
 
 INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `payment_ref`, `amount`, `payment_date`, `payment_status`, `proof_image`) VALUES
-(1, 1, '', 'paid', 300.00, '2025-11-05 09:06:49', 'Pending', NULL),
-(2, 2, '', 'Paid', 300.00, '2025-11-05 11:48:50', 'Pending', NULL),
-(3, 3, '', 'Paid', 150.00, '2025-11-07 19:03:40', 'Pending', NULL),
-(4, 1, '', '', 150.00, '2025-11-10 17:24:17', '', NULL),
-(5, 2, '', '', 150.00, '2025-11-10 17:36:53', '', NULL),
-(6, 3, '', '', 150.00, '2025-11-10 17:41:25', '', NULL),
-(7, 4, '', '', 150.00, '2025-11-10 18:25:02', '', NULL);
+(1, 1, 'Cash on Pickup', '', 150.00, '2025-11-15 21:57:01', 'Paid', NULL),
+(2, 2, 'Cash on Pickup', '', 150.00, '2025-11-16 07:41:56', 'Paid', NULL),
+(3, 3, 'Cash on Pickup', '', 150.00, '2025-11-16 17:28:26', 'Pending', NULL);
 
 -- --------------------------------------------------------
 
@@ -195,8 +213,8 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `category_id`, `size`, `image`, `stock`, `date_added`, `status`, `deleted_at`) VALUES
-(7, 'Y2K Tops', NULL, 150.00, 1, 'Medium', 'uploads/1762587441_564735523_1214149110731457_2363958690448676242_n.jpg', 1, '2025-11-08 15:37:21', 'Available', NULL),
-(9, 'Y2K Tops', NULL, 150.00, 1, 'Small', 'uploads/1762603857_564735523_1214149110731457_2363958690448676242_n.jpg', 2, '2025-11-08 20:10:57', 'Available', NULL);
+(7, 'Y2K Tops', '', 150.00, 1, 'Medium', 'uploads/1762587441_564735523_1214149110731457_2363958690448676242_n.jpg', 1, '2025-11-08 15:37:21', 'Available', '2025-11-16 17:25:21'),
+(9, 'Y2K Tops', 'White Cotton', 150.00, 1, 'Small', 'uploads/1762603857_564735523_1214149110731457_2363958690448676242_n.jpg', 2, '2025-11-08 20:10:57', 'Available', NULL);
 
 -- --------------------------------------------------------
 
@@ -223,13 +241,18 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`, `status`, `date_created`, `reset_token`, `token_expiry`, `contact_number`) VALUES
 (1, 'John Dave Briones', 'johndavebriones09@gmail.com', '$2y$10$QJRSukWHEDGy1suuAQhWBexB6OA9mIRRwYoCdHzJP6o.gYUmhCDya', 'admin', 'active', '2025-10-21 20:41:57', NULL, NULL, NULL),
-(5, 'John Kiervin', 'johnkiervinbriones@gmail.com', '$2y$10$dzxnRC7TSdfh11//jxCxTeo1KvF0/nOp1TTuTyXesHEDrlwyhWxQy', 'customer', 'active', '2025-11-01 09:19:41', NULL, NULL, NULL),
-(6, 'LinuxAdona', 'linuxadona@gmail.com', '$2y$10$fm/Po/Gzb7zziofhW1i3Yu4tD.IOlg0gvQ5FF4bYScd/M7EstCpD6', 'customer', 'active', '2025-11-06 16:42:18', NULL, NULL, NULL),
-(7, 'John Dave B', 'johndavebriones009@gmail.com', '$2y$10$t3HxanbmLU39h2WauiQgkOrIvMDBzPTln1S14nEKsl6C.OcFiWmxi', 'customer', 'active', '2025-11-06 22:01:16', NULL, NULL, NULL);
+(8, 'LinxxAdona', 'linuxadona@gmail.com', '$2y$10$5Mm1pvdl4Xt1HjKxzeYmAugEte.2QR/nlLh0GPeBnizg.he0o5sda', 'customer', 'active', '2025-11-13 14:10:24', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `addresses`
+--
+ALTER TABLE `addresses`
+  ADD PRIMARY KEY (`address_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `carts`
@@ -300,16 +323,22 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `addresses`
+--
+ALTER TABLE `addresses`
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -327,19 +356,19 @@ ALTER TABLE `inquiries`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -351,11 +380,17 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `addresses`
+--
+ALTER TABLE `addresses`
+  ADD CONSTRAINT `addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `carts`
