@@ -30,7 +30,7 @@ ob_start();
 }
 </style>
 
-<!-- 🔶 Header Bar -->
+<!-- Header Bar -->
 <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
   <div>
     <h2 class="fw-bold text-light mb-0">🛍️ Product Management</h2>
@@ -46,7 +46,7 @@ ob_start();
   </div>
 </div>
 
-<!-- 🔹 Filters -->
+<!-- Filters -->
 <form method="GET" id="filterForm" class="filter-card p-3 rounded-4 shadow-sm mb-4">
   <div class="row g-3 align-items-center">
     <div class="col-md-5">
@@ -83,7 +83,7 @@ ob_start();
   </div>
 </form>
 
-<!-- 🔹 Modern Product Cards -->
+<!-- Product Cards -->
 <div class="row g-4">
     <?php if (!empty($products)): ?>
         <?php foreach ($products as $product): ?>
@@ -130,7 +130,7 @@ ob_start();
     <?php endif; ?>
 </div>
 
-<!-- 🟡 Modern Add/Edit Product Modal -->
+<!-- Add/Edit Product Modal -->
 <div class="modal fade" id="product_modal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg rounded-4 border-0">
@@ -195,7 +195,14 @@ ob_start();
 
                         <div class="col-12">
                             <label class="form-label fw-semibold">Description</label>
-                            <textarea name="description" id="product_description" rows="4" class="form-control shadow-sm" placeholder="Enter product details (e.g. material, fit, notes, etc.)"></textarea>
+                            <textarea 
+                                name="description" 
+                                id="product_description" 
+                                rows="4" 
+                                class="form-control form-control-lg shadow-sm" 
+                                placeholder="Enter product details (e.g. material, fit, notes, etc.)"
+                                style="resize: none;"
+                            ></textarea>
                         </div>
 
                         <div class="col-12">
@@ -218,7 +225,7 @@ ob_start();
     </div>
 </div>
 
-<!-- 🟡 Modern History Modal -->
+<!-- History Modal -->
 <div class="modal fade" id="history_modal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0">

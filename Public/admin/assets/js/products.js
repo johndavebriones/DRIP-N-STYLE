@@ -1,8 +1,6 @@
 // File: Public/admin/assets/js/products.js
 document.addEventListener("DOMContentLoaded", () => {
-    // ================================
-    // 🔹 Modal Elements
-    // ================================
+    // Modal Elements
     const productModalEl = document.getElementById('product_modal');
     const productModal = new bootstrap.Modal(productModalEl);
     const historyModalEl = document.getElementById('history_modal');
@@ -15,10 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById('product_image');
     const stockInput = document.getElementById('product_stock');
     const statusSelect = document.getElementById('product_status');
+    const descInput = document.getElementById('product_description');
 
-    // ================================
-    // 🔹 Helper: POST Request
-    // ================================
+    // Helper: POST Request
     const postData = async (url, formData) => {
         try {
             const res = await fetch(url, { method: 'POST', body: formData });
@@ -32,9 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // ================================
-    // 🟢 Auto-Refresh Filters
-    // ================================
+    // Auto-Refresh Filters
     const filterForm = document.getElementById('filterForm');
     ['searchBar', 'filterCategory', 'filterStatus'].forEach(id => {
         const el = document.getElementById(id);
@@ -45,21 +40,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // ================================
-    // 🟡 Add Product
-    // ================================
+    // Add Product
     addBtn?.addEventListener('click', () => {
         productForm.reset();
         imagePreview.style.display = "none";
         imagePreview.src = "";
+        descInput.value = "";
         productForm.querySelector('[name="action"]').value = 'add';
         document.getElementById('productModalLabel').textContent = 'Add Product';
         productModal.show();
     });
 
-    // ================================
-    // 🟣 Image Preview
-    // ================================
+    // Image Preview
     if (fileInput && imagePreview) {
         fileInput.addEventListener('change', e => {
             const file = e.target.files[0];
@@ -74,9 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ================================
-    // 🟠 Edit Product
-    // ================================
+    // Edit Product
     document.querySelectorAll('.edit-product-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
             const productId = btn.dataset.productId;
@@ -85,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const formData = new FormData();
             formData.append('action', 'getProductById');
             formData.append('product_id', productId);
+
             const result = await postData('../../App/Helpers/productHelper.php', formData);
 
             if (!result?.success || !result.product) {
@@ -93,17 +84,23 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const p = result.product;
+
             productForm.reset();
             productForm.querySelector('[name="action"]').value = 'edit';
+
             document.getElementById('product_id').value = p.product_id;
             document.getElementById('product_name').value = p.name;
             document.getElementById('product_price').value = p.price;
-            document.getElementById('product_size').value = p.size || '';
+            document.getElementById('product_size').value = p.size;
             document.getElementById('product_stock').value = p.stock;
             document.getElementById('product_status').value = p.status;
             document.getElementById('product_category').value = p.category_id;
-            document.getElementById('existing_image').value = p.image || '';
 
+            // Populate description
+            document.getElementById('product_description').value = p.description ?? '';
+
+            // Existing image
+            document.getElementById('existing_image').value = p.image || '';
             if (p.image) {
                 imagePreview.src = `../../Public/${p.image}`;
                 imagePreview.style.display = "block";
@@ -116,9 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // ================================
-    // 🔵 Auto Update Status Based on Stock
-    // ================================
+    // Auto Update Status Based on Stock
     if (stockInput && statusSelect) {
         stockInput.addEventListener('input', () => {
             const stock = parseInt(stockInput.value, 10);
@@ -126,14 +121,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ================================
-    // 🟢 Save Product (Add + Edit) with Duplicate Check
-    // ================================
+    // Save Product (Add + Edit) with Duplicate Check
     productForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(productForm);
         const stock = parseInt(formData.get('stock') || 0, 10);
         formData.set('status', stock > 0 ? 'Available' : 'Out of Stock');
+        formData.set('description', descInput.value.trim());
 
         Swal.fire({ title: 'Saving...', text: 'Please wait', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
@@ -146,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
             productModal.hide();
             setTimeout(() => location.reload(), 800);
         } else {
-            // 🔹 Handle duplicate product
+            // Handle duplicate product
             if (data.message?.includes('duplicate')) {
                 Swal.fire('Warning!', data.message, 'warning');
             } else {
@@ -155,16 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ================================
-    // 🔴 Soft Delete Product
-    // ================================
+    // Soft Delete Product
     document.querySelectorAll('.delete-product-btn').forEach(btn => {
         btn.addEventListener('click', () => handleDelete(btn.dataset.productId, 'delete', 'This product will be marked as deleted.'));
     });
 
-    // ================================
-    // 🕘 History Modal
-    // ================================
+    // History Modal
     historyBtn?.addEventListener('click', fetchDeletedProducts);
 
     async function fetchDeletedProducts() {
@@ -213,9 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ================================
-    // 🔴 Handle Delete (Soft & Permanent)
-    // ================================
+    // Handle Delete (Soft & Permanent)
     async function handleDelete(productId, action, message) {
         if (!productId) return;
 

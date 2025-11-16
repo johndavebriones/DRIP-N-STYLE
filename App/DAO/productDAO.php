@@ -13,7 +13,7 @@ class ProductDAO {
         }
     }
 
-    // 🔹 Fetch filtered products
+    // Fetch filtered products
     public function getFilteredProducts($search = '', $category = '', $status = '') {
         $query = "
             SELECT p.*, c.category_name 
@@ -49,20 +49,33 @@ class ProductDAO {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    // 🔹 Get single product by ID
+    //Get single product by ID
     public function getProductById($id) {
         $stmt = $this->conn->prepare("
-            SELECT p.*, c.category_name 
+            SELECT 
+                p.product_id, p.name, p.price, p.size, p.stock, 
+                p.status, p.category_id, p.image, p.description, 
+                c.category_name 
             FROM products p 
             LEFT JOIN categories c ON p.category_id = c.category_id 
-            WHERE p.product_id = ? LIMIT 1
+            WHERE p.product_id = ? 
+            LIMIT 1
         ");
+        
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        
+        if ($result && $row = $result->fetch_assoc()) {
+            // Ensure description is never null
+            $row['description'] = $row['description'] ?? '';
+            return $row;
+        }
+
+        return null;
     }
 
-    // 🔹 Add product
+    // Add product
     public function addProduct($data) {
         $stmt = $this->conn->prepare("
             INSERT INTO products (name, description, price, category_id, size, image, stock, status)
@@ -82,7 +95,7 @@ class ProductDAO {
         return $stmt->execute();
     }
 
-    // 🔹 Update product
+    // Update product
     public function updateProduct($data) {
     // Determine status automatically based on stock
         $status = $data['stock'] <= 0 ? 'Out of Stock' : 'Available';
@@ -128,21 +141,21 @@ class ProductDAO {
     }
 
 
-    // 🔹 Soft delete
+    // Soft delete
     public function softDelete($id) {
         $stmt = $this->conn->prepare("UPDATE products SET deleted_at = NOW() WHERE product_id = ?");
         $stmt->bind_param('i', $id);
         return $stmt->execute();
     }
 
-    // 🔹 Permanent delete
+    // Permanent delete
     public function permanentDelete($id) {
         $stmt = $this->conn->prepare("DELETE FROM products WHERE product_id = ?");
         $stmt->bind_param('i', $id);
         return $stmt->execute();
     }
 
-    // 🔹 Get deleted products
+    // Get deleted products
     public function getDeletedProducts() {
         $stmt = $this->conn->prepare("
             SELECT p.*, c.category_name 
@@ -155,19 +168,19 @@ class ProductDAO {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    // 🔹 Get categories
+    // Get categories
     public function getCategories() {
         $stmt = $this->conn->prepare("SELECT * FROM categories ORDER BY category_name ASC");
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    // 🔹 Get product statuses
+    // Get product statuses
     public function getStatuses() {
         return ['Available', 'Out of Stock'];
     }
 
-    // 🔹 Check duplicate before adding
+    // Check duplicate before adding
     public function checkDuplicateProduct($data) {
         $stmt = $this->conn->prepare("
             SELECT COUNT(*) AS count 
@@ -188,7 +201,7 @@ class ProductDAO {
         return $result['count'] > 0;
     }
 
-    // 🔹 Check duplicate before updating (skip current product)
+    // Check duplicate before updating (skip current product)
     public function checkDuplicateProductForUpdate($data, $product_id) {
         $stmt = $this->conn->prepare("
             SELECT COUNT(*) AS count 
@@ -211,7 +224,7 @@ class ProductDAO {
         return $result['count'] > 0;
     }
 
-    // 🔹 Check if product has active orders
+    // Check if product has active orders
     public function hasActiveOrders($productId) {
         $stmt = $this->conn->prepare("
             SELECT COUNT(*) AS count 
@@ -225,7 +238,7 @@ class ProductDAO {
         return $result['count'] > 0;
     }
 
-    // 🔹 Reduce stock and auto-update status if needed
+    // Reduce stock and auto-update status if needed
     public function reduceStock($productId, $quantity) {
         $stmt = $this->conn->prepare("
             UPDATE products 

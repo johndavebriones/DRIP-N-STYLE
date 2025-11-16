@@ -5,13 +5,20 @@ $productController = new ProductController();
 $action = $_POST['action'] ?? '';
 
 switch ($action) {
+
+    /* ============================================
+       ADD PRODUCT
+    ============================================ */
     case 'add':
         $imagePath = '';
+
         if (!empty($_FILES['image']['name'])) {
             $uploadDir = '../../Public/uploads/';
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
             $fileName = time() . '_' . basename($_FILES['image']['name']);
             $targetFile = $uploadDir . $fileName;
+
             if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
                 $imagePath = 'uploads/' . $fileName;
             }
@@ -22,6 +29,7 @@ switch ($action) {
             'price' => $_POST['price'],
             'category_id' => $_POST['category_id'],
             'size' => $_POST['size'],
+            'description' => $_POST['description'] ?? '',
             'image' => $imagePath,
             'stock' => $_POST['stock'],
             'status' => $_POST['status']
@@ -31,6 +39,10 @@ switch ($action) {
         echo json_encode($result);
         break;
 
+
+    /* ============================================
+       EDIT PRODUCT
+    ============================================ */
     case 'edit':
         $existingImage = $_POST['existing_image'] ?? '';
         $imagePath = $existingImage;
@@ -38,8 +50,10 @@ switch ($action) {
         if (!empty($_FILES['image']['name'])) {
             $uploadDir = '../../Public/uploads/';
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
             $fileName = time() . '_' . basename($_FILES['image']['name']);
             $targetFile = $uploadDir . $fileName;
+
             if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
                 $imagePath = 'uploads/' . $fileName;
             }
@@ -51,6 +65,7 @@ switch ($action) {
             'price' => $_POST['price'],
             'category_id' => $_POST['category_id'],
             'size' => $_POST['size'],
+            'description' => $_POST['description'] ?? '',
             'image' => $imagePath,
             'stock' => $_POST['stock'],
             'status' => $_POST['status']
@@ -60,26 +75,63 @@ switch ($action) {
         echo json_encode($result);
         break;
 
+
+    /* ============================================
+       SOFT DELETE PRODUCT
+    ============================================ */
     case 'delete':
         $result = $productController->softDelete($_POST['product_id']);
         echo json_encode($result);
         break;
 
+
+    /* ============================================
+       PERMANENT DELETE PRODUCT
+    ============================================ */
     case 'permanentDelete':
         $success = $productController->permanentDelete($_POST['product_id']);
-        echo json_encode(['success' => $success, 'message' => $success ? 'Product permanently deleted!' : 'Failed to delete product']);
+        echo json_encode([
+            'success' => $success,
+            'message' => $success ? 'Product permanently deleted!' : 'Failed to delete product'
+        ]);
         break;
 
+
+    /* ============================================
+       FETCH DELETED PRODUCTS
+    ============================================ */
     case 'getDeletedProducts':
         $deleted = $productController->getDeletedProducts();
         echo json_encode(['success' => true, 'deletedProducts' => $deleted]);
         break;
 
+
+    /* ============================================
+    GET PRODUCT BY ID
+    ============================================ */
     case 'getProductById':
-        $product = $productController->getProductById($_POST['product_id']);
-        echo json_encode(['success' => true, 'product' => $product]);
+        $productId = $_POST['product_id'] ?? null;
+
+        if (!$productId) {
+            echo json_encode(['success' => false, 'message' => 'Product ID missing']);
+            break;
+        }
+
+        $product = $productController->getProductById((int)$productId);
+
+        if ($product) {
+            // Ensure description is always a string
+            $product['description'] = $product['description'] ?? '';
+
+            echo json_encode(['success' => true, 'product' => $product]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Product not found']);
+        }
         break;
 
+    /* ============================================
+     INVALID ACTION
+    ============================================ */
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
         break;
