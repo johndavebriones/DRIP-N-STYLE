@@ -3,15 +3,12 @@
 # -------------------------------
 /App/Config/email_config.php
 .env                           
-/Public/uploads
-/App/Config/database_connect.php 
-
+/App/Config/database_connect.php
 # -------------------------------
 # Third-party libraries
 # -------------------------------
 /vendors/                       
-/node_modules/                  
-/Public/assets/PHPMailer-*/
+/node_modules/
 
 # -------------------------------
 # Logs & temporary files
