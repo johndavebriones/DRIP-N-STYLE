@@ -1,0 +1,157 @@
+/* ================================
+   DRIP N' STYLE NAVBAR STYLES
+================================ */
+
+/* COLORS */
+:root {
+  --primary: #ffc107;
+  --primary-dark: #e6b800;
+  --secondary: #000;
+  --text-light: #fff;
+}
+
+/* NAVBAR BASE */
+.navbar {
+  background-color: var(--secondary) !important;
+  padding: 12px 0;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar.scrolled {
+  background-color: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* BRAND */
+.navbar-brand {
+  color: var(--primary) !important;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: var(--primary-dark) !important;
+}
+
+/* NAV LINKS */
+.nav-link {
+  color: var(--primary) !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-light) !important;
+  transform: translateY(-2px);
+}
+
+.nav-link.active {
+  color: var(--primary-dark) !important;
+  font-weight: 700;
+}
+
+/* DROPDOWN */
+.dropdown-menu {
+  background-color: var(--secondary);
+  border-radius: 8px;
+  padding: 10px 0;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.dropdown-item {
+  color: var(--primary);
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(255, 193, 7, 0.15);
+  color: var(--text-light);
+}
+
+.dropdown-item.text-danger {
+  color: #ff5252 !important;
+  font-weight: 600;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: rgba(255, 82, 82, 0.15);
+}
+
+/* LOGIN BUTTON */
+.btn-login,
+.btn-warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary) !important;
+  color: var(--secondary) !important;
+  border: none;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 6px 18px;
+  transition: 0.3s ease;
+  margin-left: 0.5rem; /* aligns with nav links */
+}
+
+.btn-login:hover,
+.btn-warning:hover {
+  background-color: var(--primary-dark) !important;
+  transform: scale(1.05);
+}
+
+/* TOGGLER ICON */
+.navbar-toggler {
+  border: none;
+  outline: none !important;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none !important;
+}
+
+.navbar-toggler-icon {
+  filter: brightness(90%);
+}
+
+@media (max-width: 992px) {
+  /* Ensure collapsed menu fills the screen */
+  .navbar-collapse {
+    width: 100%;
+  }
+
+  /* Align menu items to the right inside the collapse */
+  .navbar-collapse .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;  /* <-- aligns all items to the right */
+    text-align: right;
+    padding-right: 1rem;    /* optional spacing from edge */
+  }
+
+  .navbar-collapse .nav-item,
+  .navbar-collapse .btn-login {
+    width: 100%;           /* make each item full width for clickable area */
+    margin: 0.5rem 0;
+  }
+
+  .navbar-collapse .dropdown-menu {
+    right: 0;
+    left: auto;            /* dropdown aligns to the right edge */
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .btn-login {
+    padding: 0;
+    font-size: 0.9rem;
+  }
+}

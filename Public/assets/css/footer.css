@@ -1,0 +1,31 @@
+/* ================================
+   DRIP N' STYLE FOOTER STYLES
+================================ */
+
+footer {
+  background-color: #000; /* dark background */
+  color: #ffc107; /* primary color text */
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+footer a {
+  color: #ffc107;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Responsive footer */
+@media (max-width: 576px) {
+  footer {
+    font-size: 0.85rem;
+    padding: 15px 0;
+  }
+}

@@ -22,13 +22,13 @@
 .hero-content {
   position: relative;
   z-index: 2;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.2); /* default shadow */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
   transition: text-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .hero-content:hover,
 .hero-content h1:hover {
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5); /* single hover color */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
   transform: scale(1.02);
 }
 
@@ -111,14 +111,6 @@
 
   .product-card img {
     height: 220px;
-  }
-
-  .navbar-brand {
-    font-size: 1.2rem;
-  }
-
-  .nav-link {
-    font-size: 0.95rem;
   }
 }
 

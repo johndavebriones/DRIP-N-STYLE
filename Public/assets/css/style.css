@@ -28,23 +28,6 @@ a:hover {
   color: var(--primary-dark);
 }
 
-/* NAVBAR */
-.navbar {
-  background-color: var(--secondary);
-  transition: background-color 0.3s ease;
-}
-
-.navbar-brand,
-.nav-link {
-  color: var(--primary) !important;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-.nav-link:hover {
-  color: var(--text-light) !important;
-}
-
 /* BUTTONS */
 .btn-drip,
 .btn-login,
