@@ -1,3 +1,6 @@
+/* ======================
+   GLOBAL STYLES
+====================== */
 
 /* Global font */
 body {
@@ -12,99 +15,14 @@ body {
   min-height: 100vh;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 240px;
-  background-color: #111827;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  padding: 1.5rem 0;
-  overflow: hidden; /* ✅ Keeps hover effects inside */
-  z-index: 10;
-}
-
-.sidebar .brand {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #ffc107;
-  text-align: center;
-  margin-bottom: 1.8rem;
-  letter-spacing: 0.5px;
-}
-
-.sidebar .nav {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar .nav-link {
-  display: block;
-  color: #e5e7eb;
-  text-decoration: none;
-  padding: 0.85rem 1.5rem;
-  transition: all 0.25s ease-in-out;
-  border-radius: 8px;
-  margin: 0.25rem 1rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-  background-color: #ffc107;
-  color: #111827;
-  transform: none; /* ✅ Removes that “pop out” effect */
-  box-shadow: inset 0 0 0 2px #e0b307;
-}
-
 /* Main content */
 .main-content {
   flex-grow: 1;
-  margin-left: 240px;
+  margin-left: 240px; /* sidebar width */
   padding: 2.5rem;
   background-color: #f8f9fa;
   min-height: 100vh;
   overflow-x: hidden;
-}
-
-/* Logout Button */
-.sidebar .btn-warning {
-  width: calc(100% - 2rem);
-  margin: 1rem;
-  background-color: #ffc107;
-  color: #111827;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  font-weight: 600;
-}
-
-.sidebar .btn-warning:hover {
-  background-color: #e0b307;
-  transform: translateY(-2px);
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-  .sidebar {
-    position: absolute;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    margin-left: 0;
-  }
 }
 
 /* Sticky Filters */
@@ -114,12 +32,14 @@ body {
   z-index: 100;
 }
 
+/* Search / Filters Inputs */
 #searchBar,
 #filterCategory,
 #filterStatus {
   border-radius: 8px;
 }
 
+/* Product Cards */
 .product-card {
   border-radius: 12px;
   background-color: #fff;
@@ -185,6 +105,7 @@ body {
   color: #fff;
 }
 
+/* Responsive */
 @media (max-width: 576px) {
   .product-image {
     height: 160px;

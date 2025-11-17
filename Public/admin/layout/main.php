@@ -5,22 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $title ?? 'Admin Dashboard' ?></title>
 
-  <!-- Bootstrap (for table + grid) -->
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Your custom admin CSS -->
-  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/css/sidebar.css">
 </head>
 <body>
-
-  <div class="admin-layout">
-    <?php include __DIR__ . '/partials/sidebar.php'; ?>
-
-    <div class="main-content">
-      <?= $content ?>
-    </div>
+  <!-- Topbar with burger -->
+  <div class="topbar d-lg-none bg-dark text-white px-3 py-2 shadow-sm">
+    <button id="sidebarToggle" class="btn btn-warning me-3">☰</button>
+    <span class="fw-bold">Drip N' Style</span>
   </div>
 
+  <!-- Sidebar -->
+  <?php include __DIR__ . '/partials/sidebar.php'; ?>
+
+  <!-- Optional backdrop -->
+  <div class="sidebar-backdrop"></div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <?= $content ?>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Sidebar toggle
+    const sidebar = document.querySelector('.sidebar');
+    const backdrop = document.querySelector('.sidebar-backdrop');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    function closeSidebar() {
+      sidebar.classList.remove('active');
+      backdrop.classList.remove('active');
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      backdrop.classList.toggle('active');
+    });
+
+    backdrop.addEventListener('click', closeSidebar);
+  </script>
 </body>
 </html>
