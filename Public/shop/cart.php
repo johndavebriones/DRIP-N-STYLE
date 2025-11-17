@@ -18,56 +18,9 @@ $cart = new CartDAO($conn);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="assets/css/shop.css">
-  <style>
-    .page-fade { 
-      opacity: 0; 
-      animation: fadeIn 0.6s ease-in-out forwards; 
-    }
-    @keyframes fadeIn { 
-      from { opacity: 0; transform: translateY(10px); } 
-      to { opacity: 1; transform: translateY(0); } 
-    }
-
-    .cart-table th, .cart-table td { 
-      vertical-align: middle; 
-    }
-    .cart-table tbody tr:hover { 
-      background-color: #f8f9fa; 
-    }
-    .cart-empty { 
-      min-height: 200px; 
-    }
-
-    .quantity-controls { 
-      display: flex; 
-      align-items: center; 
-      gap: 5px; 
-      justify-content: center; 
-    }
-    .quantity-controls button { 
-      width: 32px; 
-      padding: 0; 
-    }
-    .quantity-display { 
-      width: 40px; 
-      text-align: center; 
-      font-weight: bold; 
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .cart-table th, .cart-table td { font-size: 0.9rem; }
-      .quantity-controls button { width: 28px; height: 28px; font-size: 0.8rem; }
-      .quantity-display { width: 30px; font-size: 0.9rem; }
-    }
-    @media (max-width: 576px) {
-      .cart-table th, .cart-table td { font-size: 0.8rem; padding: 0.4rem; }
-      .quantity-controls { flex-direction: column; gap: 2px; }
-      .quantity-controls button { width: 28px; height: 28px; font-size: 0.8rem; }
-      .quantity-display { width: 28px; font-size: 0.85rem; }
-      .text-end { text-align: left !important; }
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/css/cart.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
+  <link rel="stylesheet" href="../assets/css/footer.css">
 </head>
 <body>
 <div id="page-container">
@@ -178,6 +131,7 @@ $cart = new CartDAO($conn);
   <?php include '../Partials/footer.php'; ?>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php if(isset($_SESSION['update_success'])): ?>

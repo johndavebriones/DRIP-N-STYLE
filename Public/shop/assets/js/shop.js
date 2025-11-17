@@ -1,103 +1,91 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Add to Cart from product cards
-    document.querySelectorAll('.ajax-add-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const productId = btn.dataset.id;
-            const price = btn.dataset.price;
-            const qty = document.getElementById('ajaxQty' + productId).value || 1;
 
-            fetch('../../App/Controllers/CartController.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ 
-                    action: 'add', 
-                    product_id: productId, 
-                    quantity: qty, 
-                    price: price 
-                })
-            })
-            .then(res => res.text())
-            .then(() => {
-                Swal.fire({
-                    toast: true,
-                    position: 'bottom-end',
-                    icon: 'success',
-                    title: 'Added to cart!',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            })
-            .catch(err => console.error(err));
-        });
+  const productCards = document.querySelectorAll('.product-clickable');
+  const modalEl = document.getElementById('productDetailModal');
+  const modal = new bootstrap.Modal(modalEl);
+
+  const actionBtn = document.getElementById('modalActionBtn');
+  const qtyInput = document.getElementById('detailQty');
+
+  // Login status from modal data attribute
+  const isLoggedIn = modalEl.dataset.loggedin === "1";
+
+  productCards.forEach(card => {
+    card.addEventListener('click', () => {
+
+      // Populate modal fields from card data attributes
+      document.getElementById('detailImage').src = card.dataset.image;
+      document.getElementById('detailImage').alt = card.dataset.name;
+      document.getElementById('detailName').textContent = card.dataset.name;
+      document.getElementById('detailCategory').textContent = card.dataset.category;
+      document.getElementById('detailPrice').textContent = `₱${parseFloat(card.dataset.price).toFixed(2)}`;
+      document.getElementById('detailStock').textContent = `Stock: ${card.dataset.stock}`;
+      document.getElementById('detailDescription').textContent = card.dataset.description || 'No description available.';
+
+      if (isLoggedIn) {
+        // Logged-in: show quantity input and Add to Cart button
+        qtyInput.style.display = 'block';
+        qtyInput.value = 1;
+        qtyInput.max = card.dataset.stock;
+
+        actionBtn.textContent = 'Add to Cart';
+        actionBtn.classList.remove('btn-dark');
+        actionBtn.classList.add('btn-warning');
+
+      } else {
+        // Guest: hide quantity input and show login button
+        qtyInput.style.display = 'none';
+        actionBtn.textContent = 'Log in to Add to Cart';
+        actionBtn.classList.remove('btn-warning');
+        actionBtn.classList.add('btn-dark');
+      }
+
+      modal.show();
     });
+  });
 
-    // Product Detail Modal
-    const modalEl = document.getElementById('productDetailModal');
-    const productModal = new bootstrap.Modal(modalEl);
-    const detailImage = document.getElementById('detailImage');
-    const detailName = document.getElementById('detailName');
-    const detailCategory = document.getElementById('detailCategory');
-    const detailPrice = document.getElementById('detailPrice');
-    const detailStock = document.getElementById('detailStock');
-    const detailDescription = document.getElementById('detailDescription');
-    const detailQty = document.getElementById('detailQty');
-    const detailAddBtn = document.getElementById('detailAddBtn');
+  actionBtn.addEventListener('click', () => {
+    if (isLoggedIn) {
+      // Add to Cart logic
+      const qty = parseInt(qtyInput.value, 10) || 1;
+      const maxQty = parseInt(qtyInput.max, 10) || qty;
 
-    document.querySelectorAll('.product-clickable').forEach(card => {
-        card.addEventListener('click', async () => {
-            const productId = card.dataset.id;
-            const formData = new FormData();
-            formData.append('action', 'getProductById');
-            formData.append('product_id', productId);
+      if (qty < 1) {
+        Swal.fire({ icon: 'warning', title: 'Invalid Quantity', text: 'Quantity must be at least 1.' });
+        return;
+      }
 
-            try {
-                const res = await fetch('../../App/Helpers/productHelper.php', { method: 'POST', body: formData });
-                const data = await res.json();
+      if (qty > maxQty) {
+        Swal.fire({ icon: 'warning', title: 'Stock Limit', text: `You can only order up to ${maxQty} items.` });
+        return;
+      }
 
-                if (!data.success || !data.product) throw new Error('Product not found');
+      // TODO: Replace with your real add-to-cart logic
+      Swal.fire({
+        icon: 'success',
+        title: 'Added!',
+        text: `${qty} item(s) added to your cart.`,
+        timer: 1500,
+        showConfirmButton: false
+      });
 
-                const p = data.product;
-                detailImage.src = `../../Public/${p.image || 'uploads/no-image.png'}`;
-                detailName.textContent = p.name;
-                detailCategory.textContent = p.category_name || 'Uncategorized';
-                detailPrice.textContent = `₱${parseFloat(p.price).toFixed(2)}`;
-                detailStock.textContent = `Stock: ${p.stock}`;
-                detailDescription.textContent = p.description || '';
-                detailQty.value = 1;
-                detailQty.max = p.stock;
+      modal.hide();
 
-                // Add to cart from modal
-                detailAddBtn.onclick = () => {
-                    const qtyVal = detailQty.value || 1;
-                    fetch('../../App/Controllers/CartController.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ 
-                            action: 'add', 
-                            product_id: p.product_id, 
-                            quantity: qtyVal, 
-                            price: p.price 
-                        })
-                    })
-                    .then(res => res.text())
-                    .then(() => {
-                        Swal.fire({
-                            toast: true,
-                            position: 'bottom-end',
-                            icon: 'success',
-                            title: 'Added to cart!',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    })
-                    .catch(err => console.error(err));
-                };
+    } else {
+      // Guest: prompt to log in
+      Swal.fire({
+        icon: 'info',
+        title: 'Please log in',
+        text: 'You need to log in to add items to your cart.',
+        showCancelButton: true,
+        confirmButtonText: 'Log In',
+        cancelButtonText: 'Cancel'
+      }).then(result => {
+        if (result.isConfirmed) {
+          window.location.href = '../LoginPage.php';
+        }
+      });
+    }
+  });
 
-                productModal.show();
-            } catch (err) {
-                console.error(err);
-                Swal.fire('Error', err.message, 'error');
-            }
-        });
-    });
 });

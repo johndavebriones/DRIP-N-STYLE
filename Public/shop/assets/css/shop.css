@@ -144,3 +144,68 @@ footer {
   border-radius: 3px;
 }
 
+/* Modern Product Modal Styles */
+.modal-content {
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border: none;
+}
+
+.modal-header {
+  border-bottom: none;
+  padding: 1rem 1.5rem;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  background: linear-gradient(135deg, #ffc107, #ffca2c);
+  color: #212529;
+}
+
+.modal-header .btn-close {
+  filter: brightness(0.2);
+}
+
+.modal-body {
+  padding: 2rem 1.5rem;
+}
+
+#detailImage {
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  max-height: 350px;
+  width: 100%;
+}
+
+#detailName {
+  font-size: 1.5rem;
+}
+
+#detailPrice {
+  font-size: 1.3rem;
+}
+
+#loggedInControls input {
+  border-radius: 50px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#loggedInControls button,
+#guestControls button {
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#loggedInControls button:hover,
+#guestControls button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+/* Hover effect for modal image */
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+.hover-scale:hover {
+  transform: scale(1.05);
+}
