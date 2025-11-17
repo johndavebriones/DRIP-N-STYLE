@@ -36,7 +36,7 @@ if (in_array($currentPage, ['shop.php', 'cart.php', 'checkout.php'])) {
 }
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
   <div class="container">
     <a class="navbar-brand text-warning fw-bold" href="<?= $brandLink ?>">Drip N' Style</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"

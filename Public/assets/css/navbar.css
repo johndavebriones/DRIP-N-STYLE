@@ -1,24 +1,24 @@
 /* ================================
-   DRIP N' STYLE NAVBAR STYLES
+   DRIP N' STYLE NAVBAR STYLES (BG-DARK)
 ================================ */
 
 /* COLORS */
 :root {
-  --primary: #ffc107;
-  --primary-dark: #e6b800;
-  --secondary: #000;
+  --primary: #ffc107;      /* yellow accent */
+  --primary-dark: #e6b800; /* darker yellow */
+  --secondary: #212529;    /* Bootstrap bg-dark */
   --text-light: #fff;
 }
 
 /* NAVBAR BASE */
 .navbar {
-  background-color: var(--secondary) !important;
+  background-color: var(--secondary) !important; /* bg-dark */
   padding: 12px 0;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .navbar.scrolled {
-  background-color: rgba(0, 0, 0, 0.95) !important;
+  background-color: rgba(33, 37, 41, 0.95) !important; /* semi-transparent bg-dark */
   backdrop-filter: blur(5px);
   box-shadow: 0 3px 10px rgba(0,0,0,0.3);
 }
@@ -56,10 +56,10 @@
 
 /* DROPDOWN */
 .dropdown-menu {
-  background-color: var(--secondary);
+  background-color: var(--secondary); /* match bg-dark */
   border-radius: 8px;
   padding: 10px 0;
-  border: 1px solid rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.2); /* subtle accent border */
 }
 
 .dropdown-item {
@@ -82,7 +82,7 @@
   background-color: rgba(255, 82, 82, 0.15);
 }
 
-/* LOGIN BUTTON */
+/* LOGIN / WARNING BUTTON */
 .btn-login,
 .btn-warning {
   display: inline-flex;
@@ -118,30 +118,31 @@
   filter: brightness(90%);
 }
 
+/* RESPONSIVE STYLES */
 @media (max-width: 992px) {
   /* Ensure collapsed menu fills the screen */
   .navbar-collapse {
     width: 100%;
   }
 
-  /* Align menu items to the right inside the collapse */
+  /* Align menu items to the right inside collapse */
   .navbar-collapse .navbar-nav {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;  /* <-- aligns all items to the right */
+    align-items: flex-end;
     text-align: right;
-    padding-right: 1rem;    /* optional spacing from edge */
+    padding-right: 1rem;
   }
 
   .navbar-collapse .nav-item,
   .navbar-collapse .btn-login {
-    width: 100%;           /* make each item full width for clickable area */
+    width: 100%;
     margin: 0.5rem 0;
   }
 
   .navbar-collapse .dropdown-menu {
     right: 0;
-    left: auto;            /* dropdown aligns to the right edge */
+    left: auto; /* dropdown aligns to the right edge */
   }
 }
 
