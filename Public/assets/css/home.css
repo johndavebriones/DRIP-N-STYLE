@@ -33,10 +33,10 @@
   transition: text-shadow 0.3s ease, transform 0.3s ease;
 }
 
-/* LIGHT HOVER EFFECT FOR HERO TEXT */
+/* Hover effects (Desktop only)*/
 .hero-content:hover,
 .hero-content h1:hover {
-  text-shadow: 0 2px 8px rgba(141, 137, 137, 0.4); /* light glow */
+  text-shadow: 0 2px 8px rgba(141, 137, 137, 0.4);
   transform: scale(1.02);
 }
 
@@ -45,16 +45,16 @@
   color: var(--text-light);
 }
 
-/* LIGHT HOVER BUTTON */
+/* Light hover button */
 .hero a.btn {
   transition: background-color 0.3s ease, color 0.3s ease,
               box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .hero a.btn:hover {
-  background-color: #edc020 !important; /* light yellow */
+  background-color: #edc020 !important;
   color: #000 !important;
-  box-shadow: 0 0 15px rgba(255, 255, 150, 0.6); /* soft glow */
+  box-shadow: 0 0 15px rgba(255, 255, 150, 0.6);
   transform: scale(1.05);
 }
 
@@ -76,7 +76,7 @@
   border-top-right-radius: 0.5rem;
 }
 
-/* FADE-IN ANIMATION */
+/* Fade-in animation */
 .fade-in {
   animation: fadeIn 0.8s ease-in-out forwards;
 }
@@ -107,7 +107,7 @@
   position: relative;
 }
 
-/* The track that scrolls */
+/* Brand slider track */
 .brands-track {
   display: flex;
   gap: 60px;
@@ -129,14 +129,18 @@
   transform: scale(1.1);
 }
 
-/* Animation */
+/* Scroll animation */
 @keyframes scrollBrands {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
 /* ======================= RESPONSIVE ======================= */
+
+/* Tablets */
 @media (max-width: 992px) {
+
+  /* hero */
   .hero {
     height: 70vh;
     background-position: center;
@@ -150,15 +154,21 @@
     font-size: 1.1rem;
   }
 
+  /* Speed up brand animation */
+  .brands-track {
+    animation-duration: 14s;
+  }
+
   footer {
     text-align: center;
   }
 }
 
+/* Large phones / small tablets */
 @media (max-width: 768px) {
+
   .hero {
     height: 60vh;
-    background-size: cover;
   }
 
   .hero-content h1 {
@@ -176,9 +186,28 @@
   .brands-track img {
     height: 45px;
   }
+
+  /* Faster movement */
+  .brands-track {
+    animation-duration: 10s;
+  }
+
+  /* Simulated hover for touch */
+  .product-card:active {
+    transform: translateY(-8px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  }
+
+  .hero-content:active,
+  .hero-content h1:active {
+    transform: scale(1.02);
+    text-shadow: 0 2px 8px rgba(141,137,137,0.4);
+  }
 }
 
+/* Small phones */
 @media (max-width: 576px) {
+
   .hero-content h1 {
     font-size: 1.7rem;
   }
@@ -193,5 +222,10 @@
 
   .brands-track img {
     height: 40px;
+  }
+
+  /* Fastest for very small screens */
+  .brands-track {
+    animation-duration: 7s;
   }
 }

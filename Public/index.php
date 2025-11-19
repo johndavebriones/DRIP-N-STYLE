@@ -60,7 +60,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     </div>
     <div class="brands-slider">
       <div class="brands-track">
-        <img src="assets/images/brands/alo-removebg-preview.png" alt="alo">
         <img src="assets/images/brands/ck.png" alt="Calvin Klein">
         <img src="assets/images/brands/essentials-removebg-preview.png" alt="Essentials">
         <img src="assets/images/brands/uniqlo-removebg-preview.png" alt="Uniqlo">
@@ -68,7 +67,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <img src="assets/images/brands/gap-removebg-preview.png" alt="GAP">
         <img src="assets/images/brands/polo.png" alt="Polo">
         <img src="assets/images/brands/new era.png" alt="New Era">
-        <img src="assets/images/brands/alo-removebg-preview.png" alt="alo">
+        <img src="assets/images/brands/alo.jpg" alt="alo" style="height: 40px;">
         <img src="assets/images/brands/ck.png" alt="Calvin Klein">
         <img src="assets/images/brands/essentials-removebg-preview.png" alt="Essentials">
         <img src="assets/images/brands/uniqlo-removebg-preview.png" alt="Uniqlo">
@@ -76,6 +75,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <img src="assets/images/brands/gap-removebg-preview.png" alt="GAP">
         <img src="assets/images/brands/polo.png" alt="Polo">
         <img src="assets/images/brands/new era.png" alt="New Era">
+        <img src="assets/images/brands/alo.jpg" alt="alo" style="height: 40px;">
       </div>
     </div>
   </section>
