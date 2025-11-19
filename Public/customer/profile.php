@@ -32,6 +32,9 @@ $addresses = $addressController->index($user_id);
   <title>My Profile | Drip N' Style</title>
   <link href="../assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
+  <link rel="stylesheet" href="assets/css/profile.css">
+  <link rel="stylesheet" href="../assets/css/footer.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     .profile-wrapper { padding: 50px 0; }
@@ -266,7 +269,7 @@ $addresses = $addressController->index($user_id);
   </div>
 </div>
 
-  <?php include '../partials/footer.php'; ?>
+<?php include '../partials/footer.php'; ?>
 
   <script>
     function showTab(tabId) {

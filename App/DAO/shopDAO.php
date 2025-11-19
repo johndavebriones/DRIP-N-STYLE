@@ -9,7 +9,7 @@ class ShopDAO {
         $this->conn = $database->connect();
     }
 
-    // ✅ Fetch all categories
+    // Fetch all categories
     public function fetchCategories() {
         $sql = "SELECT category_id, category_name FROM categories ORDER BY category_name ASC";
         $stmt = $this->conn->prepare($sql);
@@ -18,20 +18,20 @@ class ShopDAO {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    // ✅ Fetch products with optional search, category, and sorting
+    // Fetch products with optional search, category, and sorting
     public function fetchProducts($search = '', $category = '', $sort = 'newest') {
-        $sql = "SELECT 
-                    p.product_id, 
-                    p.name, 
-                    p.price, 
-                    p.image, 
-                    p.stock, 
-                    p.status, 
-                    p.date_added, 
-                    c.category_name
-                FROM products p
-                LEFT JOIN categories c ON p.category_id = c.category_id
-                WHERE 1=1";
+    $sql = "SELECT 
+                p.product_id, 
+                p.name, 
+                p.price, 
+                p.image, 
+                p.stock, 
+                p.status, 
+                p.date_added, 
+                c.category_name
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            WHERE p.deleted_at IS NULL";  // <-- only fetch non-deleted products
 
         $params = [];
         $types = '';
@@ -73,4 +73,5 @@ class ShopDAO {
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+
 }

@@ -22,44 +22,7 @@ footer {
   padding: 1rem 0;
 }
 
-/* Checkout Layout */
-.checkout-container {
-  max-width: 900px;
-  margin: 60px auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  overflow: hidden;
-}
-.checkout-header {
-  background: #111827;
-  color: #ffc107;
-  padding: 1.5rem;
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.5rem;
-}
-.table img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-.summary-box {
-  background: #fff8e1;
-  border-radius: 8px;
-  padding: 1.2rem;
-  border: 1px solid #ffe082;
-}
-.btn-warning {
-  font-weight: 600;
-  width: 100%;
-}
-.form-label {
-  font-weight: 600;
-}
-
-/* Shop + Product Cards (Shared) */
+/* Hero & Filters */
 .shop-header, .cart-header {
   background: linear-gradient(to bottom right, #000, #222);
   color: var(--primary);
@@ -75,6 +38,7 @@ footer {
   z-index: 10;
 }
 
+/* Product Cards */
 .product-card {
   transition: all 0.3s ease;
   border: none;
@@ -82,6 +46,7 @@ footer {
   overflow: hidden;
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
   background: #fff;
+  position: relative;
 }
 .product-card:hover {
   transform: translateY(-5px);
@@ -112,39 +77,33 @@ footer {
   background-color: #ffcd39;
   color: #000;
 }
-.login-btn {
+
+/* Badges */
+.product-card .badge {
+  padding: 0.35em 0.6em;
+  font-size: 0.75rem;
+  font-weight: 600;
   border-radius: 0.5rem;
-}
-.fade-in {
-  animation: fadeIn 0.7s ease-in-out;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  position: absolute;
+  z-index: 5;
 }
 
-/* Modal image hover zoom effect */
-.modal-image-wrapper img.transition {
-  transition: transform 0.3s ease;
-}
-.modal-image-wrapper img.transition:hover {
-  transform: scale(1.05);
+.badge-low {
+  background-color: #dc3545; /* red */
+  color: #fff;
 }
 
-/* Scrollbar for long description */
-#detailDescription::-webkit-scrollbar {
-  width: 6px;
-}
-#detailDescription::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-#detailDescription::-webkit-scrollbar-thumb {
-  background: #ffc107;
-  border-radius: 3px;
+.badge-new {
+  background-color: #ffc107; /* yellow */
+  color: #212529;
 }
 
-/* Modern Product Modal Styles */
+.badge-updated {
+  background-color: #28a745; /* green */
+  color: #fff;
+}
+
+/* Modal Styles */
 .modal-content {
   border-radius: 1.5rem;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
@@ -202,10 +161,21 @@ footer {
   box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
-/* Hover effect for modal image */
-.hover-scale {
-  transition: transform 0.3s ease;
+/* Quick View hover */
+.quick-view {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 0.3rem 0;
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
-.hover-scale:hover {
-  transform: scale(1.05);
+.product-card:hover .quick-view {
+  opacity: 1;
 }
