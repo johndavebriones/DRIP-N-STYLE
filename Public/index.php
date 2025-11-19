@@ -22,7 +22,6 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     }
 }
 
-// Detect current page
 $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
@@ -51,6 +50,33 @@ $currentPage = basename($_SERVER['PHP_SELF']);
       <h1 class="display-4 fw-bold hero-title text-warning">Discover Your Style</h1>
       <p class="lead text-light">— Grab What You Desire 💫</p>
       <a href="../Public/shop/shop.php" class="btn btn-warning btn-lg fw-semibold mt-3">Shop Now</a>
+    </div>
+  </section>
+
+  <!-- Clothing Brands Section -->
+  <section class="brands-section py-4">
+    <div class="container text-center mb-3">
+      <h2 class="fw-bold text-black">Brands We Have</h2>
+    </div>
+    <div class="brands-slider">
+      <div class="brands-track">
+        <img src="assets/images/brands/alo-removebg-preview.png" alt="alo">
+        <img src="assets/images/brands/ck.png" alt="Calvin Klein">
+        <img src="assets/images/brands/essentials-removebg-preview.png" alt="Essentials">
+        <img src="assets/images/brands/uniqlo-removebg-preview.png" alt="Uniqlo">
+        <img src="assets/images/brands/zara-removebg-preview.png" alt="Zara">
+        <img src="assets/images/brands/gap-removebg-preview.png" alt="GAP">
+        <img src="assets/images/brands/polo.png" alt="Polo">
+        <img src="assets/images/brands/new era.png" alt="New Era">
+        <img src="assets/images/brands/alo-removebg-preview.png" alt="alo">
+        <img src="assets/images/brands/ck.png" alt="Calvin Klein">
+        <img src="assets/images/brands/essentials-removebg-preview.png" alt="Essentials">
+        <img src="assets/images/brands/uniqlo-removebg-preview.png" alt="Uniqlo">
+        <img src="assets/images/brands/zara-removebg-preview.png" alt="Zara">
+        <img src="assets/images/brands/gap-removebg-preview.png" alt="GAP">
+        <img src="assets/images/brands/polo.png" alt="Polo">
+        <img src="assets/images/brands/new era.png" alt="New Era">
+      </div>
     </div>
   </section>
 

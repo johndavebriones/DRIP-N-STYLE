@@ -1,3 +1,4 @@
+/* ======================= HERO SECTION ======================= */
 .hero {
   background: url('../images/dripnstylelogo.png') center/cover no-repeat;
   height: 85vh;
@@ -16,7 +17,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.203);
+  background-color: rgba(33, 33, 33, 0.176);
 }
 
 .hero-content {
@@ -26,16 +27,17 @@
   transition: text-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.hero-content:hover,
-.hero-content h1:hover {
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  transform: scale(1.02);
-}
-
 .hero-content h1 {
   font-size: 3rem;
   color: var(--primary);
   transition: text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* LIGHT HOVER EFFECT FOR HERO TEXT */
+.hero-content:hover,
+.hero-content h1:hover {
+  text-shadow: 0 2px 8px rgba(141, 137, 137, 0.4); /* light glow */
+  transform: scale(1.02);
 }
 
 .hero-content p {
@@ -43,7 +45,20 @@
   color: var(--text-light);
 }
 
-/* PRODUCT CARDS */
+/* LIGHT HOVER BUTTON */
+.hero a.btn {
+  transition: background-color 0.3s ease, color 0.3s ease,
+              box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.hero a.btn:hover {
+  background-color: #edc020 !important; /* light yellow */
+  color: #000 !important;
+  box-shadow: 0 0 15px rgba(255, 255, 150, 0.6); /* soft glow */
+  transform: scale(1.05);
+}
+
+/* ======================= PRODUCT CARDS ======================= */
 .product-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: none;
@@ -71,7 +86,56 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 📱 MOBILE RESPONSIVENESS */
+/* ======================= BRANDS SECTION ======================= */
+.brands-section {
+  background: #ffffff;
+  overflow: hidden;
+  padding: 25px 0;
+}
+
+.brands-section h2 {
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+/* Slider container */
+.brands-slider {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* The track that scrolls */
+.brands-track {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  animation: scrollBrands 20s linear infinite;
+}
+
+/* Logo styling */
+.brands-track img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(20%);
+  transition: 0.3s ease;
+}
+
+.brands-track img:hover {
+  filter: grayscale(0%);
+  transform: scale(1.1);
+}
+
+/* Animation */
+@keyframes scrollBrands {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ======================= RESPONSIVE ======================= */
 @media (max-width: 992px) {
   .hero {
     height: 70vh;
@@ -84,10 +148,6 @@
 
   .hero-content p {
     font-size: 1.1rem;
-  }
-
-  .btn-login {
-    padding: 8px 20px;
   }
 
   footer {
@@ -112,6 +172,10 @@
   .product-card img {
     height: 220px;
   }
+
+  .brands-track img {
+    height: 45px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -123,12 +187,11 @@
     font-size: 0.95rem;
   }
 
-  .btn-login {
-    font-size: 0.9rem;
-    padding: 6px 15px;
-  }
-
   footer {
     font-size: 0.85rem;
+  }
+
+  .brands-track img {
+    height: 40px;
   }
 }
