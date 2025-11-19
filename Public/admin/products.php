@@ -230,7 +230,7 @@ ob_start();
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0">
             <div class="modal-header bg-gradient-secondary text-white rounded-top-4">
-                <h5 class="modal-title fw-bold text-black" id="historyModalLabel">Deleted Products History</h5>
+                <h5 class="modal-title fw-bold text-black" id="historyModalLabel">Archived Products History</h5>
                 <button type="button" class="btn-close btn-close-black" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body py-4 px-4">

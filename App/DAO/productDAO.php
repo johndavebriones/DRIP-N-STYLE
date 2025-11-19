@@ -148,13 +148,6 @@ class ProductDAO {
         return $stmt->execute();
     }
 
-    // Permanent delete
-    public function permanentDelete($id) {
-        $stmt = $this->conn->prepare("DELETE FROM products WHERE product_id = ?");
-        $stmt->bind_param('i', $id);
-        return $stmt->execute();
-    }
-
     // Get deleted products
     public function getDeletedProducts() {
         $stmt = $this->conn->prepare("
@@ -293,4 +286,16 @@ class ProductDAO {
 
         return ['success' => true];
     }
+
+    // Restore soft-deleted product
+    public function restoreProduct($id) {
+        $stmt = $this->conn->prepare("
+            UPDATE products 
+            SET deleted_at = NULL 
+            WHERE product_id = ?
+        ");
+        $stmt->bind_param('i', $id);
+        return $stmt->execute();
+    }
+
 }

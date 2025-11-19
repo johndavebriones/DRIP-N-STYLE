@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('product_status').value = p.status;
             document.getElementById('product_category').value = p.category_id;
 
-            // Populate description
+            // Description
             document.getElementById('product_description').value = p.description ?? '';
 
             // Existing image
@@ -121,10 +121,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Save Product (Add + Edit) with Duplicate Check
+    // Save Product (Add + Edit)
     productForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(productForm);
+
         const stock = parseInt(formData.get('stock') || 0, 10);
         formData.set('status', stock > 0 ? 'Available' : 'Out of Stock');
         formData.set('description', descInput.value.trim());
@@ -140,7 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
             productModal.hide();
             setTimeout(() => location.reload(), 800);
         } else {
-            // Handle duplicate product
             if (data.message?.includes('duplicate')) {
                 Swal.fire('Warning!', data.message, 'warning');
             } else {
@@ -151,10 +151,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Soft Delete Product
     document.querySelectorAll('.delete-product-btn').forEach(btn => {
-        btn.addEventListener('click', () => handleDelete(btn.dataset.productId, 'delete', 'This product will be marked as deleted.'));
+        btn.addEventListener('click', () => handleSoftDelete(btn.dataset.productId));
     });
 
-    // History Modal
+    async function handleSoftDelete(productId) {
+        if (!productId) return;
+
+        const result = await Swal.fire({
+            title: 'Delete Product?',
+            text: 'This product will be archived and moved to history.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete'
+        });
+
+        if (!result.isConfirmed) return;
+
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('product_id', productId);
+
+        const data = await postData('../../App/Helpers/productHelper.php', formData);
+        if (!data) return;
+
+        if (data.success) {
+            Swal.fire('Deleted!', data.message, 'success');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            Swal.fire('Error!', data.message, 'error');
+        }
+    }
+
+    // History Modal (Deleted Products)
     historyBtn?.addEventListener('click', fetchDeletedProducts);
 
     async function fetchDeletedProducts() {
@@ -171,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Render Deleted Products + Restore Button
     function renderHistoryTable(products) {
         const tbody = document.getElementById('history_tbody');
         tbody.innerHTML = '';
@@ -190,47 +221,56 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${p.stock}</td>
                 <td>${p.deleted_at}</td>
                 <td>
-                    <button class="btn btn-sm btn-danger permanent-delete-btn" data-product-id="${p.product_id}">
-                        Permanent Delete
+                    <button class="btn btn-sm btn-success restore-product-btn" data-product-id="${p.product_id}">
+                        Restore
                     </button>
                 </td>
             `;
             tbody.appendChild(tr);
         });
 
-        tbody.querySelectorAll('.permanent-delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => handleDelete(btn.dataset.productId, 'permanentDelete', 'This product will be permanently deleted!'));
+        tbody.querySelectorAll('.restore-product-btn').forEach(btn => {
+            btn.addEventListener('click', () => handleRestore(btn.dataset.productId));
         });
     }
 
-    // Handle Delete (Soft & Permanent)
-    async function handleDelete(productId, action, message) {
+    // Restored Product
+    async function handleRestore(productId) {
         if (!productId) return;
 
         const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: message,
-            icon: 'warning',
+            title: 'Restore Product?',
+            text: 'This product will be restored and visible to customers again.',
+            icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes'
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, restore'
         });
 
         if (!result.isConfirmed) return;
 
         const formData = new FormData();
-        formData.append('action', action);
+        formData.append('action', 'restoreProduct');
         formData.append('product_id', productId);
 
         const data = await postData('../../App/Helpers/productHelper.php', formData);
         if (!data) return;
 
         if (data.success) {
-            Swal.fire('Deleted!', data.message, 'success');
-            if (action === 'permanentDelete') fetchDeletedProducts();
-            else setTimeout(() => location.reload(), 800);
-        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Restored!',
+                text: data.message,
+                timer: 1200,
+                showConfirmButton: false
+            });
+
+            setTimeout(() => {
+                location.reload();
+            }, 800);
+        }
+        else {
             Swal.fire('Error!', data.message, 'error');
         }
     }

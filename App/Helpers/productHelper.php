@@ -86,15 +86,31 @@ switch ($action) {
 
 
     /* ============================================
-       PERMANENT DELETE PRODUCT
+       RESTORE DELETED PRODUCT
     ============================================ */
-    case 'permanentDelete':
-        $success = $productController->permanentDelete($_POST['product_id']);
+    case 'restoreProduct':
+    if (empty($_POST['product_id'])) {
+        echo json_encode(['success' => false, 'message' => 'Product ID is required']);
+        exit;
+    }
+
+    $productId = intval($_POST['product_id']);
+
+    // DAO instance
+    $productDao = new ProductDAO();
+
+    if ($productDao->restoreProduct($productId)) {
         echo json_encode([
-            'success' => $success,
-            'message' => $success ? 'Product permanently deleted!' : 'Failed to delete product'
+            'success' => true,
+            'message' => 'Product has been successfully restored.'
         ]);
-        break;
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to restore product.'
+        ]);
+    }
+    exit;
 
 
     /* ============================================

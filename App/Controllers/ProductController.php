@@ -65,11 +65,7 @@ class ProductController {
         }
 
         $success = $this->productDAO->softDelete($productId);
-        return ['success' => $success, 'message' => $success ? 'Product deleted successfully!' : 'Failed to delete product'];
-    }
-
-    public function permanentDelete($id) {
-        return $this->productDAO->permanentDelete($id);
+        return ['success' => $success, 'message' => $success ? 'Product Archived successfully!' : 'Failed to delete product'];
     }
 
     public function getDeletedProducts() {
