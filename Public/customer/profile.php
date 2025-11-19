@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 require_once __DIR__ . '/../../App/Config/database_connect.php';
 require_once __DIR__ . '/../../App/DAO/UserDAO.php';
 require_once __DIR__ . '/../../App/DAO/OrderDAO.php';
-require_once __DIR__ . '/../../App/Controllers/AddressController.php';
+require_once __DIR__ . '/../../App/DAO/AddressDAO.php';
 
 SessionHelper::requireCustomerLogin();
 
@@ -15,14 +15,15 @@ if (!$user) {
     die("User not found in database");
 }
 
-
+// Orders
 $db = new Database();
 $conn = $db->connect();
 $orderDAO = new OrderDAO($conn);
 $orders = $orderDAO->getUserOrders($user_id);
 
-$addressController = new AddressController();
-$addresses = $addressController->index($user_id);
+// Addresses
+$addressDAO = new AddressDAO();
+$addresses = $addressDAO->getByUserId($user_id);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +36,10 @@ $addresses = $addressController->index($user_id);
   <link rel="stylesheet" href="../assets/css/navbar.css">
   <link rel="stylesheet" href="assets/css/profile.css">
   <link rel="stylesheet" href="../assets/css/footer.css">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     .profile-wrapper { padding: 50px 0; }
     .profile-card {
@@ -165,10 +169,12 @@ $addresses = $addressController->index($user_id);
             <?php endif; ?>
             <div class="mt-2">
               <a href="edit_address.php?id=<?= urlencode($addr->address_id) ?>" class="btn btn-sm btn-warning">Edit</a>
+
               <form method="post" action="../../App/Controllers/AddressController.php?action=delete" style="display:inline;">
                 <input type="hidden" name="address_id" value="<?= htmlspecialchars($addr->address_id) ?>">
                 <button class="btn btn-sm btn-danger" type="submit">Delete</button>
               </form>
+
               <?php if (empty($addr->is_default)): ?>
                 <form method="post" action="../../App/Controllers/AddressController.php?action=setDefault" style="display:inline;">
                   <input type="hidden" name="address_id" value="<?= htmlspecialchars($addr->address_id) ?>">
@@ -179,7 +185,7 @@ $addresses = $addressController->index($user_id);
           </div>
         <?php endforeach; ?>
       <?php endif; ?>
-      <!-- Add Address Button -->
+
       <button class="btn btn-outline-drip mt-3" data-bs-toggle="modal" data-bs-target="#addAddressModal">
         <i class="bi bi-plus-lg"></i> Add Address
       </button>
@@ -207,77 +213,74 @@ $addresses = $addressController->index($user_id);
   </section>
 
   <!-- Add Address Modal -->
-<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addAddressModalLabel"><i class="bi bi-geo-alt-fill me-2"></i> Add New Address</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form method="post" action="../../App/Controllers/AddressController.php?action=create" id="addAddressForm">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="address_name" class="form-label">Full Name</label>
-              <input type="text" name="address_name" id="address_name" class="form-control" placeholder="Enter your full name" required>
-            </div>
+  <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-geo-alt-fill me-2"></i> Add New Address</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="../../App/Controllers/AddressController.php?action=create">
 
-            <div class="col-md-6">
-              <label for="address_phone" class="form-label">Phone Number</label>
-              <input type="tel" name="address_phone" id="address_phone" class="form-control" placeholder="09XXXXXXXXX" required>
-            </div>
+            <input type="hidden" name="user_id" value="<?= $user_id ?>">
 
-            <div class="col-12">
-              <label for="address" class="form-label">Street Address</label>
-              <input type="text" name="address" id="address" class="form-control" placeholder="House No. / Street / Barangay" required>
-            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="address_name" class="form-control" required>
+              </div>
 
-            <div class="col-md-4">
-              <label for="city" class="form-label">City</label>
-              <input type="text" name="city" id="city" class="form-control" placeholder="e.g., Balayan" required>
-            </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" name="address_phone" class="form-control" required>
+              </div>
 
-            <div class="col-md-4">
-              <label for="province" class="form-label">Province</label>
-              <input type="text" name="province" id="province" class="form-control" placeholder="e.g., Batangas">
-            </div>
+              <div class="col-12">
+                <label class="form-label">Street Address</label>
+                <input type="text" name="address" class="form-control" required>
+              </div>
 
-            <div class="col-md-4">
-              <label for="postal_code" class="form-label">Postal Code</label>
-              <input type="text" name="postal_code" id="postal_code" class="form-control" placeholder="e.g., 4231">
-            </div>
+              <div class="col-md-4">
+                <label class="form-label">City</label>
+                <input type="text" name="city" class="form-control" required>
+              </div>
 
-            <div class="col-md-6">
-              <label for="country" class="form-label">Country</label>
-              <input type="text" name="country" id="country" class="form-control" value="Philippines" required>
-            </div>
+              <div class="col-md-4">
+                <label class="form-label">Province</label>
+                <input type="text" name="province" class="form-control">
+              </div>
 
-            <div class="col-12 mt-2">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_default" name="is_default" value="1">
-                <label class="form-check-label" for="is_default">Set as default address</label>
+              <div class="col-md-4">
+                <label class="form-label">Postal Code</label>
+                <input type="text" name="postal_code" class="form-control">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Country</label>
+                <input type="text" name="country" class="form-control" value="Philippines" required>
+              </div>
+
+              <div class="col-12 mt-2">
+                <label><input type="checkbox" name="is_default" value="1"> Set as default</label>
               </div>
             </div>
-          </div>
 
-          <div class="mt-4 d-flex justify-content-end">
-            <button type="submit" class="btn btn-warning"><i class="bi bi-save2 me-1"></i> Save Address</button>
-          </div>
-        </form>
+            <div class="mt-4 d-flex justify-content-end">
+              <button type="submit" class="btn btn-warning">
+                <i class="bi bi-save2 me-1"></i> Save Address
+              </button>
+            </div>
+
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 <?php include '../partials/footer.php'; ?>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/profile.js"></script>
 
-  <script>
-    function showTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
-      document.getElementById(tabId).style.display = 'block';
-      document.querySelectorAll('.tab-btns button').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-    }
-  </script>
 </body>
 </html>

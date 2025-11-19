@@ -10,7 +10,7 @@ class AddressDAO {
         $this->conn = $database->connect();
     }
 
-    // 🧭 Get all addresses for a user
+    //  Get all addresses for a user
     public function getByUserId($user_id) {
         $sql = "SELECT * FROM addresses WHERE user_id = ? ORDER BY is_default DESC, address_id ASC";
         $stmt = $this->conn->prepare($sql);
@@ -25,7 +25,7 @@ class AddressDAO {
         return $addresses;
     }
 
-    // 🏠 Get one address
+    // Get one address
     public function getById($address_id, $user_id = null) {
         $sql = "SELECT * FROM addresses WHERE address_id = ?";
         if ($user_id !== null) $sql .= " AND user_id = ?";
@@ -41,7 +41,7 @@ class AddressDAO {
         return $res ? new AddressModel($res) : null;
     }
 
-    // ➕ Insert new address
+    // Insert new address
     public function create(AddressModel $address) {
         $sql = "INSERT INTO addresses (user_id, name, address, city, province, country, postal_code, phone_number, is_default)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -67,7 +67,7 @@ class AddressDAO {
         return $newId;
     }
 
-    // ✏️ Update existing
+    // Update existing
     public function update(AddressModel $address) {
         $sql = "UPDATE addresses 
                 SET name=?, address=?, city=?, province=?, country=?, postal_code=?, phone_number=?, is_default=? 
@@ -93,7 +93,7 @@ class AddressDAO {
         return $ok;
     }
 
-    // 🗑️ Delete
+    //Delete
     public function delete($address_id, $user_id) {
         $sql = "DELETE FROM addresses WHERE address_id = ? AND user_id = ?";
         $stmt = $this->conn->prepare($sql);
@@ -101,7 +101,7 @@ class AddressDAO {
         return $stmt->execute();
     }
 
-    // ⭐ Set as default
+    //Set as default
     public function setDefault($address_id, $user_id) {
         $this->conn->begin_transaction();
         try {
