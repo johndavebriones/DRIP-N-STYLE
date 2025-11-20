@@ -120,6 +120,80 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     </div>
   </section>
 
+  <!-- About Section -->
+  <section id="about" class="about-section py-5 bg-white">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <img src="assets/images/dripnstyleAbout.png" class="img-fluid rounded shadow" alt="About Drip N' Style">
+        </div>
+        <div class="col-md-6">
+          <h2 class="fw-bold text-black mb-3">About Drip N' Style</h2>
+          <p class="text-muted">
+            Drip N' Style is your trusted online clothing store, offering a wide range of trendy,
+            high-quality apparel for all styles. Whether you're into casual, streetwear, or classy fits—we’ve got you covered.
+          </p>
+          <p class="text-muted">
+            Our mission is to bring premium fashion closer to you with affordable prices,
+            a personalized in-store shopping experience, and friendly customer service.
+          </p>
+          <a href="../Public/shop/shop.php" class="btn btn-warning fw-semibold text-black mt-2">Shop Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact-section py-5 bg-light">
+    <div class="container text-center">
+      <h2 class="fw-bold text-black mb-4">Contact Us</h2>
+      <p class="text-muted mb-5">
+        Got questions, concerns, or inquiries? We’re here to help anytime!
+      </p>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="p-4 bg-white rounded shadow-sm">
+            <h5 class="fw-semibold text-black">📍 Address</h5>
+            <p class="text-muted mb-0">Damballelos, Street, Barangay 4, Balayan, Philippines, 4213</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-4 bg-white rounded shadow-sm">
+            <h5 class="fw-semibold text-black">📞 Phone</h5>
+            <p class="text-muted mb-4">+63 965 327 9916</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-4 bg-white rounded shadow-sm">
+            <h5 class="fw-semibold text-black">📧 Email</h5>
+            <p class="text-muted mb-4">dripnstyle.shop@gmail.com</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional Contact Form -->
+      <div class="row mt-5 justify-content-center">
+        <div class="col-md-8">
+          <form class="p-4 bg-white rounded shadow-sm">
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Your Name" required>
+            </div>
+            <div class="mb-3">
+              <input type="email" class="form-control" placeholder="Your Email" required>
+            </div>
+            <div class="mb-3">
+              <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-warning fw-semibold text-black w-100">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
   <?php include '../Public/partials/footer.php'; ?>
 

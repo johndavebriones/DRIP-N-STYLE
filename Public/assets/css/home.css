@@ -1,4 +1,7 @@
 /* ======================= HERO SECTION ======================= */
+html{
+  scroll-behavior: smooth;
+}
 .hero {
   background: url('../images/dripnstylelogo.png') center/cover no-repeat;
   height: 85vh;
@@ -13,10 +16,7 @@
 .hero::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-color: rgba(33, 33, 33, 0.176);
 }
 
@@ -24,20 +24,19 @@
   position: relative;
   z-index: 2;
   text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  transition: text-shadow 0.3s ease, transform 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .hero-content h1 {
   font-size: 3rem;
   color: var(--primary);
-  transition: text-shadow 0.3s ease, transform 0.3s ease;
+  transition: 0.3s ease;
 }
 
-/* Hover effects (Desktop only)*/
 .hero-content:hover,
 .hero-content h1:hover {
-  text-shadow: 0 2px 8px rgba(141, 137, 137, 0.4);
   transform: scale(1.02);
+  text-shadow: 0 2px 8px rgba(141,137,137,0.4);
 }
 
 .hero-content p {
@@ -45,10 +44,8 @@
   color: var(--text-light);
 }
 
-/* Light hover button */
 .hero a.btn {
-  transition: background-color 0.3s ease, color 0.3s ease,
-              box-shadow 0.3s ease, transform 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .hero a.btn:hover {
@@ -60,25 +57,24 @@
 
 /* ======================= PRODUCT CARDS ======================= */
 .product-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: 0.2s ease;
   border: none;
 }
 
 .product-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.700);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.7);
 }
 
 .product-card img {
   height: 260px;
   object-fit: cover;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
 }
 
 /* Fade-in animation */
 .fade-in {
-  animation: fadeIn 0.8s ease-in-out forwards;
+  animation: fadeIn 0.8s ease forwards;
 }
 
 @keyframes fadeIn {
@@ -86,11 +82,11 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ======================= BRANDS SECTION ======================= */
+/* ======================= BRANDS ======================= */
 .brands-section {
-  background: #ffffff;
-  overflow: hidden;
+  background: #fff;
   padding: 25px 0;
+  overflow: hidden;
 }
 
 .brands-section h2 {
@@ -100,14 +96,11 @@
   margin-bottom: 20px;
 }
 
-/* Slider container */
 .brands-slider {
-  width: 100%;
   overflow: hidden;
-  position: relative;
+  width: 100%;
 }
 
-/* Brand slider track */
 .brands-track {
   display: flex;
   gap: 60px;
@@ -115,12 +108,10 @@
   animation: scrollBrands 20s linear infinite;
 }
 
-/* Logo styling */
 .brands-track img {
   height: 60px;
-  width: auto;
-  object-fit: contain;
   filter: grayscale(20%);
+  object-fit: contain;
   transition: 0.3s ease;
 }
 
@@ -129,103 +120,87 @@
   transform: scale(1.1);
 }
 
-/* Scroll animation */
 @keyframes scrollBrands {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
+/* ======================= CONTACT SECTION ======================= */
+.contact-section {
+  padding: 60px 0;
+  background: #fafafa;
+}
+
+.contact-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* side-by-side */
+  gap: 40px;
+  align-items: start;
+}
+
+.contact-info h3,
+.contact-form h3 {
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+}
+
+.contact-info p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.contact-info i {
+  color: var(--primary);
+  margin-right: 10px;
+}
+
+.contact-form form input,
+.contact-form form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.contact-form button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.contact-form button:hover {
+  background: #edc020;
+  color: #000;
+}
+
 /* ======================= RESPONSIVE ======================= */
-
-/* Tablets */
 @media (max-width: 992px) {
-
-  /* hero */
-  .hero {
-    height: 70vh;
-    background-position: center;
-  }
-
-  .hero-content h1 {
-    font-size: 2.3rem;
-  }
-
-  .hero-content p {
-    font-size: 1.1rem;
-  }
-
-  /* Speed up brand animation */
-  .brands-track {
-    animation-duration: 14s;
-  }
-
-  footer {
-    text-align: center;
-  }
+  .hero { height: 70vh; }
+  .hero-content h1 { font-size: 2.3rem; }
+  .brands-track { animation-duration: 14s; }
 }
 
-/* Large phones / small tablets */
 @media (max-width: 768px) {
+  .hero { height: 60vh; }
+  .hero-content h1 { font-size: 2rem; }
 
-  .hero {
-    height: 60vh;
+  .product-card img { height: 220px; }
+
+  .contact-container {
+    grid-template-columns: 1fr; /* stack on mobile */
   }
 
-  .hero-content h1 {
-    font-size: 2rem;
-  }
-
-  .hero-content p {
-    font-size: 1rem;
-  }
-
-  .product-card img {
-    height: 220px;
-  }
-
-  .brands-track img {
-    height: 45px;
-  }
-
-  /* Faster movement */
-  .brands-track {
-    animation-duration: 10s;
-  }
-
-  /* Simulated hover for touch */
-  .product-card:active {
-    transform: translateY(-8px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-  }
-
-  .hero-content:active,
-  .hero-content h1:active {
-    transform: scale(1.02);
-    text-shadow: 0 2px 8px rgba(141,137,137,0.4);
-  }
+  .brands-track img { height: 45px; }
+  .brands-track { animation-duration: 10s; }
 }
 
-/* Small phones */
 @media (max-width: 576px) {
-
-  .hero-content h1 {
-    font-size: 1.7rem;
-  }
-
-  .hero-content p {
-    font-size: 0.95rem;
-  }
-
-  footer {
-    font-size: 0.85rem;
-  }
-
-  .brands-track img {
-    height: 40px;
-  }
-
-  /* Fastest for very small screens */
-  .brands-track {
-    animation-duration: 7s;
-  }
+  .hero-content h1 { font-size: 1.7rem; }
+  .brands-track img { height: 40px; }
+  .brands-track { animation-duration: 7s; }
 }

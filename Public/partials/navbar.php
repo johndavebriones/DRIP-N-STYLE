@@ -76,10 +76,10 @@ $base = $paths[$pageKey];
 
         <?php if ($currentPage === 'index.php'): ?>
           <li class="nav-item">
-            <a class="nav-link" href="../Public/about.php">About</a>
+            <a class="nav-link" href="index.php#about">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../Public/contact.php">Contact</a>
+            <a class="nav-link" href="index.php#contact">Contact</a>
           </li>
         <?php endif; ?>
 
