@@ -28,106 +28,124 @@ ob_start();
     border-radius: 0.75rem;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
+
+.page-fade {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>
 
 <!-- Header Bar -->
-<div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-  <div>
-    <h2 class="fw-bold text-light mb-0">🛍️ Product Management</h2>
-  </div>
-
-  <div class="d-flex gap-2">
-    <button class="btn btn-success fw-semibold" id="history_modal_btn">
-      <i class="bi me-1"></i> History
-    </button>
-    <button class="btn btn-warning fw-semibold shadow-sm" id="product_modal_btn">
-      <i class="bi me-1"></i> Add Product
-    </button>
-  </div>
-</div>
-
-<!-- Filters -->
-<form method="GET" id="filterForm" class="filter-card p-3 rounded-4 shadow-sm mb-4">
-  <div class="row g-3 align-items-center">
-    <div class="col-md-5">
-      <div class="input-group">
-        <span class="input-group-text bg-white border-end-0">
-          <i class="bi bi-search text-muted"></i>
-        </span>
-        <input type="text" name="search" id="searchBar" class="form-control border-start-0"
-               placeholder="Search products..." value="<?= htmlspecialchars($search) ?>">
-      </div>
+<div class="page-fade">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold text-light mb-0">🛍️ Product Management</h2>
     </div>
-    <div class="col-md-3">
-      <select name="category" id="filterCategory" class="form-select">
-        <option value="">All Categories</option>
-        <?php foreach ($categories as $cat): ?>
-          <option value="<?= strtolower($cat['category_name']) ?>"
-            <?= strtolower($cat['category_name']) === strtolower($category) ? 'selected' : '' ?>>
-            <?= htmlspecialchars($cat['category_name']) ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="col-md-4">
-      <select name="status" id="filterStatus" class="form-select">
-        <option value="">All Status</option>
-        <?php foreach ($statuses as $s): ?>
-          <option value="<?= strtolower($s) ?>"
-            <?= strtolower($s) === strtolower($status) ? 'selected' : '' ?>>
-            <?= ucfirst($s) ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-  </div>
-</form>
 
-<!-- Product Cards -->
-<div class="row g-4">
-    <?php if (!empty($products)): ?>
-        <?php foreach ($products as $product): ?>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="card product-card border-0 shadow-sm h-100 position-relative overflow-hidden">
-                    
-                    <!-- Product Image -->
-                    <div class="product-image-container position-relative">
-                        <img src="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>"
-                             class="card-img-top product-image"
-                             alt="<?= htmlspecialchars($product['name']) ?>">
-                        <span class="badge bg-<?= $product['status'] === 'Available' ? 'success' : 'danger' ?> position-absolute top-0 end-0 m-2">
-                            <?= htmlspecialchars($product['status']) ?>
-                        </span>
-                    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-success fw-semibold" id="history_modal_btn">
+        <i class="bi me-1"></i> History
+        </button>
+        <button class="btn btn-warning fw-semibold shadow-sm" id="product_modal_btn">
+        <i class="bi me-1"></i> Add Product
+        </button>
+    </div>
+    </div>
 
-                    <!-- Product Info -->
-                    <div class="card-body text-center d-flex flex-column justify-content-between">
-                        <div>
-                            <h6 class="fw-bold text-dark mb-1"><?= htmlspecialchars($product['name']) ?></h6>
-                            <p class="text-muted small mb-1"><?= htmlspecialchars($product['category_name'] ?? 'Uncategorized') ?></p>
-                            <p class="fw-bold text-warning mb-2">₱<?= number_format($product['price'], 2) ?></p>
-                            <p class="small text-secondary mb-1">Size: <span class="fw-semibold"><?= htmlspecialchars($product['size'] ?: 'N/A') ?></span></p>
-                            <p class="small text-secondary mb-1">Stock: <span class="fw-semibold"><?= (int)$product['stock'] ?></span></p>
+    <!-- Filters -->
+    <form method="GET" id="filterForm" class="filter-card p-3 rounded-4 shadow-sm mb-4">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-5">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" name="search" id="searchBar" class="form-control border-start-0"
+                placeholder="Search products..." value="<?= htmlspecialchars($search) ?>">
+        </div>
+        </div>
+        <div class="col-md-3">
+        <select name="category" id="filterCategory" class="form-select">
+            <option value="">All Categories</option>
+            <?php foreach ($categories as $cat): ?>
+            <option value="<?= strtolower($cat['category_name']) ?>"
+                <?= strtolower($cat['category_name']) === strtolower($category) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($cat['category_name']) ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
+        </div>
+        <div class="col-md-4">
+        <select name="status" id="filterStatus" class="form-select">
+            <option value="">All Status</option>
+            <?php foreach ($statuses as $s): ?>
+            <option value="<?= strtolower($s) ?>"
+                <?= strtolower($s) === strtolower($status) ? 'selected' : '' ?>>
+                <?= ucfirst($s) ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
+        </div>
+    </div>
+    </form>
+
+    <!-- Product Cards -->
+    <div class="row g-4">
+        <?php if (!empty($products)): ?>
+            <?php foreach ($products as $product): ?>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card product-card border-0 shadow-sm h-100 position-relative overflow-hidden">
+                        
+                        <!-- Product Image -->
+                        <div class="product-image-container position-relative">
+                            <img src="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>"
+                                class="card-img-top product-image"
+                                alt="<?= htmlspecialchars($product['name']) ?>">
+                            <span class="badge bg-<?= $product['status'] === 'Available' ? 'success' : 'danger' ?> position-absolute top-0 end-0 m-2">
+                                <?= htmlspecialchars($product['status']) ?>
+                            </span>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="mt-3 d-flex justify-content-center gap-2">
-                            <button class="btn btn-outline-dark btn-sm edit-product-btn px-3"
-                                    data-product-id="<?= $product['product_id'] ?>">
-                                <i class="bi bi-pencil-square me-1"></i> Edit
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm delete-product-btn px-3"
-                                    data-product-id="<?= $product['product_id'] ?>">
-                                <i class="bi bi-trash3 me-1"></i> Delete
-                            </button>
+                        <!-- Product Info -->
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1"><?= htmlspecialchars($product['name']) ?></h6>
+                                <p class="text-muted small mb-1"><?= htmlspecialchars($product['category_name'] ?? 'Uncategorized') ?></p>
+                                <p class="fw-bold text-warning mb-2">₱<?= number_format($product['price'], 2) ?></p>
+                                <p class="small text-secondary mb-1">Size: <span class="fw-semibold"><?= htmlspecialchars($product['size'] ?: 'N/A') ?></span></p>
+                                <p class="small text-secondary mb-1">Stock: <span class="fw-semibold"><?= (int)$product['stock'] ?></span></p>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="mt-3 d-flex justify-content-center gap-2">
+                                <button class="btn btn-outline-dark btn-sm edit-product-btn px-3"
+                                        data-product-id="<?= $product['product_id'] ?>">
+                                    <i class="bi bi-pencil-square me-1"></i> Edit
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm delete-product-btn px-3"
+                                        data-product-id="<?= $product['product_id'] ?>">
+                                    <i class="bi bi-trash3 me-1"></i> Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <div class="text-center text-muted py-5">No products found.</div>
-    <?php endif; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="text-center text-muted py-5">No products found.</div>
+        <?php endif; ?>
+    </div>
 </div>
 
 <!-- Add/Edit Product Modal -->
@@ -210,7 +228,7 @@ ob_start();
                             <input type="file" name="image" id="product_image" class="form-control shadow-sm" accept="image/*">
                             <div class="mt-3 text-center">
                                 <img id="image_preview" src="" alt="Image Preview"
-                                     class="img-fluid rounded-3 shadow-sm" style="max-height: 200px; display: none;">
+                                    class="img-fluid rounded-3 shadow-sm" style="max-height: 200px; display: none;">
                             </div>
                         </div>
                     </div>
@@ -261,25 +279,6 @@ ob_start();
         </div>
     </div>
 </div>
-
-<!-- Styles -->
-<style>
-.page-fade {
-  opacity: 0;
-  animation: fadeIn 0.6s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
