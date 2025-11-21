@@ -170,7 +170,9 @@ if (!empty($_SESSION['order_canceled'])) {
             </div>
             <div id="modalControls" class="mt-3 d-flex gap-2 align-items-center">
               <input type="number" id="detailQty" value="1" min="1" class="form-control text-center rounded-pill border-1 shadow-sm" style="width: 70px; display: none;">
-              <button id="modalActionBtn" class="btn w-100 fw-bold rounded-pill shadow-sm"></button>
+              <button id="modalActionBtn" class="btn btn-warning w-100 fw-bold rounded-pill shadow-sm">
+                  Add to Cart
+              </button>
             </div>
           </div>
         </div>
