@@ -126,4 +126,12 @@ class CartDAO {
         $row = $result->fetch_assoc();
         return (float)($row['total'] ?? 0);
     }
+
+    public function clearCart(int $user_id): bool {
+    $cart_id = $this->getOrCreateCart($user_id);
+    $stmt = $this->conn->prepare("DELETE FROM cart_items WHERE cart_id = ?");
+    $stmt->bind_param("i", $cart_id);
+    $stmt->execute();
+    return $stmt->affected_rows > 0;
+    }
 }
