@@ -3,10 +3,12 @@ require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::preventCache();
 
+// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../../Public/LoginPage.php");
     exit;
 }
+
 $user_id = $_SESSION['user_id'];
 
 require_once __DIR__ . '/../../App/Config/database_connect.php';
@@ -26,8 +28,12 @@ $total = $cartDAO->getCartTotal($user_id);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Checkout | Drip N' Style</title>
+
+<!-- CSS -->
 <link href="../assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/navbar.css">
+<link rel="stylesheet" href="../assets/css/footer.css">
 </head>
 <body>
 
@@ -39,14 +45,18 @@ $total = $cartDAO->getCartTotal($user_id);
         <h2 class="mb-4">Checkout</h2>
 
         <?php if (empty($cartItems)): ?>
-            <p>Your cart is empty. <a href="shop.php" class="btn btn-warning">Continue Shopping</a></p>
+            <div class="alert alert-warning">
+                <p>Your cart is empty. <a href="shop.php" class="btn btn-warning btn-sm">Continue Shopping</a></p>
+            </div>
         <?php else: ?>
             <form id="checkoutForm" action="checkout_process.php" method="POST" enctype="multipart/form-data">
+                <!-- Pickup Date -->
                 <div class="mb-3">
                     <label for="pickup_date" class="form-label">Pick-up Date</label>
                     <input type="date" name="pickup_date" id="pickup_date" class="form-control" min="<?= date('Y-m-d') ?>" required>
                 </div>
 
+                <!-- Payment Method -->
                 <div class="mb-3">
                     <label for="payment_method" class="form-label">Payment Method</label>
                     <select name="payment_method" id="payment_method" class="form-select" required>
@@ -55,7 +65,8 @@ $total = $cartDAO->getCartTotal($user_id);
                     </select>
                 </div>
 
-                <div id="gcash_fields" style="display:none;">
+                <!-- GCash Fields -->
+                <div id="gcash_fields" class="d-none">
                     <div class="mb-3">
                         <label for="payment_ref" class="form-label">GCash Reference Number</label>
                         <input type="text" name="payment_ref" id="payment_ref" class="form-control">
@@ -66,6 +77,7 @@ $total = $cartDAO->getCartTotal($user_id);
                     </div>
                 </div>
 
+                <!-- Order Summary -->
                 <h4 class="mt-4">Order Summary</h4>
                 <ul class="list-group mb-3">
                     <?php foreach ($cartItems as $item): ?>
@@ -85,22 +97,27 @@ $total = $cartDAO->getCartTotal($user_id);
                 </div>
             </form>
         <?php endif; ?>
+
     </div>
 </div>
 
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const paymentMethod = document.getElementById('payment_method');
 const gcashFields = document.getElementById('gcash_fields');
+const paymentRef = document.getElementById('payment_ref');
+const proofImage = document.getElementById('proof_image');
 
 paymentMethod.addEventListener('change', () => {
     if (paymentMethod.value === 'GCash') {
-        gcashFields.style.display = 'block';
-        document.getElementById('payment_ref').required = true;
-        document.getElementById('proof_image').required = true;
+        gcashFields.classList.remove('d-none');
+        paymentRef.required = true;
+        proofImage.required = true;
     } else {
-        gcashFields.style.display = 'none';
-        document.getElementById('payment_ref').required = false;
-        document.getElementById('proof_image').required = false;
+        gcashFields.classList.add('d-none');
+        paymentRef.required = false;
+        proofImage.required = false;
     }
 });
 

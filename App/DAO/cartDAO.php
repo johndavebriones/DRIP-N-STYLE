@@ -109,4 +109,21 @@ class CartDAO {
         $stmt->execute();
         return $stmt->affected_rows > 0;
     }
+
+    /**
+     * Get total amount for user's cart
+     */
+    public function getCartTotal(int $user_id): float {
+        $cart_id = $this->getOrCreateCart($user_id);
+        $stmt = $this->conn->prepare("
+            SELECT SUM(quantity * price_at_time) AS total
+            FROM cart_items
+            WHERE cart_id = ?
+        ");
+        $stmt->bind_param("i", $cart_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return (float)($row['total'] ?? 0);
+    }
 }
