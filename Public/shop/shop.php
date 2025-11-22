@@ -10,15 +10,13 @@ $brandFilter = $_GET['brand'] ?? '';
 $categories = $shop->getCategories();
 $products = $shop->getProducts($search, $category, $sort);
 
-// Extract brands (first word of product names)
 $brands = [];
 foreach ($products as $p) {
     $brand = explode(' ', trim($p['name']))[0];
-    $brands[$brand] = $brand; // unique
+    $brands[$brand] = $brand;
 }
-ksort($brands); // alphabetical
+ksort($brands);
 
-// Filter products by brand if selected
 if ($brandFilter) {
     $products = array_filter($products, fn($p) => explode(' ', trim($p['name']))[0] === $brandFilter);
 }
@@ -99,9 +97,10 @@ if (!empty($_SESSION['order_canceled'])) {
                     data-id="<?= $product['product_id'] ?>"
                     data-name="<?= htmlspecialchars($product['name']) ?>"
                     data-category="<?= htmlspecialchars($product['category_name']) ?>"
+                    data-size="<?= htmlspecialchars($product['size'] ?? 'N/A') ?>"
                     data-price="<?= $product['price'] ?>"
                     data-stock="<?= $product['stock'] ?>"
-                    data-description="<?= htmlspecialchars($product['description'] ?? '') ?>"
+                    data-description="<?= htmlspecialchars($product['description'] ?? 'No description') ?>"
                     data-image="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>">
 
                   <?php if($isNew): ?>
@@ -123,9 +122,6 @@ if (!empty($_SESSION['order_canceled'])) {
                       <h6 class="card-title fw-bold"><?= htmlspecialchars($product['name']); ?></h6>
                       <p class="text-muted small mb-1"><?= htmlspecialchars($product['category_name']); ?></p>
                       <p class="price-tag mb-2 text-warning fw-bold">₱<?= number_format($product['price'], 2); ?></p>
-                      <p class="text-muted small mb-3 text-truncate" title="<?= htmlspecialchars($product['description'] ?? '') ?>">
-                        <?= htmlspecialchars($product['description'] ?? '') ?>
-                      </p>
                       <p class="text-muted small mb-3">Stock: <?= $product['stock'] ?></p>
                   </div>
                 </div>
@@ -164,13 +160,14 @@ if (!empty($_SESSION['order_canceled'])) {
             <div>
               <h4 id="detailName" class="fw-bold mb-2 text-dark"></h4>
               <p class="text-muted small mb-2" id="detailCategory"></p>
+              <p class="text-muted small mb-2" id="detailSize"></p>
               <h5 class="text-warning fw-bold mb-3" id="detailPrice"></h5>
-              <p class="text-muted small mb-2" id="detailStock"></p>
               <div id="detailDescription" class="text-secondary small"></div>
             </div>
             <div id="modalControls" class="mt-3 d-flex gap-2 align-items-center">
+              <p class="text-muted small mb-2" id="detailStock"></p>
               <input type="number" id="detailQty" value="1" min="1" class="form-control text-center rounded-pill border-1 shadow-sm" style="width: 70px; display: none;">
-              <button id="modalActionBtn" class="btn btn-warning w-100 fw-bold rounded-pill shadow-sm">
+              <button id="modalActionBtn" class="btn btn-warning w-50 fw-bold rounded-pill shadow-sm">
                   Add to Cart
               </button>
             </div>
@@ -182,6 +179,6 @@ if (!empty($_SESSION['order_canceled'])) {
 </div>
 
 <script src="../assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/shop.js"></script>
+<script src="assets/js/shop.js?v=2"></script>
 </body>
 </html>

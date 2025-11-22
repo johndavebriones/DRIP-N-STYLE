@@ -28,10 +28,13 @@ class ShopDAO {
                 p.stock, 
                 p.status, 
                 p.date_added, 
+                p.size,          -- add this
+                p.description,   -- add this
                 c.category_name
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.category_id
-            WHERE p.deleted_at IS NULL";  // <-- only fetch non-deleted products
+            WHERE p.deleted_at IS NULL";
+
 
         $params = [];
         $types = '';

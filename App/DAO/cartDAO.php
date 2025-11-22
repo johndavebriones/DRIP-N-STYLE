@@ -12,21 +12,24 @@ class CartDAO {
      * Get existing cart_id or create a new cart for a user
      */
     public function getOrCreateCart(int $user_id): int {
-        $stmt = $this->conn->prepare("SELECT cart_id FROM carts WHERE user_id = ?");
-        $stmt->bind_param('i', $user_id);
+        // 1. Check if user already has a cart
+        $stmt = $this->conn->prepare("SELECT cart_id FROM carts WHERE user_id = ? LIMIT 1");
+        $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($row = $result->fetch_assoc()) {
-            return (int)$row['cart_id'];
+            return intval($row['cart_id']);
         }
 
-        // Create new cart
-        $insert = $this->conn->prepare("INSERT INTO carts (user_id) VALUES (?)");
-        $insert->bind_param('i', $user_id);
+        // 2. Create new cart if none exists
+        $insert = $this->conn->prepare("INSERT INTO carts (user_id, created_at) VALUES (?, NOW())");
+        $insert->bind_param("i", $user_id);
         $insert->execute();
-        return $insert->insert_id;
+
+        return intval($this->conn->insert_id);
     }
+
 
     /**
      * Add item to cart, or update quantity if it already exists
@@ -51,7 +54,12 @@ class CartDAO {
         // Insert new cart item
         $insert = $this->conn->prepare("INSERT INTO cart_items (cart_id, product_id, quantity, price_at_time) VALUES (?, ?, ?, ?)");
         $insert->bind_param("iiid", $cart_id, $product_id, $quantity, $price);
-        $insert->execute();
+
+        if (!$insert->execute()) {
+            // return false so JS WILL SHOW ERROR
+            return false;
+        }
+
         return $insert->affected_rows > 0;
     }
 
@@ -134,4 +142,16 @@ class CartDAO {
     $stmt->execute();
     return $stmt->affected_rows > 0;
     }
+
+    /**
+     * Get a single product by product_id
+     */
+    public function getProduct(int $product_id): ?array {
+        $stmt = $this->conn->prepare("SELECT * FROM products WHERE product_id = ? LIMIT 1");
+        $stmt->bind_param("i", $product_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc() ?: null;
+    }
+
 }
