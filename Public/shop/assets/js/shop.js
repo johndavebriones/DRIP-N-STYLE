@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- OPEN MODAL ----
   productCards.forEach(card => {
     card.addEventListener('click', () => {
-
       const img = document.getElementById('detailImage');
       img.src = card.dataset.image;
       img.dataset.id = card.dataset.id;
@@ -25,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const modalControls = document.getElementById('modalControls');
 
       if (isLoggedIn) {
-        modalControls.style.display = 'flex';   // show quantity & button
+        modalControls.style.display = 'flex';
         qtyInput.style.display = 'block';
         qtyInput.value = 1;
         qtyInput.max = card.dataset.stock;
@@ -55,70 +54,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (qty > maxQty) {
       qtyInput.value = maxQty;
-      Swal.fire({
-        toast: true,
-        position: 'bottom-end',
-        icon: 'warning',
-        title: `You can only order up to ${maxQty} items.`,
-        showConfirmButton: false,
-        timer: 1500
-      });
+      alert(`You can only order up to ${maxQty} items.`);
     } else if (qty < 1) {
       qtyInput.value = 1;
-      Swal.fire({
-        toast: true,
-        position: 'bottom-end',
-        icon: 'warning',
-        title: 'Quantity must be at least 1.',
-        showConfirmButton: false,
-        timer: 1500
-      });
+      alert('Quantity must be at least 1.');
     }
   });
 
-  // ---- AJAX HELPERS ----
-  const sendCartRequest = (action, data) => {
+  // ---- AJAX Helpers ----
+  const sendCartRequest = async (action, data) => {
     const formData = new FormData();
     formData.append('action', action);
     for (const key in data) formData.append(key, data[key]);
 
-    return fetch('/DRIP-N-STYLE/App/Controllers/CartController.php', { 
-        method: 'POST', 
-        body: formData 
-      })
-      .then(res => res.text())
-      .then(text => {
-        const [status, message] = text.split('|');
-
-        Swal.fire({
-          toast: true,
-          position: 'bottom-end',
-          icon: status === 'success' ? 'success' : 'error',
-          title: message,
-          showConfirmButton: false,
-          timer: 1500
-        });
-
-        return status === 'success';
-      })
-      .catch(() => {
-        Swal.fire({ icon: 'error', title: 'Something went wrong' });
-        return false;
+    try {
+      const res = await fetch('/DRIP-N-STYLE/App/Controllers/CartController.php', {
+        method: 'POST',
+        body: formData
       });
+      const json = await res.json(); // parse JSON response
+
+      alert(json.message); // default alert instead of SweetAlert
+
+      return json.success;
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong.');
+      return false;
+    }
   };
 
   // ---- ADD TO CART BUTTON ----
   actionBtn.addEventListener('click', async () => {
     if (!isLoggedIn) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Please log in',
-        text: 'You need to log in to add items to your cart.',
-        showCancelButton: true,
-        confirmButtonText: 'Log In'
-      }).then(result => {
-        if (result.isConfirmed) window.location.href = '../LoginPage.php';
-      });
+      if (confirm('You need to log in to add items to your cart. Do you want to log in now?')) {
+        window.location.href = '../LoginPage.php';
+      }
       return;
     }
 
@@ -126,11 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxQty = parseInt(qtyInput.max, 10) || qty;
 
     if (qty < 1 || qty > maxQty) {
-      Swal.fire({
-        icon: 'warning',
-        title: qty < 1 ? 'Invalid Quantity' : 'Stock Limit',
-        text: qty < 1 ? 'Quantity must be at least 1.' : `You can only order up to ${maxQty} items.`
-      });
+      alert(qty < 1 ? 'Quantity must be at least 1.' : `You can only order up to ${maxQty} items.`);
       return;
     }
 
@@ -146,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (success) {
-      setTimeout(() => document.activeElement.blur(), 10);
+      qtyInput.value = 1;
       setTimeout(() => modal.hide(), 60);
     }
   });

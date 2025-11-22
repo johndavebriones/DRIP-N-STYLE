@@ -179,6 +179,6 @@ if (!empty($_SESSION['order_canceled'])) {
 </div>
 
 <script src="../assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/shop.js?v=2"></script>
+<script src="assets/js/shop.js?v=3"></script>
 </body>
 </html>

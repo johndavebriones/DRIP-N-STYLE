@@ -54,8 +54,26 @@ class CartController {
         }
 
         $stock = intval($product['stock']);
-        if ($quantity > $stock) {
-            echo json_encode(["success" => false, "message" => "Only $stock items available"]);
+
+        // Check existing quantity in cart
+        $cartItems = $this->cartDAO->getCartItems($user_id);
+        $existingQty = 0;
+        foreach ($cartItems as $item) {
+            if ($item['product_id'] == $product_id) {
+                $existingQty = intval($item['quantity']);
+                break;
+            }
+        }
+
+        // Total quantity requested
+        $totalQty = $existingQty + $quantity;
+
+        if ($totalQty > $stock) {
+            $available = $stock - $existingQty;
+            $msg = $available > 0 
+                ? "You can only add $available more item(s) of this product"
+                : "You already have the maximum available stock in your cart";
+            echo json_encode(["success" => false, "message" => $msg]);
             exit;
         }
 
