@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     checkoutBtn.disabled = !Array.from(checkboxes).some(cb => cb.checked);
   }
 
-  // QUANTITY BUTTONS
+  // ------------------ QUANTITY BUTTONS ------------------
   document.querySelectorAll(".quantity-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const row = btn.closest("tr");
@@ -39,7 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
       quantityEl.textContent = quantity;
 
       const price = parseFloat(row.querySelector("td.price").textContent.replace("₱", "").replace(/,/g, ""));
-      row.querySelector("td.subtotal").textContent = "₱" + (price * quantity).toLocaleString("en-PH", { minimumFractionDigits: 2 });
+      row.querySelector("td.subtotal").textContent =
+        "₱" + (price * quantity).toLocaleString("en-PH", { minimumFractionDigits: 2 });
 
       updateTotal();
 
@@ -61,11 +62,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Uncheck all on load
-  checkboxes.forEach(cb => { cb.checked = false; cb.addEventListener("change", updateTotal); });
+  // ------------------ REMOVE BUTTONS (NO FETCH, NO JSON) ------------------
+  document.querySelectorAll(".remove-item-form").forEach(form => {
+    form.addEventListener("submit", (e) => {
+      if (!confirm("Are you sure you want to remove this item?")) {
+        e.preventDefault();
+      }
+      // else: allow normal form submission to controller
+      // Controller refreshes the page → no JSON errors
+    });
+  });
+
+  // ------------------ CHECKBOXES ------------------
+  checkboxes.forEach(cb => {
+    cb.checked = false;
+    cb.addEventListener("change", updateTotal);
+  });
   updateTotal();
 
-  // CHECKOUT SUBMISSION
+  // ------------------ CHECKOUT ------------------
   const checkoutForm = document.getElementById("checkoutForm");
   checkoutForm.addEventListener("submit", (e) => {
     checkoutForm.querySelectorAll("input[name='item_ids[]']").forEach(i => i.remove());

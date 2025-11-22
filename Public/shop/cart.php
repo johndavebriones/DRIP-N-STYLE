@@ -15,6 +15,7 @@ $cartItems = $cart->getCartItems($_SESSION['user_id'] ?? 0);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cart | Drip N' Style</title>
+
 <link href="../assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="../assets/css/style.css">
@@ -23,8 +24,10 @@ $cartItems = $cart->getCartItems($_SESSION['user_id'] ?? 0);
 <link rel="stylesheet" href="../assets/css/navbar.css">
 <link rel="stylesheet" href="../assets/css/footer.css">
 </head>
+
 <body>
 <div id="page-container">
+
   <?php include '../partials/navbar.php'; ?>
 
   <main>
@@ -41,96 +44,111 @@ $cartItems = $cart->getCartItems($_SESSION['user_id'] ?? 0);
 
     <section class="py-5 page-fade">
       <div class="container">
+
         <?php if (empty($cartItems)): ?>
           <div class="alert alert-warning text-center cart-empty">
             <p>Your cart is currently empty.</p>
             <a href="shop.php" class="btn btn-warning mt-3">Continue Shopping</a>
           </div>
+
         <?php else: ?>
+
+          <!-- CART TABLE (NO OUTER FORM) -->
+          <div class="table-responsive mt-4">
+            <table class="table align-middle cart-table shadow-sm">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 35%">Product</th>
+                  <th class="text-center" style="width: 15%">Quantity</th>
+                  <th style="width: 10%">Price</th>
+                  <th style="width: 10%">Subtotal</th>
+                  <th style="width: 10%">Action</th>
+                  <th style="width: 5%"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+              <?php foreach ($cartItems as $item): ?>
+                <tr data-stock="<?= $item['stock'] ?>">
+
+                  <!-- PRODUCT INFO -->
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <img src="../../Public/<?= htmlspecialchars($item['image'] ?: 'uploads/no-image.png') ?>"
+                           style="width:70px;height:70px;object-fit:cover;" class="rounded">
+
+                      <div class="ms-3">
+                        <strong><?= htmlspecialchars($item['name']) ?></strong><br>
+                        <small class="text-muted">Size: <?= htmlspecialchars($item['size'] ?? '-') ?></small><br>
+                        <small class="text-muted"><?= htmlspecialchars($item['description'] ?? '-') ?></small>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- QUANTITY -->
+                  <td class="text-center">
+                    <div class="d-inline-flex justify-content-center">
+                      <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
+                              data-item="<?= $item['item_id'] ?>" data-action="decrease">−</button>
+
+                      <span class="mx-2 fw-bold quantity-value"><?= $item['quantity'] ?></span>
+
+                      <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
+                              data-item="<?= $item['item_id'] ?>" data-action="increase">+</button>
+                    </div>
+                  </td>
+
+                  <!-- PRICE + SUBTOTAL -->
+                  <td class="price">₱<?= number_format($item['price_at_time'], 2) ?></td>
+                  <td class="subtotal">₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></td>
+
+                  <!-- REMOVE BUTTON (SEPARATE FORM) -->
+                  <td>
+                    <form method="POST" action="../../App/Controllers/CartController.php" class="remove-item-form d-inline">
+                      <input type="hidden" name="action" value="remove">
+                      <input type="hidden" name="item_id" value="<?= $item['item_id'] ?>">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i> Remove
+                      </button>
+                    </form>
+                  </td>
+
+                  <!-- CHECKBOX -->
+                  <td class="text-center">
+                    <input class="form-check-input select-item"
+                           type="checkbox"
+                           value="<?= $item['item_id'] ?>">
+                  </td>
+
+                </tr>
+              <?php endforeach; ?>
+
+                <!-- TOTAL ROW -->
+                <tr class="fw-bold">
+                  <td colspan="3" class="text-end">Total:</td>
+                  <td class="total text-end">₱0.00</td>
+                  <td colspan="2"></td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
           <form id="checkoutForm" method="GET" action="/DRIP-N-STYLE/Public/shop/checkout.php">
-            <div class="table-responsive mt-4">
-              <table class="table align-middle cart-table shadow-sm">
-                <thead class="table-light">
-                  <tr>
-                    <th style="width: 35%">Product</th>
-                    <th class="text-center" style="width: 15%">Quantity</th>
-                    <th style="width: 10%">Price</th>
-                    <th style="width: 10%">Subtotal</th>
-                    <th style="width: 10%">Action</th>
-                    <th style="width: 5%"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($cartItems as $item): ?>
-                  <tr data-stock="<?= $item['stock'] ?>">
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <img src="../../Public/<?= htmlspecialchars($item['image'] ?: 'uploads/no-image.png') ?>"
-                             style="width:70px;height:70px;object-fit:cover;"
-                             class="rounded">
-                        <div class="ms-3">
-                          <strong><?= htmlspecialchars($item['name']) ?></strong><br>
-                          <small class="text-muted">Size: <?= htmlspecialchars($item['size'] ?? '-') ?></small><br>
-                          <small class="text-muted"><?= htmlspecialchars($item['description'] ?? '-') ?></small>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td class="text-center">
-                      <div class="d-inline-flex justify-content-center">
-                        <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
-                                data-item="<?= $item['item_id'] ?>" data-action="decrease">−</button>
-                        <span class="mx-2 fw-bold quantity-value"><?= $item['quantity'] ?></span>
-                        <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
-                                data-item="<?= $item['item_id'] ?>" data-action="increase">+</button>
-                      </div>
-                    </td>
-
-                    <td class="price">₱<?= number_format($item['price_at_time'], 2) ?></td>
-                    <td class="subtotal">₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></td>
-
-                    <td>
-                      <form method="POST"
-                            action="../../App/Controllers/CartController.php"
-                            class="remove-item-form d-inline">
-                        <input type="hidden" name="action" value="remove">
-                        <input type="hidden" name="item_id" value="<?= $item['item_id'] ?>">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                          <i class="bi bi-trash"></i> Remove
-                        </button>
-                      </form>
-                    </td>
-
-                    <td class="text-center">
-                      <input class="form-check-input select-item"
-                             type="checkbox"
-                             name="item_ids[]"
-                             value="<?= $item['item_id'] ?>">
-                    </td>
-                  </tr>
-                  <?php endforeach; ?>
-
-                  <tr class="fw-bold">
-                    <td colspan="3" class="text-end">Total:</td>
-                    <td class="total text-end">₱0.00</td>
-                    <td colspan="2"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
             <div class="text-end mt-3">
               <button type="submit" id="checkoutBtn" class="btn btn-warning fw-bold" disabled>
                 Proceed to Checkout
               </button>
             </div>
           </form>
+
         <?php endif; ?>
+
       </div>
     </section>
   </main>
 
   <?php include '../partials/footer.php'; ?>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
