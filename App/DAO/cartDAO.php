@@ -104,9 +104,10 @@ class CartDAO {
     public function updateQuantity(int $item_id, int $quantity): bool {
         $stmt = $this->conn->prepare("UPDATE cart_items SET quantity = ? WHERE item_id = ?");
         $stmt->bind_param("ii", $quantity, $item_id);
-        $stmt->execute();
-        return $stmt->affected_rows > 0;
+
+        return $stmt->execute(); // FIXED
     }
+
 
     /**
      * Remove item from cart
@@ -114,8 +115,8 @@ class CartDAO {
     public function removeFromCart(int $item_id): bool {
         $stmt = $this->conn->prepare("DELETE FROM cart_items WHERE item_id = ?");
         $stmt->bind_param("i", $item_id);
-        $stmt->execute();
-        return $stmt->affected_rows > 0;
+
+        return $stmt->execute(); // FIXED
     }
 
     /**
@@ -154,4 +155,22 @@ class CartDAO {
         return $result->fetch_assoc() ?: null;
     }
 
+    public function getCartItemsByIds($cart_id, $item_ids = []) {
+        if (empty($item_ids)) return [];
+
+        $placeholders = implode(',', array_fill(0, count($item_ids), '?'));
+        $types = 'i' . str_repeat('i', count($item_ids)); 
+
+        $stmt = $this->conn->prepare("
+            SELECT ci.item_id, ci.quantity, ci.price_at_time, p.name, p.image, p.size 
+            FROM cart_items ci
+            JOIN products p ON ci.product_id = p.product_id
+            WHERE ci.cart_id = ?
+            AND ci.item_id IN ($placeholders)
+        ");
+
+        $stmt->bind_param($types, $cart_id, ...$item_ids);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }

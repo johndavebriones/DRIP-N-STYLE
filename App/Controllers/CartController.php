@@ -8,8 +8,7 @@ class CartController {
 
     public function __construct() {
         $db = new Database();
-        $conn = $db->connect();
-        $this->cartDAO = new CartDAO($conn);
+        $this->cartDAO = new CartDAO($db->connect());
     }
 
     public function handleRequest() {
@@ -17,95 +16,102 @@ class CartController {
 
         switch ($action) {
             case 'add':
-                $this->addToCart();
+                $this->addToCart(); // AJAX
                 break;
 
             case 'update':
-                $this->updateCart();
+                $this->updateCart(); // Reload page
                 break;
 
             case 'remove':
-                $this->removeFromCart();
+                $this->removeFromCart(); // Reload page
                 break;
 
             default:
-                $this->redirectCart();
+                header("Location: /DRIP-N-STYLE/Public/shop/cart.php");
+                exit;
         }
     }
 
+    // ------------------- ADD TO CART (AJAX) -------------------
     public function addToCart() {
+        header("Content-Type: application/json");
+
         $user_id    = $_SESSION['user_id'] ?? 0;
         $product_id = intval($_POST['product_id'] ?? 0);
         $quantity   = intval($_POST['quantity'] ?? 1);
         $price      = floatval($_POST['price'] ?? 0);
 
         if (!$user_id || $product_id < 1 || $quantity < 1) {
-            echo 'error|Invalid request';
-            return;
+            echo json_encode(["success" => false, "message" => "Invalid request"]);
+            exit;
         }
 
-        // Get product to check stock
         $product = $this->cartDAO->getProduct($product_id);
         if (!$product) {
-            echo 'error|Product not found';
-            return;
+            echo json_encode(["success" => false, "message" => "Product not found"]);
+            exit;
         }
 
         $stock = intval($product['stock']);
         if ($quantity > $stock) {
-            echo 'error|Only ' . $stock . ' items available';
-            return;
+            echo json_encode(["success" => false, "message" => "Only $stock items available"]);
+            exit;
         }
 
         $added = $this->cartDAO->addToCart($user_id, $product_id, $quantity, $price);
 
         if ($added) {
-            echo 'success|Product added to cart';
+            echo json_encode(["success" => true, "message" => "Product added to cart"]);
         } else {
-            echo 'error|Failed to add product';
+            echo json_encode(["success" => false, "message" => "Failed to add product"]);
         }
+        exit;
     }
 
+    // ------------------- UPDATE QUANTITY (Reload) -------------------
     public function updateCart() {
+        header("Content-Type: application/json");
+
         $item_id = intval($_POST['item_id'] ?? 0);
-        $action  = $_POST['quantity_action'] ?? '';
+        $quantity = intval($_POST['quantity'] ?? 0);
+
+        if (!$item_id || $quantity < 1) {
+            echo json_encode(["success" => false, "message" => "Invalid request"]);
+            exit;
+        }
 
         $item = $this->cartDAO->getCartItemById($item_id);
         if (!$item) {
-            echo 'error|Item not found';
-            return;
+            echo json_encode(["success" => false, "message" => "Item not found"]);
+            exit;
         }
 
-        $quantity = intval($item['quantity']);
         $stock = intval($item['stock']);
-
-        if ($action === 'increase') {
-            if ($quantity >= $stock) {
-                echo 'error|Max stock limit reached';
-                return;
-            }
-            $quantity++;
-        } elseif ($action === 'decrease') {
-            $quantity = max(1, $quantity - 1);
+        if ($quantity > $stock) {
+            echo json_encode(["success" => false, "message" => "Only $stock items available"]);
+            exit;
         }
 
-        $this->cartDAO->updateQuantity($item_id, $quantity);
-        echo 'success|Quantity updated';
+        $updated = $this->cartDAO->updateQuantity($item_id, $quantity);
+
+        if ($updated) {
+            echo json_encode(["success" => true, "message" => "Quantity updated", "new_quantity" => $quantity]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Failed to update quantity"]);
+        }
+        exit;
     }
 
+    // ------------------- REMOVE ITEM (Reload) -------------------
     public function removeFromCart() {
         $item_id = intval($_POST['item_id'] ?? 0);
 
-        if (!$item_id) {
-            echo 'error|Invalid item';
-            return;
+        if ($item_id) {
+            $this->cartDAO->removeFromCart($item_id);
+            $_SESSION['flash_message'] = "Item removed from cart.";
         }
 
-        $this->cartDAO->removeFromCart($item_id);
-        echo 'success|Item removed';
-    }
-
-    private function redirectCart() {
         header("Location: /DRIP-N-STYLE/Public/shop/cart.php");
         exit;
     }
@@ -113,6 +119,8 @@ class CartController {
 
 /* MAIN */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller = new CartController();
-    $controller->handleRequest();
+    (new CartController())->handleRequest();
+} else {
+    header("Location: /DRIP-N-STYLE/Public/shop/cart.php");
+    exit;
 }
