@@ -10,31 +10,32 @@ $brandFilter = $_GET['brand'] ?? '';
 $categories = $shop->getCategories();
 $products = $shop->getProducts($search, $category, $sort);
 
-// Group products by name and aggregate sizes/stocks
+// Group products by name and aggregate sizes/colors/stocks
 $groupedProducts = [];
 foreach ($products as $p) {
     $baseName = trim($p['name']);
     
     if (!isset($groupedProducts[$baseName])) {
         $groupedProducts[$baseName] = [
-            'product_id' => $p['product_id'],
             'name' => $baseName,
             'category_name' => $p['category_name'],
-            'price' => $p['price'],
             'image' => $p['image'],
-            'description' => $p['description'] ?? 'No description',
             'date_added' => $p['date_added'],
             'total_stock' => 0,
-            'sizes' => []
+            'variations' => []
         ];
     }
     
-    // Add size variation
+    // Add size-color variation
     $size = $p['size'] ?? 'One Size';
-    $groupedProducts[$baseName]['sizes'][] = [
+    $color = $p['color'] ?? 'Default';
+    
+    $groupedProducts[$baseName]['variations'][] = [
         'product_id' => $p['product_id'],
         'size' => $size,
+        'color' => $color,
         'stock' => $p['stock'] ?? 0,
+        'price' => $p['price'],
         'description' => $p['description'] ?? 'No description'
     ];
     
@@ -75,6 +76,31 @@ if (!empty($_SESSION['order_canceled'])) {
   <link rel="stylesheet" href="../assets/css/footer.css">
   
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .size-color-btn {
+      min-width: 45px;
+      padding: 8px 12px;
+      border: 2px solid #dee2e6;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .size-color-btn:hover:not(:disabled) {
+      border-color: #ffc107;
+      transform: translateY(-2px);
+    }
+    .size-color-btn.active {
+      border-color: #ffc107;
+      background: #ffc107;
+      color: white;
+      font-weight: bold;
+    }
+    .size-color-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+  </style>
 </head>
 <body>
 <div id="page-container">
@@ -127,13 +153,9 @@ if (!empty($_SESSION['order_canceled'])) {
           ?>
               <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <div class="card product-card h-100 product-clickable"
-                    data-id="<?= $product['product_id'] ?>"
                     data-name="<?= htmlspecialchars($product['name']) ?>"
                     data-category="<?= htmlspecialchars($product['category_name']) ?>"
-                    data-price="<?= $product['price'] ?>"
-                    data-stock="<?= $product['total_stock'] ?>"
-                    data-description="<?= htmlspecialchars($product['description']) ?>"
-                    data-sizes='<?= json_encode($product['sizes']) ?>'
+                    data-variations='<?= json_encode($product['variations']) ?>'
                     data-image="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>">
 
                   <?php if($isNew): ?>
@@ -154,7 +176,6 @@ if (!empty($_SESSION['order_canceled'])) {
                   <div class="card-body d-flex flex-column">
                       <h6 class="card-title fw-bold"><?= htmlspecialchars($product['name']); ?></h6>
                       <p class="text-muted small mb-1"><?= htmlspecialchars($product['category_name']); ?></p>
-                      <p class="price-tag mb-2 text-warning fw-bold">₱<?= number_format($product['price'], 2); ?></p>
                       <p class="text-muted small mb-3">Stock: <?= $product['total_stock'] ?></p>
                   </div>
                 </div>
@@ -177,8 +198,8 @@ if (!empty($_SESSION['order_canceled'])) {
 <!-- Product Detail Modal -->
 <div class="modal fade" id="productDetailModal" data-loggedin="<?= isset($_SESSION['user_id']) ? 1 : 0 ?>" tabindex="-1" aria-labelledby="productDetailLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content rounded-5 shadow-xl border-0">
-      <div class="modal-header border-0 bg-gradient-warning text-dark py-3 px-4 rounded-top-5">
+    <div class="modal-content rounded-4 shadow-xl border-0">
+      <div class="modal-header border-0 bg-gradient-warning text-dark py-3 px-4 rounded-top-4">
         <h5 class="modal-title fw-bold" id="productDetailLabel">Product Details</h5>
         <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal"></button>
       </div>
@@ -186,18 +207,24 @@ if (!empty($_SESSION['order_canceled'])) {
         <div class="row g-4">
           <div class="col-md-6 text-center">
             <div class="overflow-hidden rounded-4 shadow-sm mb-3">
-              <img id="detailImage" src="" alt="" class="img-fluid transition hover-scale" style="max-height: 350px; width: 100%;">
+              <img id="detailImage" src="" alt="" class="img-fluid transition hover-scale" style="max-height: 350px; width: 100%; object-fit: cover;">
             </div>
           </div>
           <div class="col-md-6 d-flex flex-column justify-content-between">
             <div>
               <h4 id="detailName" class="fw-bold mb-2 text-dark"></h4>
-              <p class="text-muted small mb-2" id="detailCategory"></p>
+              <p class="text-muted small mb-3" id="detailCategory"></p>
               
               <!-- Size Selector -->
               <div class="mb-3">
                 <label class="form-label fw-bold small">Select Size:</label>
                 <div id="sizeSelector" class="d-flex flex-wrap gap-2"></div>
+              </div>
+              
+              <!-- Color Selector -->
+              <div class="mb-3">
+                <label class="form-label fw-bold small">Select Color:</label>
+                <div id="colorSelector" class="d-flex flex-wrap gap-2 align-items-center"></div>
               </div>
               
               <h5 class="text-warning fw-bold mb-3" id="detailPrice"></h5>
@@ -218,6 +245,6 @@ if (!empty($_SESSION['order_canceled'])) {
 </div>
 
 <script src="../assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/shop.js?v=4"></script>
+<script src="assets/js/shop.js?v=5"></script>
 </body>
 </html>

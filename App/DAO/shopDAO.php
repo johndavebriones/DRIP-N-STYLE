@@ -20,21 +20,21 @@ class ShopDAO {
 
     // Fetch products with optional search, category, and sorting
     public function fetchProducts($search = '', $category = '', $sort = 'newest') {
-    $sql = "SELECT 
-                p.product_id, 
-                p.name, 
-                p.price, 
-                p.image, 
-                p.stock, 
-                p.status, 
-                p.date_added, 
-                p.size,          -- add this
-                p.description,   -- add this
-                c.category_name
-            FROM products p
-            LEFT JOIN categories c ON p.category_id = c.category_id
-            WHERE p.deleted_at IS NULL";
-
+        $sql = "SELECT 
+                    p.product_id, 
+                    p.name, 
+                    p.price, 
+                    p.image, 
+                    p.stock, 
+                    p.status, 
+                    p.date_added, 
+                    p.size,
+                    p.color,
+                    p.description,
+                    c.category_name
+                FROM products p
+                LEFT JOIN categories c ON p.category_id = c.category_id
+                WHERE p.deleted_at IS NULL";
 
         $params = [];
         $types = '';
@@ -76,5 +76,4 @@ class ShopDAO {
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-
 }
