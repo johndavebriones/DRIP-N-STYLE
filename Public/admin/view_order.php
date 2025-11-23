@@ -1,155 +1,277 @@
 <?php
-require_once __DIR__ . '/../../App/Config/database_connect.php';
+require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
+SessionHelper::requireAdminLogin();
+SessionHelper::preventCache();
+
 require_once __DIR__ . '/../../App/Controllers/OrderController.php';
+require_once __DIR__ . '/../../App/Config/database_connect.php';
 
-if (!isset($_GET['order_id'])) die("No order ID provided.");
-
-$order_id = intval($_GET['order_id']);
 $db = new Database();
 $conn = $db->connect();
-$orderController = new OrderController($conn);
+$orderController = new OrderDAO($conn);
+
+$order_id = $_GET['order_id'] ?? null;
+
+if (!$order_id) {
+    header('Location: orders.php');
+    exit;
+}
 
 $order = $orderController->getOrderById($order_id);
-$orderItems = $orderController->getOrderItems($order_id);
+$items = $orderController->getOrderItems($order_id);
 
-if (!$order) die("Order not found.");
+if (!$order) {
+    header('Location: orders.php');
+    exit;
+}
 
-$swal = null;
-
+// Handle status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     $newOrderStatus = $_POST['order_status'] ?? null;
     $newPaymentStatus = $_POST['payment_status'] ?? null;
-
+    
     $result = $orderController->updateOrderAndPaymentStatus($order_id, $newOrderStatus, $newPaymentStatus);
-
+    
     if ($result['success']) {
-        $swal = [
-            'icon' => 'success',
-            'title' => 'Updated',
-            'text' => $result['message']
-        ];
+        $_SESSION['success_message'] = $result['message'];
+        if (isset($result['stock_reduced']) && $result['stock_reduced']) {
+            $_SESSION['success_message'] .= ' Stock has been reduced for all items.';
+        }
+        header('Location: view_order.php?order_id=' . $order_id);
+        exit;
     } else {
-        $swal = [
-            'icon' => 'error',
-            'title' => 'Error',
-            'text' => $result['message']
-        ];
+        $_SESSION['error_message'] = $result['message'];
     }
-
-    // reload order data after update
-    $order = $orderController->getOrderById($order_id);
-    $orderItems = $orderController->getOrderItems($order_id);
 }
+
+$title = "Order #" . $order_id;
+ob_start();
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Order #<?= htmlspecialchars($order_id) ?> | Drip N' Style Admin</title>
-    <link href="../assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="assets/css/view_order.css">
-</head>
-<body>
-<div class="container my-5">
 
+<style>
+.page-fade {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.order-detail-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.status-badge-large {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+.product-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #ffc107;
+}
+
+.product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+</style>
+
+<div class="page-fade">
     <!-- Back Button -->
-    <a href="orders.php" class="btn btn-outline-dark mb-3">
-        <i class="bi bi-arrow-left"></i> Back to Orders
-    </a>
-
-    <!-- Header -->
-    <div class="order-header mb-4 shadow-sm">
-        <h2 class="fw-bold mb-0"><i class="bi bi-receipt me-2"></i>Order #<?= htmlspecialchars($order_id) ?></h2>
-        <p class="mb-0">Placed on <?= date("F d, Y", strtotime($order["order_date"])) ?></p>
+    <div class="mb-4">
+        <a href="orders.php" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Orders
+        </a>
     </div>
 
-    <!-- Order Summary -->
-    <div class="card shadow-sm mb-4 border-0">
-        <div class="card-header bg-gradient-warning text-dark fw-bold">
-            <h5 class="mb-0"><i class="bi bi-card-list me-2"></i>Order Summary</h5>
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i><?= $_SESSION['success_message'] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <p class="mb-2"><i class="bi bi-currency-dollar me-1"></i><strong>Total Amount:</strong> ₱<?= number_format($order["total_amount"], 2) ?></p>
-                    <p class="mb-2"><i class="bi bi-calendar-event me-1"></i><strong>Order Date:</strong> <?= date("F d, Y", strtotime($order["order_date"])) ?></p>
-                    <p class="mb-2"><i class="bi bi-clock-history me-1"></i><strong>Pickup Date:</strong> <?= htmlspecialchars($order["pickup_date"] ?? "Not set") ?></p>
-                </div>
-                <div class="col-md-6">
-                    <form method="post" class="mb-3">
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <label class="fw-bold">Order Status:</label>
-                                <select name="order_status" class="form-select">
-                                    <?php
-                                    $statuses = ['Pending','Ready for Pickup','Completed','Cancelled'];
-                                    foreach ($statuses as $status):
-                                        $selected = ($order['order_status'] === $status) ? 'selected' : '';
-                                    ?>
-                                    <option value="<?= $status ?>" <?= $selected ?>><?= $status ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="fw-bold">Payment Status:</label>
-                                <select name="payment_status" class="form-select">
-                                    <?php
-                                    $paymentStatuses = ['Pending','Paid','Failed'];
-                                    foreach($paymentStatuses as $pStatus):
-                                        $selected = ($order['payment_status'] === $pStatus) ? 'selected' : '';
-                                    ?>
-                                    <option value="<?= $pStatus ?>" <?= $selected ?>><?= $pStatus ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" name="update_status" class="btn btn-warning mt-2 update-status-btn">
-                            <i class="bi bi-arrow-repeat me-1"></i> Update Status
-                        </button>
-                    </form>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
 
-                    <p class="mb-1"><i class="bi bi-credit-card me-1"></i><strong>Payment Method:</strong> <?= htmlspecialchars($order["payment_method"] ?? "N/A") ?></p>
-                </div>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle me-2"></i><?= $_SESSION['error_message'] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
+
+    <!-- Order Header -->
+    <div class="order-detail-card">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h2 class="fw-bold mb-2">Order #<?= htmlspecialchars($order['order_id']) ?></h2>
+                <p class="text-muted mb-0">
+                    <i class="bi bi-calendar me-2"></i>
+                    <?= date('F d, Y - g:i A', strtotime($order['order_date'])) ?>
+                </p>
+            </div>
+            <div class="text-end">
+                <h3 class="text-success fw-bold mb-0">₱<?= number_format($order['total_amount'], 2) ?></h3>
+                <small class="text-muted">Total Amount</small>
+            </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5 class="fw-bold mb-3">Customer Information</h5>
+                <p class="mb-2"><strong>Name:</strong> <?= htmlspecialchars($order['customer_name'] ?? 'N/A') ?></p>
+                <p class="mb-2"><strong>Email:</strong> <?= htmlspecialchars($order['customer_email'] ?? 'N/A') ?></p>
+                <p class="mb-2"><strong>Contact:</strong> <?= htmlspecialchars($order['customer_contact'] ?? 'N/A') ?></p>
+            </div>
+            <div class="col-md-6">
+                <h5 class="fw-bold mb-3">Order Details</h5>
+                <p class="mb-2"><strong>Pickup Date:</strong> <?= htmlspecialchars($order['pickup_date'] ?? 'Not set') ?></p>
+                <p class="mb-2"><strong>Payment Method:</strong> <?= htmlspecialchars($order['payment_method'] ?? 'N/A') ?></p>
+                <p class="mb-2">
+                    <strong>Payment Status:</strong>
+                    <span class="badge bg-<?= $order['payment_status'] === 'Paid' ? 'success' : ($order['payment_status'] === 'Failed' ? 'danger' : 'warning') ?>">
+                        <?= htmlspecialchars($order['payment_status']) ?>
+                    </span>
+                </p>
+                <p class="mb-2">
+                    <strong>Order Status:</strong>
+                    <span class="badge bg-<?php
+                        echo match($order['order_status']) {
+                            'Pending' => 'warning text-dark',
+                            'Confirmed' => 'info text-dark',
+                            'Ready for Pickup' => 'primary',
+                            'Completed' => 'success',
+                            'Cancelled' => 'danger',
+                            default => 'secondary'
+                        };
+                    ?>">
+                        <?= htmlspecialchars($order['order_status']) ?>
+                    </span>
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Order Items -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="fw-bold mb-3">Items</h5>
-            <?php foreach ($orderItems as $item): ?>
-                <div class="order-item">
-                    <h6 class="fw-bold"><?= htmlspecialchars($item['product_name']) ?></h6>
-                    <p class="mb-1"><strong>Description:</strong> <?= htmlspecialchars($item['description'] ?? 'No description') ?></p>
-                    <p class="mb-1"><strong>Size:</strong> <?= htmlspecialchars($item['size'] ?? 'N/A') ?></p>
-                    <p class="mb-1">
-                        <strong>Quantity:</strong> <?= (int)$item['quantity'] ?> | 
-                        <strong>Price:</strong> ₱<?= number_format($item['price'], 2) ?> | 
-                        <strong>Subtotal:</strong> ₱<?= number_format($item['price'] * $item['quantity'], 2) ?>
-                    </p>
+    <div class="order-detail-card">
+        <h5 class="fw-bold mb-3">Order Items</h5>
+        <?php foreach ($items as $item): ?>
+            <div class="product-item">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <?php if (!empty($item['image'])): ?>
+                            <img src="../../Public/<?= htmlspecialchars($item['image']) ?>" 
+                                 alt="<?= htmlspecialchars($item['product_name']) ?>"
+                                 class="product-image">
+                        <?php else: ?>
+                            <div class="product-image bg-secondary d-flex align-items-center justify-content-center">
+                                <i class="bi bi-image text-white"></i>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="col">
+                        <h6 class="fw-bold mb-1"><?= htmlspecialchars($item['product_name']) ?></h6>
+                        <p class="text-muted small mb-1">
+                            <strong>Size:</strong> <?= htmlspecialchars($item['size'] ?? 'N/A') ?>
+                            <?php if (!empty($item['color'])): ?>
+                                | <strong>Color:</strong> <?= htmlspecialchars($item['color']) ?>
+                            <?php endif; ?>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Quantity:</strong> <?= (int)$item['quantity'] ?> × 
+                            <strong>₱<?= number_format($item['price'], 2) ?></strong>
+                        </p>
+                    </div>
+                    <div class="col-auto text-end">
+                        <h5 class="text-success fw-bold mb-0">
+                            ₱<?= number_format($item['price'] * $item['quantity'], 2) ?>
+                        </h5>
+                    </div>
                 </div>
-            <?php endforeach; ?>
-        </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 
+    <!-- Update Status Form -->
+    <div class="order-detail-card">
+        <h5 class="fw-bold mb-3">Update Order Status</h5>
+        <form method="POST" id="updateStatusForm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Order Status</label>
+                    <select name="order_status" class="form-select" required>
+                        <option value="Pending" <?= $order['order_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                        <option value="Confirmed" <?= $order['order_status'] === 'Confirmed' ? 'selected' : '' ?>>Confirmed</option>
+                        <option value="Ready for Pickup" <?= $order['order_status'] === 'Ready for Pickup' ? 'selected' : '' ?>>Ready for Pickup</option>
+                        <option value="Completed" <?= $order['order_status'] === 'Completed' ? 'selected' : '' ?>>Completed</option>
+                        <option value="Cancelled" <?= $order['order_status'] === 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Payment Status</label>
+                    <select name="payment_status" class="form-select" required>
+                        <option value="Pending" <?= $order['payment_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                        <option value="Paid" <?= $order['payment_status'] === 'Paid' ? 'selected' : '' ?>>Paid</option>
+                        <option value="Failed" <?= $order['payment_status'] === 'Failed' ? 'selected' : '' ?>>Failed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Stock Management Rules:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Setting Order Status to <strong>"Completed"</strong> and Payment Status to <strong>"Paid"</strong> will <strong>reduce stock</strong> for all items in this order.</li>
+                    <li>Setting Order Status to <strong>"Cancelled"</strong> will automatically set Payment Status to <strong>"Failed"</strong>.</li>
+                    <li><strong>Cancelled orders do NOT increase stock</strong> - items remain as-is.</li>
+                </ul>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" name="update_status" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-2"></i>Update Status
+                </button>
+                <a href="orders.php" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-const swalData = <?= json_encode($swal) ?>;
-if (swalData) {
-    Swal.fire({
-        icon: swalData.icon,
-        title: swalData.title,
-        text: swalData.text,
-        confirmButtonColor: '#3085d6'
-    });
-}
+// Confirmation before updating to Completed + Paid
+document.getElementById('updateStatusForm').addEventListener('submit', function(e) {
+    const orderStatus = document.querySelector('select[name="order_status"]').value;
+    const paymentStatus = document.querySelector('select[name="payment_status"]').value;
+    
+    if (orderStatus === 'Completed' && paymentStatus === 'Paid') {
+        if (!confirm('This will mark the order as Completed and reduce stock for all items. Continue?')) {
+            e.preventDefault();
+        }
+    }
+    
+    if (orderStatus === 'Cancelled') {
+        if (!confirm('This will cancel the order and mark payment as Failed. Stock will NOT be restored. Continue?')) {
+            e.preventDefault();
+        }
+    }
+});
 </script>
 
-<script src="../assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/view_order.js"></script>
-</body>
-</html>
+<?php
+$content = ob_get_clean();
+include __DIR__ . '/layout/main.php';
+?>

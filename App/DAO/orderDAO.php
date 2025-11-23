@@ -7,10 +7,9 @@ class OrderDAO {
     private $productDAO;
 
     public function __construct($conn) {
-    $this->conn = $conn;
-    $this->productDAO = new ProductDAO($conn); // pass the same connection
+        $this->conn = $conn;
+        $this->productDAO = new ProductDAO($conn);
     }
-
 
     /*-----------------------------------------------------------
         CREATE ORDER
@@ -121,6 +120,7 @@ class OrderDAO {
                 p.name AS product_name,
                 p.image,
                 p.size,
+                p.color,
                 p.description,
                 oi.price,
                 oi.quantity
@@ -141,10 +141,13 @@ class OrderDAO {
             SELECT 
                 o.*, 
                 u.name AS customer_name,
+                u.email AS customer_email,
+                u.contact AS customer_contact,
                 p.payment_method,
                 p.payment_status,
                 p.payment_id,
-                p.amount
+                p.amount,
+                p.proof_image
             FROM orders o
             LEFT JOIN users u ON o.user_id = u.user_id
             LEFT JOIN payments p ON o.payment_id = p.payment_id
@@ -157,34 +160,40 @@ class OrderDAO {
     }
 
     /*-----------------------------------------------------------
-        UPDATE ORDER + PAYMENT STATUS
+        UPDATE ORDER + PAYMENT STATUS (WITH STOCK MANAGEMENT)
     ------------------------------------------------------------*/
     public function updateOrderAndPaymentStatus($order_id, $newOrderStatus = null, $newPaymentStatus = null) {
+        // Get current order details
         $order = $this->getOrderById($order_id);
-        if (!$order) return ['success' => false, 'message' => 'Order not found.'];
+        if (!$order) {
+            return ['success' => false, 'message' => 'Order not found.'];
+        }
 
-        $currentPaymentStatus = $order['payment_status'] ?? null;
         $currentOrderStatus = $order['order_status'] ?? null;
+        $currentPaymentStatus = $order['payment_status'] ?? null;
 
-        // Normalize empty strings -> null for easier checks
+        // Normalize empty strings to null
         $newOrderStatus = (isset($newOrderStatus) && $newOrderStatus !== '') ? $newOrderStatus : null;
         $newPaymentStatus = (isset($newPaymentStatus) && $newPaymentStatus !== '') ? $newPaymentStatus : null;
 
         // Apply sync rules
-        if ($newOrderStatus === 'Cancelled') $newPaymentStatus = 'Failed';
-        if ($newPaymentStatus === 'Failed') $newOrderStatus = 'Cancelled';
+        if ($newOrderStatus === 'Cancelled') {
+            $newPaymentStatus = 'Failed';
+        }
+        if ($newPaymentStatus === 'Failed') {
+            $newOrderStatus = 'Cancelled';
+        }
 
-        // Determine what the final statuses will be (after update)
+        // Determine final statuses
         $finalOrderStatus = $newOrderStatus !== null ? $newOrderStatus : $currentOrderStatus;
         $finalPaymentStatus = $newPaymentStatus !== null ? $newPaymentStatus : $currentPaymentStatus;
 
-        // Prevent Completed if payment is Pending
+        // Validation: Cannot complete order if payment is pending
         if ($finalOrderStatus === 'Completed' && ($finalPaymentStatus === 'Pending' || $finalPaymentStatus === null)) {
             return ['success' => false, 'message' => 'Cannot complete order while payment is pending.'];
         }
 
-        // Begin updates (payment then order)
-        // Update payment if needed
+        // Update payment status if needed
         if (!empty($order['payment_id']) && $newPaymentStatus !== null) {
             $stmt = $this->conn->prepare("UPDATE payments SET payment_status = ? WHERE payment_id = ?");
             $stmt->bind_param("si", $newPaymentStatus, $order['payment_id']);
@@ -193,7 +202,7 @@ class OrderDAO {
             }
         }
 
-        // Update order if needed
+        // Update order status if needed
         if ($newOrderStatus !== null) {
             $stmt2 = $this->conn->prepare("UPDATE orders SET order_status = ? WHERE order_id = ?");
             $stmt2->bind_param("si", $newOrderStatus, $order_id);
@@ -202,34 +211,56 @@ class OrderDAO {
             }
         }
 
-        // Recompute final statuses in case DB/other logic changed them
-        $finalOrderStatus = $newOrderStatus !== null ? $newOrderStatus : $currentOrderStatus;
-        $finalPaymentStatus = $newPaymentStatus !== null ? $newPaymentStatus : $currentPaymentStatus;
+        // ============================================================
+        // STOCK MANAGEMENT LOGIC
+        // ============================================================
+        
+        // Check if order just became Completed AND payment is Paid
+        $orderBecameCompleted = ($finalOrderStatus === 'Completed' && $currentOrderStatus !== 'Completed');
+        $paymentIsPaid = ($finalPaymentStatus === 'Paid');
 
-        // If order just became Completed and payment is Paid -> reduce stock
-        if ($finalOrderStatus === 'Completed' && $finalPaymentStatus === 'Paid') {
+        if ($orderBecameCompleted && $paymentIsPaid) {
+            // Reduce stock for ALL items in this order
             $items = $this->getOrderItems($order_id);
-            foreach ($items as $item) {
-                $res = $this->productDAO->reduceStock($item['product_id'], (int)$item['quantity']);
-                if (!$res['success']) {
-                    // Log or handle partial failures — but continue to attempt other items
-                    // For now, return failure
-                    return ['success' => false, 'message' => 'Failed reducing stock for product ' . $item['product_id'] . ': ' . ($res['error'] ?? '')];
-                }
+            
+            if (empty($items)) {
+                return ['success' => false, 'message' => 'No items found in this order.'];
             }
+
+            error_log("Order #{$order_id} completed - Reducing stock for " . count($items) . " items");
+
+            foreach ($items as $item) {
+                $productId = $item['product_id'];
+                $quantity = (int)$item['quantity'];
+                
+                error_log("  - Product #{$productId}: Reducing {$quantity} units");
+                
+                $res = $this->productDAO->reduceStock($productId, $quantity);
+                
+                if (!$res['success']) {
+                    error_log("  - ERROR: Failed to reduce stock for product #{$productId}");
+                    return [
+                        'success' => false, 
+                        'message' => 'Failed reducing stock for ' . $item['product_name'] . ': ' . ($res['error'] ?? 'Unknown error')
+                    ];
+                }
+                
+                error_log("  - SUCCESS: Stock reduced for product #{$productId}");
+            }
+
+            error_log("Order #{$order_id}: All stocks reduced successfully");
         }
 
-        // If order has become Cancelled (and wasn’t Cancelled before) -> restore stock
-        if ($finalOrderStatus === 'Cancelled' && $currentOrderStatus !== 'Cancelled') {
-            $items = $this->getOrderItems($order_id);
-            foreach ($items as $item) {
-                $res = $this->productDAO->increaseStock($item['product_id'], (int)$item['quantity']);
-                if (!$res['success']) {
-                    return ['success' => false, 'message' => 'Failed restoring stock for product ' . $item['product_id'] . ': ' . ($res['error'] ?? '')];
-                }
-            }
+        // NOTE: When order is Cancelled, we DO NOT increase stock
+        // Stock remains as-is (business requirement)
+        if ($finalOrderStatus === 'Cancelled') {
+            error_log("Order #{$order_id} cancelled - Stock will NOT be increased (as per requirement)");
         }
 
-        return ['success' => true, 'message' => 'Order and payment statuses updated successfully.'];
+        return [
+            'success' => true, 
+            'message' => 'Order and payment statuses updated successfully.',
+            'stock_reduced' => ($orderBecameCompleted && $paymentIsPaid)
+        ];
     }
 }

@@ -98,7 +98,7 @@ class ProductDAO {
         return $stmt->execute();
     }
 
-    // Update product - SIMPLIFIED (NO IMAGE UPDATE)
+    // Update product (WITHOUT image field)
     public function updateProduct($data) {
         $status = $data['stock'] <= 0 ? 'Out of Stock' : 'Available';
 
@@ -222,58 +222,57 @@ class ProductDAO {
         return $result['count'] > 0;
     }
 
-    // Reduce stock and auto-update status if needed
+    /*-----------------------------------------------------------
+        REDUCE STOCK (For Completed Orders)
+    ------------------------------------------------------------*/
     public function reduceStock($productId, $quantity) {
+        // First, get current stock
+        $stmt = $this->conn->prepare("SELECT stock, name FROM products WHERE product_id = ?");
+        $stmt->bind_param("i", $productId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        
+        if (!$result) {
+            error_log("reduceStock: Product #{$productId} not found");
+            return ['success' => false, 'error' => 'Product not found'];
+        }
+
+        $currentStock = (int)$result['stock'];
+        $productName = $result['name'];
+        
+        error_log("reduceStock: Product #{$productId} ({$productName}) - Current: {$currentStock}, Reducing: {$quantity}");
+
+        // Reduce stock (but not below 0)
         $stmt = $this->conn->prepare("
             UPDATE products 
             SET stock = GREATEST(stock - ?, 0)
             WHERE product_id = ?
         ");
         $stmt->bind_param("ii", $quantity, $productId);
+        
         if (!$stmt->execute()) {
+            error_log("reduceStock: SQL Error - " . $stmt->error);
             return ['success' => false, 'error' => $stmt->error];
         }
 
+        // Get updated stock
         $stmtCheck = $this->conn->prepare("SELECT stock FROM products WHERE product_id = ?");
         $stmtCheck->bind_param("i", $productId);
         $stmtCheck->execute();
         $stockRow = $stmtCheck->get_result()->fetch_assoc();
-        $stock = $stockRow['stock'] ?? 0;
+        $newStock = $stockRow['stock'] ?? 0;
 
-        if ($stock <= 0) {
+        error_log("reduceStock: Product #{$productId} - New stock: {$newStock}");
+
+        // Auto-update status to 'Out of Stock' if stock reaches 0
+        if ($newStock <= 0) {
             $stmtStatus = $this->conn->prepare("UPDATE products SET status = 'Out of Stock' WHERE product_id = ?");
             $stmtStatus->bind_param("i", $productId);
             $stmtStatus->execute();
+            error_log("reduceStock: Product #{$productId} status updated to 'Out of Stock'");
         }
 
-        return ['success' => true];
-    }
-
-    // Increase stock and update status if needed
-    public function increaseStock($productId, $quantity) {
-        $stmt = $this->conn->prepare("
-            UPDATE products 
-            SET stock = stock + ?
-            WHERE product_id = ?
-        ");
-        $stmt->bind_param("ii", $quantity, $productId);
-        if (!$stmt->execute()) {
-            return ['success' => false, 'error' => $stmt->error];
-        }
-
-        $stmtCheck = $this->conn->prepare("SELECT stock FROM products WHERE product_id = ?");
-        $stmtCheck->bind_param("i", $productId);
-        $stmtCheck->execute();
-        $stockRow = $stmtCheck->get_result()->fetch_assoc();
-        $stock = $stockRow['stock'] ?? 0;
-
-        if ($stock > 0) {
-            $stmtStatus = $this->conn->prepare("UPDATE products SET status = 'Available' WHERE product_id = ?");
-            $stmtStatus->bind_param("i", $productId);
-            $stmtStatus->execute();
-        }
-
-        return ['success' => true];
+        return ['success' => true, 'new_stock' => $newStock];
     }
 
     // Restore soft-deleted product
