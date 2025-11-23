@@ -75,21 +75,8 @@ switch ($action) {
     case 'edit':
         error_log("EDIT PRODUCT: Processing...");
         
-        // For EDIT mode, ONLY use the image path from POST parameter
-        // DO NOT process file uploads in edit mode
-        $imagePath = $_POST['image'] ?? '';
-        
-        if (empty($imagePath)) {
-            error_log("EDIT ERROR: No image path received in POST data!");
-            echo json_encode([
-                'success' => false, 
-                'message' => 'Image path missing. Please try again.'
-            ]);
-            exit;
-        }
-        
-        error_log("EDIT: Image path received - " . $imagePath);
-
+        // For EDIT mode, do NOT include image in the update
+        // The image should remain the same for all variations in the group
         $stock = intval($_POST['stock']);
         $status = $stock > 0 ? 'Available' : 'Out of Stock';
 
@@ -101,12 +88,11 @@ switch ($action) {
             'size' => $_POST['size'],
             'color' => $_POST['color'] ?? '',
             'description' => $_POST['description'] ?? '',
-            'image' => $imagePath,  // Keep existing image from the group
             'stock' => $stock,
             'status' => $status
         ];
 
-        error_log("EDIT: Final data - " . json_encode($data));
+        error_log("EDIT: Final data (without image) - " . json_encode($data));
 
         $result = $productController->updateProduct($data);
         error_log("EDIT: Result - " . json_encode($result));
@@ -183,7 +169,7 @@ switch ($action) {
         if ($product) {
             $product['description'] = $product['description'] ?? '';
             $product['color'] = $product['color'] ?? '';
-            error_log("GET BY ID: Success - Image: " . $product['image']);
+            error_log("GET BY ID: Success - Image: " . ($product['image'] ?? 'none'));
             echo json_encode(['success' => true, 'product' => $product]);
         } else {
             error_log("GET BY ID ERROR: Product not found");
