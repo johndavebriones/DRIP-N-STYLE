@@ -155,7 +155,7 @@ if (!empty($_SESSION['order_canceled'])) {
                       <h6 class="card-title fw-bold"><?= htmlspecialchars($product['name']); ?></h6>
                       <p class="text-muted small mb-1"><?= htmlspecialchars($product['category_name']); ?></p>
                       <p class="price-tag mb-2 text-warning fw-bold">₱<?= number_format($product['price'], 2); ?></p>
-                      <p class="text-muted small mb-3">Total Stock: <?= $product['total_stock'] ?></p>
+                      <p class="text-muted small mb-3">Stock: <?= $product['total_stock'] ?></p>
                   </div>
                 </div>
               </div>
