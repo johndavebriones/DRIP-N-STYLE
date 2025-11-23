@@ -43,17 +43,19 @@ class ProductDAO {
             $types .= 's';
         }
 
+        $query .= " ORDER BY p.name ASC, p.date_added DESC";
+
         $stmt = $this->conn->prepare($query);
         if ($params) $stmt->bind_param($types, ...$params);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    //Get single product by ID
+    // Get single product by ID
     public function getProductById($id) {
         $stmt = $this->conn->prepare("
             SELECT 
-                p.product_id, p.name, p.price, p.size, p.stock, 
+                p.product_id, p.name, p.price, p.size, p.color, p.stock, 
                 p.status, p.category_id, p.image, p.description, 
                 c.category_name 
             FROM products p 
@@ -67,8 +69,8 @@ class ProductDAO {
         $result = $stmt->get_result();
         
         if ($result && $row = $result->fetch_assoc()) {
-            // Ensure description is never null
             $row['description'] = $row['description'] ?? '';
+            $row['color'] = $row['color'] ?? '';
             return $row;
         }
 
@@ -78,16 +80,17 @@ class ProductDAO {
     // Add product
     public function addProduct($data) {
         $stmt = $this->conn->prepare("
-            INSERT INTO products (name, description, price, category_id, size, image, stock, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO products (name, description, price, category_id, size, color, image, stock, status, date_added)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->bind_param(
-            "ssdissis",
+            "ssdisssis",
             $data['name'],
             $data['description'],
             $data['price'],
             $data['category_id'],
             $data['size'],
+            $data['color'],
             $data['image'],
             $data['stock'],
             $data['status']
@@ -95,51 +98,31 @@ class ProductDAO {
         return $stmt->execute();
     }
 
-    // Update product
+    // Update product - SIMPLIFIED (NO IMAGE UPDATE)
     public function updateProduct($data) {
-    // Determine status automatically based on stock
         $status = $data['stock'] <= 0 ? 'Out of Stock' : 'Available';
 
-        if (!empty($data['image'])) {
-            $stmt = $this->conn->prepare("
-                UPDATE products 
-                SET name=?, description=?, price=?, category_id=?, size=?, image=?, stock=?, status=? 
-                WHERE product_id=?
-            ");
-            $stmt->bind_param(
-                "ssdissisi",
-                $data['name'],
-                $data['description'],
-                $data['price'],
-                $data['category_id'],
-                $data['size'],
-                $data['image'],
-                $data['stock'],
-                $status,
-                $data['product_id']
-            );
-        } else {
-            $stmt = $this->conn->prepare("
-                UPDATE products 
-                SET name=?, description=?, price=?, category_id=?, size=?, stock=?, status=? 
-                WHERE product_id=?
-            ");
-            $stmt->bind_param(
-                "ssdissi",
-                $data['name'],
-                $data['description'],
-                $data['price'],
-                $data['category_id'],
-                $data['size'],
-                $data['stock'],
-                $status,
-                $data['product_id']
-            );
-        }
+        // Update WITHOUT touching the image field
+        $stmt = $this->conn->prepare("
+            UPDATE products 
+            SET name=?, description=?, price=?, category_id=?, size=?, color=?, stock=?, status=? 
+            WHERE product_id=?
+        ");
+        $stmt->bind_param(
+            "ssdissisi",
+            $data['name'],
+            $data['description'],
+            $data['price'],
+            $data['category_id'],
+            $data['size'],
+            $data['color'],
+            $data['stock'],
+            $status,
+            $data['product_id']
+        );
 
         return $stmt->execute();
     }
-
 
     // Soft delete
     public function softDelete($id) {
@@ -180,14 +163,18 @@ class ProductDAO {
             FROM products 
             WHERE name = ? 
               AND category_id = ? 
+              AND price = ?
               AND size = ? 
+              AND color = ?
               AND deleted_at IS NULL
         ");
         $stmt->bind_param(
-            "sis",
+            "sidss",
             $data['name'],
             $data['category_id'],
-            $data['size']
+            $data['price'],
+            $data['size'],
+            $data['color']
         );
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
@@ -201,15 +188,19 @@ class ProductDAO {
             FROM products 
             WHERE name = ? 
               AND category_id = ? 
+              AND price = ?
               AND size = ? 
+              AND color = ?
               AND product_id != ? 
               AND deleted_at IS NULL
         ");
         $stmt->bind_param(
-            "sisi",
+            "sidssi",
             $data['name'],
             $data['category_id'],
+            $data['price'],
             $data['size'],
+            $data['color'],
             $product_id
         );
         $stmt->execute();
@@ -243,7 +234,6 @@ class ProductDAO {
             return ['success' => false, 'error' => $stmt->error];
         }
 
-        // If stock reached 0 update status
         $stmtCheck = $this->conn->prepare("SELECT stock FROM products WHERE product_id = ?");
         $stmtCheck->bind_param("i", $productId);
         $stmtCheck->execute();
@@ -271,7 +261,6 @@ class ProductDAO {
             return ['success' => false, 'error' => $stmt->error];
         }
 
-        // If stock > 0 set status to Available
         $stmtCheck = $this->conn->prepare("SELECT stock FROM products WHERE product_id = ?");
         $stmtCheck->bind_param("i", $productId);
         $stmtCheck->execute();
@@ -297,5 +286,4 @@ class ProductDAO {
         $stmt->bind_param('i', $id);
         return $stmt->execute();
     }
-
 }

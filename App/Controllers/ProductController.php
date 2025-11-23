@@ -21,10 +21,11 @@ class ProductController {
     }
 
     public function addProduct($data) {
+        // Check for duplicate: name + category + price + size + color
         if ($this->productDAO->checkDuplicateProduct($data)) {
             return [
                 'success' => false,
-                'message' => 'A product with the same name, category, and size already exists!'
+                'message' => 'A product variant with the same name, category, price, size, and color already exists!'
             ];
         }
 
@@ -41,10 +42,11 @@ class ProductController {
             return ['success' => false, 'message' => 'Product ID is missing'];
         }
 
+        // Check for duplicate: name + category + price + size + color (excluding current product)
         if ($this->productDAO->checkDuplicateProductForUpdate($data, $product_id)) {
             return [
                 'success' => false,
-                'message' => 'Another product with the same name, category, and size already exists!'
+                'message' => 'Another product variant with the same name, category, price, size, and color already exists!'
             ];
         }
 
@@ -60,12 +62,19 @@ class ProductController {
     }
 
     public function softDelete($productId) {
+        // Check if product has active orders before deleting
         if ($this->productDAO->hasActiveOrders($productId)) {
-            return ['success' => false, 'message' => 'Cannot delete this product because it has active orders.'];
+            return [
+                'success' => false, 
+                'message' => 'Cannot delete this product because it has active orders.'
+            ];
         }
 
         $success = $this->productDAO->softDelete($productId);
-        return ['success' => $success, 'message' => $success ? 'Product Archived successfully!' : 'Failed to delete product'];
+        return [
+            'success' => $success, 
+            'message' => $success ? 'Product archived successfully!' : 'Failed to archive product'
+        ];
     }
 
     public function getDeletedProducts() {
