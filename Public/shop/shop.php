@@ -10,15 +10,48 @@ $brandFilter = $_GET['brand'] ?? '';
 $categories = $shop->getCategories();
 $products = $shop->getProducts($search, $category, $sort);
 
-$brands = [];
+// Group products by name and aggregate sizes/stocks
+$groupedProducts = [];
 foreach ($products as $p) {
+    $baseName = trim($p['name']);
+    
+    if (!isset($groupedProducts[$baseName])) {
+        $groupedProducts[$baseName] = [
+            'product_id' => $p['product_id'],
+            'name' => $baseName,
+            'category_name' => $p['category_name'],
+            'price' => $p['price'],
+            'image' => $p['image'],
+            'description' => $p['description'] ?? 'No description',
+            'date_added' => $p['date_added'],
+            'total_stock' => 0,
+            'sizes' => []
+        ];
+    }
+    
+    // Add size variation
+    $size = $p['size'] ?? 'One Size';
+    $groupedProducts[$baseName]['sizes'][] = [
+        'product_id' => $p['product_id'],
+        'size' => $size,
+        'stock' => $p['stock'] ?? 0,
+        'description' => $p['description'] ?? 'No description'
+    ];
+    
+    $groupedProducts[$baseName]['total_stock'] += ($p['stock'] ?? 0);
+}
+
+// Extract brands
+$brands = [];
+foreach ($groupedProducts as $p) {
     $brand = explode(' ', trim($p['name']))[0];
     $brands[$brand] = $brand;
 }
 ksort($brands);
 
+// Filter by brand
 if ($brandFilter) {
-    $products = array_filter($products, fn($p) => explode(' ', trim($p['name']))[0] === $brandFilter);
+    $groupedProducts = array_filter($groupedProducts, fn($p) => explode(' ', trim($p['name']))[0] === $brandFilter);
 }
 
 if (!empty($_SESSION['order_canceled'])) {
@@ -85,22 +118,22 @@ if (!empty($_SESSION['order_canceled'])) {
       <div class="container">
         <div class="row g-4">
           <?php 
-          $productsWithStock = array_filter($products, fn($p) => ($p['stock'] ?? 0) > 0);
+          $productsWithStock = array_filter($groupedProducts, fn($p) => $p['total_stock'] > 0);
           if (count($productsWithStock) > 0): 
             foreach ($productsWithStock as $product): 
-              $isNew = strtotime($product['date_added']) > strtotime('-7 days'); // new product
-              $isLow = $product['stock'] < 5; // low stock
-              $isUpdated = !$isNew && !$isLow && strtotime($product['date_added']) > strtotime('-30 days'); // recently updated
+              $isNew = strtotime($product['date_added']) > strtotime('-7 days');
+              $isLow = $product['total_stock'] < 20;
+              $isUpdated = !$isNew && !$isLow && strtotime($product['date_added']) > strtotime('-30 days');
           ?>
               <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <div class="card product-card h-100 product-clickable"
                     data-id="<?= $product['product_id'] ?>"
                     data-name="<?= htmlspecialchars($product['name']) ?>"
                     data-category="<?= htmlspecialchars($product['category_name']) ?>"
-                    data-size="<?= htmlspecialchars($product['size'] ?? 'N/A') ?>"
                     data-price="<?= $product['price'] ?>"
-                    data-stock="<?= $product['stock'] ?>"
-                    data-description="<?= htmlspecialchars($product['description'] ?? 'No description') ?>"
+                    data-stock="<?= $product['total_stock'] ?>"
+                    data-description="<?= htmlspecialchars($product['description']) ?>"
+                    data-sizes='<?= json_encode($product['sizes']) ?>'
                     data-image="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>">
 
                   <?php if($isNew): ?>
@@ -110,7 +143,7 @@ if (!empty($_SESSION['order_canceled'])) {
                     <span class="badge badge-low position-absolute top-0 end-0 m-2">Low Stock</span>
                   <?php endif; ?>
                   <?php if($isUpdated): ?>
-                    <span class="badge badge-updated position-absolute top-50 start-50 translate-middle m-2">Updated</span>
+                    <span class="badge badge-updated position-absolute top-0 end-0 m-2">Updated</span>
                   <?php endif; ?>
 
                   <img src="../../Public/<?= htmlspecialchars($product['image'] ?: 'uploads/no-image.png') ?>" 
@@ -122,7 +155,7 @@ if (!empty($_SESSION['order_canceled'])) {
                       <h6 class="card-title fw-bold"><?= htmlspecialchars($product['name']); ?></h6>
                       <p class="text-muted small mb-1"><?= htmlspecialchars($product['category_name']); ?></p>
                       <p class="price-tag mb-2 text-warning fw-bold">₱<?= number_format($product['price'], 2); ?></p>
-                      <p class="text-muted small mb-3">Stock: <?= $product['stock'] ?></p>
+                      <p class="text-muted small mb-3">Total Stock: <?= $product['total_stock'] ?></p>
                   </div>
                 </div>
               </div>
@@ -160,12 +193,18 @@ if (!empty($_SESSION['order_canceled'])) {
             <div>
               <h4 id="detailName" class="fw-bold mb-2 text-dark"></h4>
               <p class="text-muted small mb-2" id="detailCategory"></p>
-              <p class="text-muted small mb-2" id="detailSize"></p>
+              
+              <!-- Size Selector -->
+              <div class="mb-3">
+                <label class="form-label fw-bold small">Select Size:</label>
+                <div id="sizeSelector" class="d-flex flex-wrap gap-2"></div>
+              </div>
+              
               <h5 class="text-warning fw-bold mb-3" id="detailPrice"></h5>
-              <div id="detailDescription" class="text-secondary small"></div>
+              <div id="detailDescription" class="text-secondary small mb-3"></div>
+              <p class="text-muted small mb-2" id="detailStock"></p>
             </div>
             <div id="modalControls" class="mt-3 d-flex gap-2 align-items-center">
-              <p class="text-muted small mb-2" id="detailStock"></p>
               <input type="number" id="detailQty" value="1" min="1" class="form-control text-center rounded-pill border-1 shadow-sm" style="width: 70px; display: none;">
               <button id="modalActionBtn" class="btn btn-warning w-50 fw-bold rounded-pill shadow-sm">
                   Add to Cart
@@ -179,6 +218,6 @@ if (!empty($_SESSION['order_canceled'])) {
 </div>
 
 <script src="../assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/shop.js?v=3"></script>
+<script src="assets/js/shop.js?v=4"></script>
 </body>
 </html>
