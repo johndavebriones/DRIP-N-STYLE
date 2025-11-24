@@ -75,23 +75,38 @@ $cartItems = $cart->getCartItems($_SESSION['user_id'] ?? 0);
                   <td>
                     <div class="d-flex align-items-center">
                       <img src="../../Public/<?= htmlspecialchars($item['image'] ?: 'uploads/no-image.png') ?>"
-                           style="width:70px;height:70px;object-fit:cover;" class="rounded">
+                           alt="<?= htmlspecialchars($item['name']) ?>"
+                           style="width:80px;height:80px;object-fit:cover;" class="rounded shadow-sm">
 
                       <div class="ms-3">
-                        <strong><?= htmlspecialchars($item['name']) ?></strong><br>
-                        <small class="text-muted">Size: <?= htmlspecialchars($item['size'] ?? '-') ?></small><br>
-                        <small class="text-muted"><?= htmlspecialchars($item['description'] ?? '-') ?></small>
+                        <strong class="d-block mb-1"><?= htmlspecialchars($item['name']) ?></strong>
+                        
+                        <?php if (!empty($item['size'])): ?>
+                          <small class="text-muted d-block">
+                            Size: <span class="fw-semibold"><?= htmlspecialchars($item['size']) ?></span>
+                          </small>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($item['color'])): ?>
+                          <small class="text-muted d-block">
+                            Color: <span class="fw-semibold"><?= htmlspecialchars($item['color']) ?></span>
+                          </small>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($item['description'])): ?>
+                          <small class="text-muted d-block mt-1"><?= htmlspecialchars($item['description']) ?></small>
+                        <?php endif; ?>
                       </div>
                     </div>
                   </td>
 
                   <!-- QUANTITY -->
                   <td class="text-center">
-                    <div class="d-inline-flex justify-content-center">
+                    <div class="d-inline-flex justify-content-center align-items-center">
                       <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
                               data-item="<?= $item['item_id'] ?>" data-action="decrease">−</button>
 
-                      <span class="mx-2 fw-bold quantity-value"><?= $item['quantity'] ?></span>
+                      <span class="mx-3 fw-bold quantity-value" style="min-width: 30px; text-align: center;"><?= $item['quantity'] ?></span>
 
                       <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
                               data-item="<?= $item['item_id'] ?>" data-action="increase">+</button>
@@ -100,7 +115,7 @@ $cartItems = $cart->getCartItems($_SESSION['user_id'] ?? 0);
 
                   <!-- PRICE + SUBTOTAL -->
                   <td class="price">₱<?= number_format($item['price_at_time'], 2) ?></td>
-                  <td class="subtotal">₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></td>
+                  <td class="subtotal fw-semibold">₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></td>
 
                   <!-- REMOVE BUTTON (SEPARATE FORM) -->
                   <td>

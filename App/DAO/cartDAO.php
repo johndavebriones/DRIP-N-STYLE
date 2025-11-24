@@ -70,7 +70,7 @@ class CartDAO {
         $cart_id = $this->getOrCreateCart($user_id);
         $stmt = $this->conn->prepare("
             SELECT ci.item_id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time,
-                   p.name, p.image, p.stock, p.size, p.description
+                   p.name, p.image, p.stock, p.size, p.description, p.color
             FROM cart_items ci
             INNER JOIN products p ON ci.product_id = p.product_id
             WHERE ci.cart_id = ?
@@ -87,7 +87,7 @@ class CartDAO {
     public function getCartItemById(int $item_id): ?array {
         $stmt = $this->conn->prepare("
             SELECT ci.item_id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time,
-                   p.name, p.image, p.stock, p.size, p.description
+                   p.name, p.image, p.stock, p.size, p.description, p.color
             FROM cart_items ci
             INNER JOIN products p ON ci.product_id = p.product_id
             WHERE ci.item_id = ?
