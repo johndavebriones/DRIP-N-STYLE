@@ -80,11 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   updateTotal();
 
-  // ------------------ CHECKOUT ------------------
+  // ------------------ CHECKOUT WITH SESSION FLOW ------------------
   const checkoutForm = document.getElementById("checkoutForm");
   checkoutForm.addEventListener("submit", (e) => {
+    // Remove any existing hidden inputs
     checkoutForm.querySelectorAll("input[name='item_ids[]']").forEach(i => i.remove());
 
+    // Get selected items
     const selected = Array.from(checkboxes).filter(cb => cb.checked);
     if (selected.length === 0) {
       e.preventDefault();
@@ -92,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Append selected item IDs as hidden inputs
     selected.forEach(cb => {
       const input = document.createElement("input");
       input.type = "hidden";
@@ -99,5 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
       input.value = cb.value;
       checkoutForm.appendChild(input);
     });
+
+    // Form will submit normally to checkout.php via GET
+    // checkout.php will create the session token and store item_ids
   });
 });

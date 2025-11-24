@@ -1,5 +1,12 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (isset($_SESSION['checkout_token'])) {
+    unset($_SESSION['checkout_token']);
+    unset($_SESSION['checkout_item_ids']);
+    unset($_SESSION['checkout_timestamp']);
+}
 require_once __DIR__ . '/../../App/DAO/cartDAO.php';
 require_once __DIR__ . '/../../App/config/database_connect.php';
 

@@ -8,6 +8,58 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Prevent direct access or refresh after order placement
+if (isset($_SESSION['order_placed']) && $_SESSION['order_placed'] === true) {
+    unset($_SESSION['order_placed']);
+    header("Location: shop.php");
+    exit;
+}
+
+// Handle checkout session
+if (isset($_GET['item_ids']) && !empty($_GET['item_ids'])) {
+    // Coming from cart with item_ids - this is a NEW checkout attempt
+    
+    // Check if we have an existing token with different items
+    if (isset($_SESSION['checkout_token']) && 
+        isset($_SESSION['checkout_item_ids']) && 
+        $_GET['item_ids'] !== $_SESSION['checkout_item_ids']) {
+        // Different items - clear old session and create new one
+        unset($_SESSION['checkout_token']);
+        unset($_SESSION['checkout_item_ids']);
+        unset($_SESSION['checkout_timestamp']);
+        unset($_SESSION['checkout_loaded']);
+    }
+    
+    // Create new checkout session (or refresh existing one with same items)
+    $_SESSION['checkout_token'] = bin2hex(random_bytes(16));
+    $_SESSION['checkout_item_ids'] = $_GET['item_ids'];
+    $_SESSION['checkout_timestamp'] = time();
+    $_SESSION['checkout_loaded'] = true; // Mark as loaded
+    
+} else {
+    // No item_ids in URL - check if we have a valid existing session
+    
+    if (!isset($_SESSION['checkout_token']) || 
+        !isset($_SESSION['checkout_item_ids']) || 
+        !isset($_SESSION['checkout_loaded'])) {
+        // No valid checkout session - redirect to cart
+        $_SESSION['error'] = "Checkout session expired. Please try again.";
+        header("Location: cart.php");
+        exit;
+    }
+    
+    // Valid session exists - this means user is refreshing the page
+    // Clear session and redirect
+    unset($_SESSION['checkout_token']);
+    unset($_SESSION['checkout_item_ids']);
+    unset($_SESSION['checkout_timestamp']);
+    unset($_SESSION['checkout_loaded']);
+    
+    $_SESSION['error'] = "Checkout session expired. Please try again.";
+    header("Location: cart.php");
+    exit;
+}
+
 $user_id = $_SESSION['user_id'];
 
 require_once __DIR__ . '/../../App/Config/database_connect.php';
@@ -18,9 +70,9 @@ $conn = $db->connect();
 $cartDAO = new CartDAO($conn);
 
 /* -----------------------------
-   FIXED: Correctly read item_ids[]
+   Get item_ids from session
 ----------------------------- */
-$item_ids = isset($_GET['item_ids']) ? $_GET['item_ids'] : [];
+$item_ids = isset($_SESSION['checkout_item_ids']) ? $_SESSION['checkout_item_ids'] : [];
 $item_ids = is_array($item_ids) ? $item_ids : [];
 
 $cartItems = [];
@@ -48,6 +100,29 @@ if (!empty($item_ids)) {
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="../assets/css/navbar.css">
 <link rel="stylesheet" href="../assets/css/footer.css">
+<style>
+.order-item-details {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+.order-item-details span {
+    display: inline-block;
+    margin-right: 1rem;
+}
+</style>
+
+<!-- Script to prevent bfcache -->
+<script>
+(function() {
+    // Only prevent page from being cached (bfcache)
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.replace('cart.php');
+        }
+    };
+})();
+</script>
 </head>
 <body>
 
@@ -65,6 +140,9 @@ if (!empty($item_ids)) {
 
       <form id="checkoutForm" action="checkout_process.php" method="POST" enctype="multipart/form-data">
 
+        <!-- Pass checkout token for validation -->
+        <input type="hidden" name="checkout_token" value="<?= htmlspecialchars($_SESSION['checkout_token']) ?>">
+
         <!-- Pass item_ids[] to process page -->
         <?php foreach ($item_ids as $id): ?>
             <input type="hidden" name="item_ids[]" value="<?= htmlspecialchars($id) ?>">
@@ -81,30 +159,28 @@ if (!empty($item_ids)) {
           <label for="payment_method" class="form-label">Payment Method</label>
           <select name="payment_method" id="payment_method" class="form-select" required>
             <option value="Cash on Pickup" selected>Cash on Pickup</option>
-            <option value="GCash">GCash</option>
           </select>
-        </div>
-
-        <!-- GCash Fields -->
-        <div id="gcash_fields" class="d-none">
-          <div class="mb-3">
-            <label for="payment_ref" class="form-label">GCash Reference Number</label>
-            <input type="text" name="payment_ref" id="payment_ref" class="form-control">
-          </div>
-
-          <div class="mb-3">
-            <label for="proof_image" class="form-label">Upload Proof of Payment</label>
-            <input type="file" name="proof_image" id="proof_image" class="form-control" accept="image/*">
-          </div>
         </div>
 
         <!-- Order Summary -->
         <h4 class="mt-4">Order Summary</h4>
         <ul class="list-group mb-3">
           <?php foreach ($cartItems as $item): ?>
-            <li class="list-group-item d-flex justify-content-between">
-              <?= htmlspecialchars($item['name']) ?> (x<?= $item['quantity'] ?>)
-              <span>₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></span>
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <div class="fw-semibold"><?= htmlspecialchars($item['name']) ?> (x<?= $item['quantity'] ?>)</div>
+                  <div class="order-item-details">
+                    <?php if (!empty($item['color'])): ?>
+                      <span><strong>Color:</strong> <?= htmlspecialchars($item['color']) ?></span>
+                    <?php endif; ?>
+                    <?php if (!empty($item['description'])): ?>
+                      <span><strong>Description:</strong> <?= htmlspecialchars($item['description']) ?></span>
+                    <?php endif; ?>
+                  </div>
+                </div>
+                <span class="fw-bold">₱<?= number_format($item['price_at_time'] * $item['quantity'], 2) ?></span>
+              </div>
             </li>
           <?php endforeach; ?>
 
@@ -123,39 +199,61 @@ if (!empty($item_ids)) {
   </div>
 </div>
 
-<!-- Disable back button -->
 <script>
-history.pushState(null, "", location.href);
-window.onpopstate = function () {
-    history.pushState(null, "", location.href);
-};
-</script>
-
-<script>
-// Payment method behavior
-const paymentMethod = document.getElementById('payment_method');
-const gcashFields = document.getElementById('gcash_fields');
-const paymentRef = document.getElementById('payment_ref');
-const proofImage = document.getElementById('proof_image');
-
-paymentMethod.addEventListener('change', () => {
-    if (paymentMethod.value === 'GCash') {
-        gcashFields.classList.remove('d-none');
-        paymentRef.required = true;
-        proofImage.required = true;
-    } else {
-        gcashFields.classList.add('d-none');
-        paymentRef.required = false;
-        proofImage.required = false;
+(function() {
+    'use strict';
+    
+    let isSubmitting = false;
+    let isCancelling = false;
+    
+    // Form submission handling
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function() {
+            isSubmitting = true;
+        });
     }
-});
-
-// Cancel order
-document.getElementById('cancelOrderBtn').addEventListener('click', () => {
-    if (confirm("Are you sure you want to cancel your order?")) {
-        window.location.href = "shop.php";
+    
+    // Cancel button handling - clears session and redirects
+    const cancelBtn = document.getElementById('cancelOrderBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            if (confirm("Are you sure you want to cancel your order?")) {
+                isCancelling = true;
+                
+                // Clear checkout session via AJAX
+                fetch('clear_checkout_session.php', { 
+                    method: 'POST',
+                    credentials: 'same-origin'
+                })
+                .finally(() => {
+                    window.location.replace('cart.php');
+                });
+            }
+        });
     }
-});
+    
+    // Payment method behavior
+    const paymentMethod = document.getElementById('payment_method');
+    const gcashFields = document.getElementById('gcash_fields');
+    const paymentRef = document.getElementById('payment_ref');
+    const proofImage = document.getElementById('proof_image');
+
+    if (paymentMethod) {
+        paymentMethod.addEventListener('change', () => {
+            if (paymentMethod.value === 'GCash') {
+                if (gcashFields) gcashFields.classList.remove('d-none');
+                if (paymentRef) paymentRef.required = true;
+                if (proofImage) proofImage.required = true;
+            } else {
+                if (gcashFields) gcashFields.classList.add('d-none');
+                if (paymentRef) paymentRef.required = false;
+                if (proofImage) proofImage.required = false;
+            }
+        });
+    }
+    
+})();
 </script>
 
 </body>

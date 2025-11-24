@@ -3,6 +3,16 @@ require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::preventCache();
 
+// Security: Check if user just placed an order
+if (!isset($_SESSION['order_placed']) || $_SESSION['order_placed'] !== true) {
+    // User is trying to access success page without placing an order
+    header("Location: shop.php");
+    exit;
+}
+
+// Clear the order_placed flag so this page can only be accessed once
+unset($_SESSION['order_placed']);
+
 require_once __DIR__ . '/../../App/Config/database_connect.php';
 require_once __DIR__ . '/../../App/DAO/OrderDAO.php';
 
@@ -27,6 +37,11 @@ if ($order_id) {
 
   $orderItems = $orderDAO->getOrderItems($order_id);
 }
+
+// Store order_id in session to prevent accessing other orders
+if ($order_id) {
+    $_SESSION['last_order_id'] = $order_id;
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,6 +54,7 @@ if ($order_id) {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/shop.css">
+  <link rel="stylesheet" href="../assets/css/navbar.css">
   <style>
     body { background-color: #f8f9fa; font-family: 'Poppins', sans-serif; }
     .success-container {
@@ -93,7 +109,7 @@ if ($order_id) {
 
     <div class="mt-4">
       <a href="shop.php" class="btn btn-warning"><i class="bi bi-bag"></i> Continue Shopping</a>
-      <a href="orders.php" class="btn btn-outline-dark"><i class="bi bi-clock-history"></i> View My Orders</a>
+      <a href="../customer/profile.php" class="btn btn-outline-dark"><i class="bi bi-clock-history"></i> View My Orders</a>
     </div>
 
   <?php else: ?>
@@ -102,6 +118,35 @@ if ($order_id) {
     </div>
   <?php endif; ?>
 </div>
+
+<!-- Prevent back button after leaving success page -->
+<script>
+// Push state to prevent back button access
+history.pushState(null, "", location.href);
+
+window.onpopstate = function() {
+    // If user tries to go back, push forward again and redirect
+    history.pushState(null, "", location.href);
+    
+    // Show message and redirect
+    alert("Order confirmation page cannot be accessed again. Redirecting to shop...");
+    window.location.href = "shop.php";
+};
+
+// Mark page as visited
+sessionStorage.setItem('success_page_visited', 'true');
+
+// Note: No beforeunload warning needed on success page
+// Users should be free to navigate away after order confirmation
+
+// If user navigates away and comes back via browser navigation
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || sessionStorage.getItem('success_page_visited') === 'true') {
+        // Page was loaded from cache or already visited
+        window.location.href = "shop.php";
+    }
+});
+</script>
 
 <?php include '../partials/footer.php'; ?>
 </body>

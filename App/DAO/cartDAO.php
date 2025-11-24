@@ -155,22 +155,52 @@ class CartDAO {
         return $result->fetch_assoc() ?: null;
     }
 
-    public function getCartItemsByIds($cart_id, $item_ids = []) {
-        if (empty($item_ids)) return [];
-
+    public function getCartItemsByIds($cart_id, $item_ids) {
+        if (empty($item_ids)) {
+            return [];
+        }
+        
+        // Create placeholders for prepared statement
         $placeholders = implode(',', array_fill(0, count($item_ids), '?'));
-        $types = 'i' . str_repeat('i', count($item_ids)); 
-
-        $stmt = $this->conn->prepare("
-            SELECT ci.item_id, ci.quantity, ci.price_at_time, p.name, p.image, p.size 
-            FROM cart_items ci
-            JOIN products p ON ci.product_id = p.product_id
-            WHERE ci.cart_id = ?
-            AND ci.item_id IN ($placeholders)
-        ");
-
-        $stmt->bind_param($types, $cart_id, ...$item_ids);
+        
+        $sql = "
+                SELECT 
+                    ci.item_id,
+                    ci.product_id,
+                    ci.quantity,
+                    ci.price_at_time,
+                    p.name,
+                    p.price,
+                    p.color,
+                    p.description,
+                    p.stock
+                FROM cart_items ci
+                INNER JOIN products p ON ci.product_id = p.product_id
+                WHERE ci.cart_id = ? 
+                AND ci.item_id IN ($placeholders)";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        if (!$stmt) {
+            return [];
+        }
+        
+        $types = 'i' . str_repeat('i', count($item_ids));
+        $params = array_merge([$cart_id], $item_ids);
+        
+        // Bind parameters dynamically
+        $stmt->bind_param($types, ...$params);
+        
         $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+        
+        $stmt->close();
+        
+        return $items;
     }
 }
