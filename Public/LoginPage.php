@@ -3,6 +3,13 @@ ini_set('session.cookie_path', '/');
 require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::redirectIfLoggedIn();
+
+// Store timeout alert if exists
+$timeoutAlert = null;
+if (isset($_SESSION['timeout_alert'])) {
+    $timeoutAlert = $_SESSION['timeout_alert'];
+    unset($_SESSION['timeout_alert']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,6 +101,13 @@ SessionHelper::redirectIfLoggedIn();
 </div>
 
 <script>
+// Session timeout alert
+<?php if ($timeoutAlert): ?>
+window.addEventListener('DOMContentLoaded', function() {
+    alert(<?= json_encode($timeoutAlert) ?>);
+});
+<?php endif; ?>
+
 const toggle = document.getElementById('togglePassword');
 const input = document.getElementById('password');
 const icon = toggle.querySelector('i');

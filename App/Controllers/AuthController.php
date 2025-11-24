@@ -56,34 +56,35 @@ class AuthController {
 
 
     public function login($email, $password) {
-    $email = trim($email);
-    $password = trim($password);
+        $email = trim($email);
+        $password = trim($password);
 
-    $user = $this->userDAO->findByEmail($email);
+        $user = $this->userDAO->findByEmail($email);
 
-    if (!$user) {
-        $_SESSION['error'] = "Account not found. Please check your email.";
-        header("Location: ../../Public/LoginPage.php");
+        if (!$user) {
+            $_SESSION['error'] = "Account not found. Please check your email.";
+            header("Location: ../../Public/LoginPage.php");
+            exit;
+        }
+
+        if (!password_verify($password, $user['password'])) {
+            $_SESSION['error'] = "Incorrect password. Please try again.";
+            header("Location: ../../Public/LoginPage.php");
+            exit;
+        }
+
+        $_SESSION['user_id']   = $user['user_id'];
+        $_SESSION['user_name'] = $user['name'];
+        $_SESSION['role']      = $user['role'];
+        $_SESSION['last_activity'] = time(); // Set initial activity timestamp
+
+        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+            header("Location: ../../Public/admin/dashboard.php");
+        } else {
+            header("Location: ../../Public/shop/shop.php");
+        }
         exit;
     }
-
-    if (!password_verify($password, $user['password'])) {
-        $_SESSION['error'] = "Incorrect password. Please try again.";
-        header("Location: ../../Public/LoginPage.php");
-        exit;
-    }
-
-    $_SESSION['user_id']   = $user['user_id'];
-    $_SESSION['user_name'] = $user['name'];
-    $_SESSION['role']      = $user['role'];
-
-    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-        header("Location: ../../Public/admin/dashboard.php");
-    } else {
-        header("Location: ../../Public/shop/shop.php");
-    }
-    exit;
-}
 
     public function logout() {
         if (session_status() === PHP_SESSION_NONE) session_start();

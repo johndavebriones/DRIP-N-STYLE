@@ -1,8 +1,7 @@
 <?php
-require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
-
-if (session_status() === PHP_SESSION_NONE) session_start();
-SessionHelper::preventCache();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $currentPage = basename($_SERVER['PHP_SELF']);
 
