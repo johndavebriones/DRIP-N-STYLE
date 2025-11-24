@@ -16,9 +16,6 @@ ob_start();
 <div class="page-fade">
   <div class="page-header d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold mb-0">📦 Orders Management</h2>
-    <button class="btn btn-outline-light btn-modern" id="refreshOrdersBtn">
-      <i class="bi bi-arrow-clockwise me-1"></i> Refresh
-    </button>
   </div>
 
   <!-- 🔹 Filters -->
@@ -32,7 +29,6 @@ ob_start();
         <select name="status" class="form-select shadow-sm">
           <option value="">All Status</option>
           <option value="Pending">Pending</option>
-          <option value="Confirmed">Confirmed</option>
           <option value="Ready for Pickup">Ready for Pickup</option>
           <option value="Completed">Completed</option>
           <option value="Cancelled">Cancelled</option>
@@ -41,7 +37,6 @@ ob_start();
       <div class="col-md-4">
         <select name="payment" class="form-select shadow-sm">
           <option value="">All Payment Methods</option>
-          <option value="GCash">GCash</option>
           <option value="Cash on Pickup">Cash on Pickup</option>
         </select>
       </div>

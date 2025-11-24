@@ -92,7 +92,7 @@ ob_start();
 <div class="page-fade">
     <!-- Back Button -->
     <div class="mb-4">
-        <a href="orders.php" class="btn btn-outline-secondary">
+        <a href="orders.php" class="btn btn-secondary">
             <i class="bi bi-arrow-left me-2"></i>Back to Orders
         </a>
     </div>
@@ -143,7 +143,7 @@ ob_start();
                 <p class="mb-2"><strong>Payment Method:</strong> <?= htmlspecialchars($order['payment_method'] ?? 'N/A') ?></p>
                 <p class="mb-2">
                     <strong>Payment Status:</strong>
-                    <span class="badge bg-<?= $order['payment_status'] === 'Paid' ? 'success' : ($order['payment_status'] === 'Failed' ? 'danger' : 'warning') ?>">
+                    <span class="badge bg-<?= $order['payment_status'] === 'Paid' ? 'success text-dark' : ($order['payment_status'] === 'Failed' ? 'danger text-dark' : 'warning text-dark') ?>">
                         <?= htmlspecialchars($order['payment_status']) ?>
                     </span>
                 </p>
@@ -152,11 +152,10 @@ ob_start();
                     <span class="badge bg-<?php
                         echo match($order['order_status']) {
                             'Pending' => 'warning text-dark',
-                            'Confirmed' => 'info text-dark',
-                            'Ready for Pickup' => 'primary',
-                            'Completed' => 'success',
-                            'Cancelled' => 'danger',
-                            default => 'secondary'
+                            'Ready for Pickup' => 'primary text-dark',
+                            'Completed' => 'success text-dark',
+                            'Cancelled' => 'danger text-dark',
+                            default => 'secondary text-dark'
                         };
                     ?>">
                         <?= htmlspecialchars($order['order_status']) ?>
@@ -215,7 +214,6 @@ ob_start();
                     <label class="form-label fw-semibold">Order Status</label>
                     <select name="order_status" class="form-select" required>
                         <option value="Pending" <?= $order['order_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
-                        <option value="Confirmed" <?= $order['order_status'] === 'Confirmed' ? 'selected' : '' ?>>Confirmed</option>
                         <option value="Ready for Pickup" <?= $order['order_status'] === 'Ready for Pickup' ? 'selected' : '' ?>>Ready for Pickup</option>
                         <option value="Completed" <?= $order['order_status'] === 'Completed' ? 'selected' : '' ?>>Completed</option>
                         <option value="Cancelled" <?= $order['order_status'] === 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>

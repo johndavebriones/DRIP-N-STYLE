@@ -64,20 +64,6 @@ class OrderDAO {
         return $this->conn->insert_id;
     }
 
-    /*-----------------------------------------------------------
-        LINK PAYMENT TO ORDER
-    ------------------------------------------------------------*/
-    public function linkPaymentToOrder($order_id, $payment_id) {
-        $stmt = $this->conn->prepare("
-            UPDATE orders SET payment_id = ? WHERE order_id = ?
-        ");
-        $stmt->bind_param("ii", $payment_id, $order_id);
-        $stmt->execute();
-    }
-
-    /*-----------------------------------------------------------
-        GET USER ORDERS
-    ------------------------------------------------------------*/
     public function getUserOrders($user_id) {
         $stmt = $this->conn->prepare("
             SELECT o.*, p.payment_method, p.payment_status, p.amount
@@ -91,9 +77,6 @@ class OrderDAO {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    /*-----------------------------------------------------------
-        GET ALL ORDERS
-    ------------------------------------------------------------*/
     public function getAllOrders() {
         $sql = "
             SELECT 
@@ -109,9 +92,6 @@ class OrderDAO {
         return $this->conn->query($sql)->fetch_all(MYSQLI_ASSOC);
     }
 
-    /*-----------------------------------------------------------
-        GET ORDER ITEMS
-    ------------------------------------------------------------*/
     public function getOrderItems($order_id) {
         $stmt = $this->conn->prepare("
             SELECT 
@@ -133,16 +113,14 @@ class OrderDAO {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    /*-----------------------------------------------------------
-        GET ORDER BY ID
-    ------------------------------------------------------------*/
     public function getOrderById($order_id) {
         $stmt = $this->conn->prepare("
             SELECT 
                 o.*, 
                 u.name AS customer_name,
                 u.email AS customer_email,
-                u.contact AS customer_contact,
+                u.contact_number AS customer_phone,
+                a.address AS customer_address,
                 p.payment_method,
                 p.payment_status,
                 p.payment_id,
@@ -151,6 +129,7 @@ class OrderDAO {
             FROM orders o
             LEFT JOIN users u ON o.user_id = u.user_id
             LEFT JOIN payments p ON o.payment_id = p.payment_id
+            LEFT JOIN addresses a ON o.user_id = a.user_id AND a.is_default = 1
             WHERE o.order_id = ?
             LIMIT 1
         ");
@@ -159,9 +138,6 @@ class OrderDAO {
         return $stmt->get_result()->fetch_assoc();
     }
 
-    /*-----------------------------------------------------------
-        UPDATE ORDER + PAYMENT STATUS (WITH STOCK MANAGEMENT)
-    ------------------------------------------------------------*/
     public function updateOrderAndPaymentStatus($order_id, $newOrderStatus = null, $newPaymentStatus = null) {
         // Get current order details
         $order = $this->getOrderById($order_id);
@@ -211,11 +187,6 @@ class OrderDAO {
             }
         }
 
-        // ============================================================
-        // STOCK MANAGEMENT LOGIC
-        // ============================================================
-        
-        // Check if order just became Completed AND payment is Paid
         $orderBecameCompleted = ($finalOrderStatus === 'Completed' && $currentOrderStatus !== 'Completed');
         $paymentIsPaid = ($finalPaymentStatus === 'Paid');
 
@@ -251,8 +222,6 @@ class OrderDAO {
             error_log("Order #{$order_id}: All stocks reduced successfully");
         }
 
-        // NOTE: When order is Cancelled, we DO NOT increase stock
-        // Stock remains as-is (business requirement)
         if ($finalOrderStatus === 'Cancelled') {
             error_log("Order #{$order_id} cancelled - Stock will NOT be increased (as per requirement)");
         }
