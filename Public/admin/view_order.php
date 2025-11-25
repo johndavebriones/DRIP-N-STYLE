@@ -44,6 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     }
 }
 
+$isOrderLocked = ($order['order_status'] === 'Cancelled' && $order['payment_status'] === 'Failed');
+
 $title = "Order #" . $order_id;
 ob_start();
 ?>
@@ -208,50 +210,76 @@ ob_start();
     <!-- Update Status Form -->
     <div class="order-detail-card">
         <h5 class="fw-bold mb-3">Update Order Status</h5>
-        <form method="POST" id="updateStatusForm">
+        
+        <?php if ($isOrderLocked): ?>
+            <div class="alert alert-warning">
+                <i class="bi bi-lock-fill me-2"></i>
+                <strong>Order Locked:</strong> This order has been cancelled with a failed payment and cannot be modified.
+            </div>
+            
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Order Status</label>
-                    <select name="order_status" class="form-select" required>
-                        <option value="Pending" <?= $order['order_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
-                        <option value="Ready for Pickup" <?= $order['order_status'] === 'Ready for Pickup' ? 'selected' : '' ?>>Ready for Pickup</option>
-                        <option value="Completed" <?= $order['order_status'] === 'Completed' ? 'selected' : '' ?>>Completed</option>
-                        <option value="Cancelled" <?= $order['order_status'] === 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                    </select>
+                    <input type="text" class="form-control" value="<?= htmlspecialchars($order['order_status']) ?>" disabled>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Payment Status</label>
-                    <select name="payment_status" class="form-select" required>
-                        <option value="Pending" <?= $order['payment_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
-                        <option value="Paid" <?= $order['payment_status'] === 'Paid' ? 'selected' : '' ?>>Paid</option>
-                        <option value="Failed" <?= $order['payment_status'] === 'Failed' ? 'selected' : '' ?>>Failed</option>
-                    </select>
+                    <input type="text" class="form-control" value="<?= htmlspecialchars($order['payment_status']) ?>" disabled>
                 </div>
             </div>
-
-            <div class="alert alert-info mt-3">
-                <i class="bi bi-info-circle me-2"></i>
-                <strong>Stock Management Rules:</strong>
-                <ul class="mb-0 mt-2">
-                    <li>Setting Order Status to <strong>"Completed"</strong> and Payment Status to <strong>"Paid"</strong> will <strong>reduce stock</strong> for all items in this order.</li>
-                    <li>Setting Order Status to <strong>"Cancelled"</strong> will automatically set Payment Status to <strong>"Failed"</strong>.</li>
-                    <li><strong>Cancelled orders do NOT increase stock</strong> - items remain as-is.</li>
-                </ul>
+            
+            <div class="mt-3">
+                <a href="orders.php" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Orders
+                </a>
             </div>
+        <?php else: ?>
+            <form method="POST" id="updateStatusForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Order Status</label>
+                        <select name="order_status" class="form-select" required>
+                            <option value="Pending" <?= $order['order_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                            <option value="Ready for Pickup" <?= $order['order_status'] === 'Ready for Pickup' ? 'selected' : '' ?>>Ready for Pickup</option>
+                            <option value="Completed" <?= $order['order_status'] === 'Completed' ? 'selected' : '' ?>>Completed</option>
+                            <option value="Cancelled" <?= $order['order_status'] === 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Payment Status</label>
+                        <select name="payment_status" class="form-select" required>
+                            <option value="Pending" <?= $order['payment_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                            <option value="Paid" <?= $order['payment_status'] === 'Paid' ? 'selected' : '' ?>>Paid</option>
+                            <option value="Failed" <?= $order['payment_status'] === 'Failed' ? 'selected' : '' ?>>Failed</option>
+                        </select>
+                    </div>
+                </div>
 
-            <div class="d-flex gap-2 mt-3">
-                <button type="submit" name="update_status" class="btn btn-primary">
-                    <i class="bi bi-check-circle me-2"></i>Update Status
-                </button>
-                <a href="orders.php" class="btn btn-outline-secondary">Cancel</a>
-            </div>
-        </form>
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Stock Management Rules:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Setting Order Status to <strong>"Completed"</strong> and Payment Status to <strong>"Paid"</strong> will <strong>reduce stock</strong> for all items in this order.</li>
+                        <li>Setting Order Status to <strong>"Cancelled"</strong> will automatically set Payment Status to <strong>"Failed"</strong>.</li>
+                        <li><strong>Cancelled orders do NOT increase stock</strong> - items remain as-is.</li>
+                        <li><strong>Once cancelled with failed payment, the order becomes locked and cannot be modified.</strong></li>
+                    </ul>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" name="update_status" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-2"></i>Update Status
+                    </button>
+                    <a href="orders.php" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        <?php endif; ?>
     </div>
 </div>
 
 <script>
 // Confirmation before updating to Completed + Paid
-document.getElementById('updateStatusForm').addEventListener('submit', function(e) {
+document.getElementById('updateStatusForm')?.addEventListener('submit', function(e) {
     const orderStatus = document.querySelector('select[name="order_status"]').value;
     const paymentStatus = document.querySelector('select[name="payment_status"]').value;
     
@@ -262,7 +290,7 @@ document.getElementById('updateStatusForm').addEventListener('submit', function(
     }
     
     if (orderStatus === 'Cancelled') {
-        if (!confirm('This will cancel the order and mark payment as Failed. Stock will NOT be restored. Continue?')) {
+        if (!confirm('This will cancel the order and mark payment as Failed. Stock will NOT be restored. Once cancelled, this order cannot be modified again. Continue?')) {
             e.preventDefault();
         }
     }

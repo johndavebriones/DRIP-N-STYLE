@@ -159,6 +159,14 @@ class OrderDAO {
         $currentOrderStatus = $order['order_status'] ?? null;
         $currentPaymentStatus = $order['payment_status'] ?? null;
 
+        // LOCK: Prevent changes if order is already Cancelled and payment is Failed
+        if ($currentOrderStatus === 'Cancelled' && $currentPaymentStatus === 'Failed') {
+            return [
+                'success' => false, 
+                'message' => 'Cannot modify a cancelled order with failed payment. This order is locked.'
+            ];
+        }
+
         // Normalize empty strings to null
         $newOrderStatus = (isset($newOrderStatus) && $newOrderStatus !== '') ? $newOrderStatus : null;
         $newPaymentStatus = (isset($newPaymentStatus) && $newPaymentStatus !== '') ? $newPaymentStatus : null;

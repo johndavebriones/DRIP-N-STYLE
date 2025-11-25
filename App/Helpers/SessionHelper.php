@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 class SessionHelper {
 
     // Session timeout in seconds (15 minutes = 900 seconds)
-    const SESSION_TIMEOUT = 300;
+    const SESSION_TIMEOUT = 60;
 
     /**
      * Check if session has timed out due to inactivity
