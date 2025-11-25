@@ -12,6 +12,17 @@ class OrderDAO {
     }
 
     /*-----------------------------------------------------------
+        LINK PAYMENT TO ORDER
+    ------------------------------------------------------------*/
+    public function linkPaymentToOrder($order_id, $payment_id) {
+        $stmt = $this->conn->prepare("
+            UPDATE orders SET payment_id = ? WHERE order_id = ?
+        ");
+        $stmt->bind_param("ii", $payment_id, $order_id);
+        $stmt->execute();
+    }
+
+    /*-----------------------------------------------------------
         CREATE ORDER
     ------------------------------------------------------------*/
     public function createOrder($user_id, $total_amount, $pickup_date) {
