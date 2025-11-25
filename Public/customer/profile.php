@@ -113,6 +113,11 @@ $addresses = $addressDAO->getByUserId($user_id);
           <input type="email" name="email" class="form-control" 
                 value="<?= htmlspecialchars($user['email'] ?? '') ?>" required>
         </div>
+        <div class="mb-3">
+          <label class="form-label">Contact No.</label>
+          <input type="text" name="contact_number" class="form-control" 
+                value="<?= htmlspecialchars($user['contact_number'] ?? '') ?>" required>
+        </div>
         <button class="btn btn-warning" type="submit">
           <i class="bi bi-save me-1"></i>Save Changes
         </button>

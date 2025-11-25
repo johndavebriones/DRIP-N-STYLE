@@ -127,7 +127,7 @@ if (!empty($_SESSION['order_canceled'])) {
       <div class="container text-center">
         <h5 class="fw-bold text-dark mb-3">Shop by Brand</h5>
         <?php foreach ($brands as $b): ?>
-          <a href="shop.php?brand=<?= urlencode($b) ?>" class="btn btn-outline-warning brand-btn">
+          <a href="shop.php?brand=<?= urlencode($b) ?>" class="btn btn-warning brand-btn">
             <?= htmlspecialchars($b) ?>
           </a>
         <?php endforeach; ?>

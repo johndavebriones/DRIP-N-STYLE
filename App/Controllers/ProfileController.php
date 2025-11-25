@@ -15,8 +15,9 @@ switch ($action) {
     case 'update':
         $name = $_POST['name'] ?? '';
         $email = $_POST['email'] ?? '';
+        $contact = $_POST['contact_number'] ?? '';
 
-        if ($userDAO->updateUserFields($user_id, ['name' => $name, 'email' => $email])) {
+        if ($userDAO->updateUserFields($user_id, ['name' => $name, 'email' => $email, 'contact_number' => $contact])) {
             header("Location: ../../public/profile.php?success=profile_updated");
         } else {
             header("Location: ../../public/profile.php?error=profile_failed");
