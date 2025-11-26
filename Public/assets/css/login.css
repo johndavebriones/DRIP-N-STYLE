@@ -8,32 +8,44 @@
 }
 
 body {
-  background: linear-gradient(to bottom, #d4a017, #fff6d6);
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-/* Card Wrapper */
+/* Full Screen Split Layout - Image on LEFT, Form on RIGHT */
 .auth-container {
   display: flex;
-  width: 720px;
-  max-width: 95%;
-  background: #fff;
-  border-radius: 20px;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100vh;
   overflow: hidden;
-  box-shadow: 0 8px 35px rgba(0,0,0,0.15);
 }
 
-/* Left — Image Area */
+/* Left — Image Area (covers 60% of screen) */
 .auth-left {
-  width: 320px;
+  width: 60%;
+  min-height: 100vh;
   background: #f9d342;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(212, 160, 23, 0.1) 0%, rgba(249, 211, 66, 0.2) 100%);
+  pointer-events: none;
 }
 
 .auth-left img {
@@ -41,12 +53,22 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
+  transition: transform 0.3s ease;
 }
 
-/* Right — Form */
+.auth-left:hover img {
+  transform: scale(1.05);
+}
+
+/* Right — Form (covers 40% of screen) */
 .auth-right {
-  flex: 1;
-  padding: 45px 35px;
+  width: 40%;
+  padding: 50px 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+  overflow-y: auto;
 }
 
 .auth-right h3 {
@@ -60,7 +82,8 @@ body {
 .auth-right p {
   text-align: center;
   color: #555;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
+  font-size: 14px;
 }
 
 /* ============================
@@ -136,26 +159,79 @@ body {
 
 .btn-warning:hover {
     background-color: #d99f00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 180, 0, 0.3);
 }
 
-/* Cleaner modal link */
+/* Text link styling */
+.text-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
 .text-link a {
     color: #0074e8;
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-/* ====== MOBILE ====== */
-@media (max-width: 768px) {
+.text-link a:hover {
+    color: #005bb5;
+    text-decoration: underline;
+}
 
+/* Alert card styling */
+.card.border-warning {
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* ====== LARGE TABLETS ====== */
+@media (max-width: 1024px) {
+  .auth-left {
+    width: 55%;
+  }
+
+  .auth-right {
+    width: 45%;
+    padding: 40px 35px;
+  }
+
+  .auth-right h3 {
+    font-size: 1.85rem;
+  }
+}
+
+/* ====== TABLET (landscape to portrait) ====== */
+@media (max-width: 992px) {
+  .auth-container {
+    width: 750px;
+  }
+
+  .auth-left {
+    width: 40%;
+    min-height: 500px;
+  }
+
+  .auth-right {
+    width: 60%;
+    padding: 40px 35px;
+  }
+}
+
+/* ====== MOBILE (stacked layout) ====== */
+@media (max-width: 768px) {
   .auth-container {
     flex-direction: column;
     width: 100%;
     border-radius: 18px;
   }
 
-  /* Top image takes full width & top half */
+  /* Top image takes full width */
   .auth-left {
     width: 100%;
     height: 45vh;
+    min-height: 280px;
   }
 
   .auth-left img {
@@ -165,17 +241,113 @@ body {
   }
 
   .auth-right {
+    width: 100%;
     padding: 32px 22px;
-  }
-}
-
-/* Extra small phones */
-@media (max-width: 480px) {
-  .auth-left {
-    height: 38vh;
   }
 
   .auth-right h3 {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
+  }
+}
+
+/* ====== SMALL TABLETS & LARGE PHONES ====== */
+@media (max-width: 640px) {
+  .auth-left {
+    height: 40vh;
+    min-height: 260px;
+  }
+
+  .auth-right {
+    padding: 30px 20px;
+  }
+
+  .auth-right h3 {
+    font-size: 1.65rem;
+  }
+
+  .input-custom {
+    font-size: 14px;
+    padding: 11px 42px;
+  }
+
+  .btn-warning {
+    font-size: 16px;
+  }
+}
+
+/* ====== EXTRA SMALL PHONES ====== */
+@media (max-width: 480px) {
+  .auth-left {
+    height: 35vh;
+    min-height: 220px;
+  }
+
+  .auth-left:hover img {
+    transform: scale(1.02);
+  }
+
+  .auth-right {
+    padding: 25px 16px;
+  }
+
+  .auth-right h3 {
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+  }
+
+  .auth-right p {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .form-group-custom {
+    margin-bottom: 16px;
+  }
+
+  .input-custom {
+    font-size: 14px;
+    padding: 10px 40px;
+  }
+
+  .icon-left {
+    left: 12px;
+    font-size: 15px;
+  }
+
+  .icon-right {
+    right: 12px;
+    font-size: 16px;
+  }
+
+  .auth-btn,
+  .btn-warning {
+    font-size: 15px;
+    padding: 11px;
+  }
+
+  .text-link {
+    font-size: 14px;
+    margin-top: 15px;
+  }
+}
+
+/* ====== VERY SMALL PHONES (320px) ====== */
+@media (max-width: 380px) {
+  .auth-left {
+    height: 32vh;
+    min-height: 200px;
+  }
+
+  .auth-right h3 {
+    font-size: 1.35rem;
+  }
+
+  .auth-right p {
+    font-size: 12px;
+  }
+
+  .input-custom {
+    font-size: 13px;
+    padding: 9px 38px;
   }
 }

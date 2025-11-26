@@ -47,58 +47,7 @@ foreach ($products as $product) {
 $title = "Products";
 ob_start();
 ?>
-
-<style>
-.page-header {
-    background: linear-gradient(90deg, #343a40, #495057);
-    color: white;
-    padding: 1.2rem 1.5rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-}
-
-.page-fade {
-    opacity: 0;
-    animation: fadeIn 0.6s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.product-card {
-    transition: transform 0.2s;
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-}
-
-.variant-item {
-    background: #f8f9fa;
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    border-left: 3px solid #ffc107;
-}
-
-.color-text {
-    display: inline-block;
-    padding: 2px 8px;
-    background: #e9ecef;
-    border-radius: 4px;
-    font-size: 0.85em;
-    font-weight: 500;
-}
-</style>
-
+<link rel="stylesheet" href="assets/css/products.css">
 <!-- Header Bar -->
 <div class="page-fade">
     <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -445,11 +394,8 @@ ob_start();
     </div>
 </div>
 
-<!-- Load required libraries first -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Load products.js last -->
 <script src="assets/js/products.js?v=<?= time() ?>"></script>
 
 <?php

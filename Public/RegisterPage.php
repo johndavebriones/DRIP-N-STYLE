@@ -11,7 +11,7 @@ SessionHelper::redirectIfLoggedIn();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Drip N' Style | Register</title>
 
-  <link href="../Public/assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="assets/css/register.css">
 </head>
@@ -82,7 +82,6 @@ SessionHelper::redirectIfLoggedIn();
 </div>
 
 <script>
-/* Page transition */
 document.querySelectorAll('a[href]').forEach(link => {
   link.addEventListener('click', function(e) {
     if (this.getAttribute('href').endsWith('.php')) {
@@ -95,7 +94,6 @@ document.querySelectorAll('a[href]').forEach(link => {
   });
 });
 
-/* Password Show/Hide */
 function bindHoldToShow(iconId, inputId) {
   const icon = document.getElementById(iconId);
   const input = document.getElementById(inputId);
