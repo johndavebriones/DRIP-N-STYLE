@@ -40,7 +40,7 @@ if ($order_id) {
 
 // Store order_id in session to prevent accessing other orders
 if ($order_id) {
-    $_SESSION['last_order_id'] = $order_id;
+    $_SESSION['success_page_viewed'] = $order_id;
 }
 ?>
 
@@ -119,33 +119,52 @@ if ($order_id) {
   <?php endif; ?>
 </div>
 
-<!-- Prevent back button after leaving success page -->
+<!-- Prevent back button and refresh after user navigates away -->
 <script>
-// Push state to prevent back button access
-history.pushState(null, "", location.href);
-
-window.onpopstate = function() {
-    // If user tries to go back, push forward again and redirect
-    history.pushState(null, "", location.href);
+(function() {
+    'use strict';
     
-    // Show message and redirect
-    alert("Order confirmation page cannot be accessed again. Redirecting to shop...");
-    window.location.href = "shop.php";
-};
-
-// Mark page as visited
-sessionStorage.setItem('success_page_visited', 'true');
-
-// Note: No beforeunload warning needed on success page
-// Users should be free to navigate away after order confirmation
-
-// If user navigates away and comes back via browser navigation
-window.addEventListener('pageshow', function(event) {
-    if (event.persisted || sessionStorage.getItem('success_page_visited') === 'true') {
-        // Page was loaded from cache or already visited
-        window.location.href = "shop.php";
+    let hasNavigatedAway = false;
+    
+    // Detect when user clicks a link to navigate away
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.href) {
+            hasNavigatedAway = true;
+        }
+    });
+    
+    // Only block back button AFTER user has navigated away
+    window.addEventListener('beforeunload', function() {
+        if (hasNavigatedAway) {
+            // Mark that user has left the success page
+            sessionStorage.setItem('left_success_page', 'true');
+        }
+    });
+    
+    // Check if user is trying to return to success page
+    if (sessionStorage.getItem('left_success_page') === 'true') {
+        // User already viewed success page and left - redirect them
+        sessionStorage.removeItem('left_success_page');
+        window.location.replace('shop.php');
     }
-});
+    
+    // Handle browser back button
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted && sessionStorage.getItem('left_success_page') === 'true') {
+            // Page was loaded from cache and user already left
+            window.location.replace('shop.php');
+        }
+    });
+    
+    // Prevent going back to success page using browser history
+    if (performance.navigation.type === 2) {
+        // User came here via back button
+        if (sessionStorage.getItem('left_success_page') === 'true') {
+            window.location.replace('shop.php');
+        }
+    }
+})();
 </script>
 
 <?php include '../partials/footer.php'; ?>

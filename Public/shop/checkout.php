@@ -8,13 +8,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Prevent direct access or refresh after order placement
-if (isset($_SESSION['order_placed']) && $_SESSION['order_placed'] === true) {
-    unset($_SESSION['order_placed']);
-    header("Location: shop.php");
-    exit;
-}
-
 // Handle checkout session
 if (isset($_GET['item_ids']) && !empty($_GET['item_ids'])) {
     // Coming from cart with item_ids - this is a NEW checkout attempt
@@ -69,9 +62,7 @@ $db = new Database();
 $conn = $db->connect();
 $cartDAO = new CartDAO($conn);
 
-/* -----------------------------
-   Get item_ids from session
------------------------------ */
+//Get item_ids from session
 $item_ids = isset($_SESSION['checkout_item_ids']) ? $_SESSION['checkout_item_ids'] : [];
 $item_ids = is_array($item_ids) ? $item_ids : [];
 
@@ -112,10 +103,8 @@ if (!empty($item_ids)) {
 }
 </style>
 
-<!-- Script to prevent bfcache -->
 <script>
 (function() {
-    // Only prevent page from being cached (bfcache)
     window.onpageshow = function(event) {
         if (event.persisted) {
             window.location.replace('cart.php');
@@ -138,7 +127,7 @@ if (!empty($item_ids)) {
       </div>
     <?php else: ?>
 
-      <form id="checkoutForm" action="checkout_process.php" method="POST" enctype="multipart/form-data">
+      <form id="checkoutForm" action="checkout_process.php" method="POST">
 
         <!-- Pass checkout token for validation -->
         <input type="hidden" name="checkout_token" value="<?= htmlspecialchars($_SESSION['checkout_token']) ?>">
@@ -154,12 +143,11 @@ if (!empty($item_ids)) {
           <input type="date" name="pickup_date" id="pickup_date" class="form-control" min="<?= date('Y-m-d') ?>" required>
         </div>
 
-        <!-- Payment Method -->
+        <!-- Payment Method (Cash Only) -->
         <div class="mb-3">
           <label for="payment_method" class="form-label">Payment Method</label>
-          <select name="payment_method" id="payment_method" class="form-select" required>
-            <option value="Cash on Pickup" selected>Cash on Pickup</option>
-          </select>
+          <input type="text" class="form-control" value="Cash on Pickup" readonly>
+          <input type="hidden" name="payment_method" value="Cash on Pickup">
         </div>
 
         <!-- Order Summary -->
@@ -232,27 +220,6 @@ if (!empty($item_ids)) {
             }
         });
     }
-    
-    // Payment method behavior
-    const paymentMethod = document.getElementById('payment_method');
-    const gcashFields = document.getElementById('gcash_fields');
-    const paymentRef = document.getElementById('payment_ref');
-    const proofImage = document.getElementById('proof_image');
-
-    if (paymentMethod) {
-        paymentMethod.addEventListener('change', () => {
-            if (paymentMethod.value === 'GCash') {
-                if (gcashFields) gcashFields.classList.remove('d-none');
-                if (paymentRef) paymentRef.required = true;
-                if (proofImage) proofImage.required = true;
-            } else {
-                if (gcashFields) gcashFields.classList.add('d-none');
-                if (paymentRef) paymentRef.required = false;
-                if (proofImage) proofImage.required = false;
-            }
-        });
-    }
-    
 })();
 </script>
 

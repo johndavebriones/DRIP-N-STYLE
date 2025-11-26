@@ -57,19 +57,11 @@ if ($total_amount <= 0) {
     exit;
 }
 
-// Get form inputs
+// Get form inputs - Cash on Pickup only
 $pickup_date = $_POST['pickup_date'] ?? date('Y-m-d');
-$raw_method = $_POST['payment_method'] ?? '';
-$payment_method = ($raw_method === 'GCash') ? 'GCash' : 'Cash on Pickup';
-$payment_ref = $_POST['payment_ref'] ?? null;
-$payment_status = ($payment_method === 'GCash') ? 'Paid' : 'Pending';
-
-// Validate GCash
-if ($payment_method === 'GCash' && empty($payment_ref)) {
-    $_SESSION['error'] = "Please enter your GCash reference number.";
-    header("Location: checkout.php");
-    exit;
-}
+$payment_method = 'Cash on Pickup'; // Force Cash on Pickup
+$payment_ref = null; // No reference needed for cash
+$payment_status = 'Pending'; // Cash is always pending until pickup
 
 // Process order with selected items only
 $order_id = $orderController->processOrder(
@@ -81,23 +73,6 @@ $order_id = $orderController->processOrder(
     $item_ids  // Pass selected item IDs to controller
 );
 
-// Handle proof image
-if ($order_id && $payment_method === 'GCash' && isset($_FILES['proof_image']) && $_FILES['proof_image']['error'] === UPLOAD_ERR_OK) {
-    $upload_dir = __DIR__ . '/../../Public/uploads/payments/';
-    if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-
-    $filename = 'proof_' . time() . '_' . basename($_FILES['proof_image']['name']);
-    $target_path = $upload_dir . $filename;
-
-    if (move_uploaded_file($_FILES['proof_image']['tmp_name'], $target_path)) {
-        $proof_image_path = 'uploads/payments/' . $filename;
-        // Save proof image in database
-        $stmt = $conn->prepare("UPDATE payments SET proof_image=? WHERE order_id=?");
-        $stmt->bind_param("si", $proof_image_path, $order_id);
-        $stmt->execute();
-    }
-}
-
 // Clear checkout session and mark order as placed
 if ($order_id) {
     // Remove ordered items from cart
@@ -108,6 +83,8 @@ if ($order_id) {
     // Clear checkout session variables
     unset($_SESSION['checkout_token']);
     unset($_SESSION['checkout_item_ids']);
+    unset($_SESSION['checkout_timestamp']);
+    unset($_SESSION['checkout_loaded']);
     
     // CRITICAL: Mark order as placed - allows ONE-TIME access to success page
     $_SESSION['order_placed'] = true;
