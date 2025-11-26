@@ -20,7 +20,7 @@ if (isset($_SESSION['timeout_alert'])) {
 
   <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/login.css?v=10">
+  <link rel="stylesheet" href="assets/css/login.css?v=11">
 </head>
 <body>
 
