@@ -1,0 +1,463 @@
+/* Dashboard Page Animation */
+.page-fade {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section Titles */
+.section-title {
+  color: #F59E0B;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem !important;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #F59E0B, #FCD34D);
+  border-radius: 2px;
+}
+
+/* Stat Cards */
+.stat-card {
+  transition: all 0.3s ease;
+  border-left: 4px solid #F59E0B;
+}
+
+.stat-card-yellow {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2) !important;
+  border-left-color: #D97706;
+}
+
+.stat-card .card-body {
+  padding: 1.5rem;
+}
+
+.stat-card .card-title {
+  color: #92400E;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.stat-card h3 {
+  color: #F59E0B;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Sales Metrics */
+.sales-metric {
+  padding: 1rem;
+  border-right: 1px solid #FDE68A;
+  transition: background-color 0.3s ease;
+}
+
+.sales-metric:hover {
+  background-color: #FFFBEB;
+}
+
+.sales-metric:last-child {
+  border-right: none;
+}
+
+.sales-label {
+  font-size: 0.875rem;
+  color: #92400E;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sales-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #F59E0B;
+  margin: 0;
+}
+
+.sales-value.text-primary {
+  color: #F59E0B !important;
+}
+
+/* Cards */
+.card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid #FDE68A;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+.card-header {
+  border-bottom: 2px solid #FDE68A;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+}
+
+.header-yellow {
+  background: linear-gradient(135deg, #FBBF24 0%, #FCD34D 100%);
+  border-bottom: 2px solid #F59E0B;
+}
+
+.header-yellow h5 {
+  margin: 0;
+  color: #78350F;
+}
+
+.header-yellow small {
+  color: #92400E;
+  font-weight: 500;
+}
+
+.card-body {
+  padding: 1.5rem;
+  background-color: #FFFBEB;
+}
+
+/* Inventory Status Cards */
+.inventory-card {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.inventory-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #F59E0B, #FCD34D);
+}
+
+.inventory-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.25) !important;
+}
+
+.card-in-stock {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-left: 4px solid #10B981;
+}
+
+.card-low-stock {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border-left: 4px solid #F59E0B;
+}
+
+.card-out-stock {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border-left: 4px solid #EF4444;
+}
+
+.inventory-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.inventory-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0.5rem 0;
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-in-stock .inventory-number {
+  background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-out-stock .inventory-number {
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Chart Containers */
+canvas {
+  max-height: 350px !important;
+  height: 350px !important;
+}
+
+.card-body canvas {
+  width: 100% !important;
+  height: 350px !important;
+}
+
+/* Table Styling */
+.table-responsive {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.table {
+  margin-bottom: 0;
+  background-color: #FFFBEB;
+}
+
+.table thead {
+  background: linear-gradient(135deg, #FCD34D 0%, #FDE68A 100%);
+}
+
+.table thead th {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+  color: #78350F;
+  border-bottom: 2px solid #F59E0B;
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #FDE68A;
+}
+
+.table tbody tr:hover {
+  background-color: #FEF3C7;
+  transform: scale(1.01);
+}
+
+.table tbody td {
+  vertical-align: middle;
+  color: #78350F;
+}
+
+.table tbody td.fw-medium {
+  font-weight: 600;
+  color: #92400E;
+}
+
+.table-light {
+  background: linear-gradient(135deg, #FCD34D 0%, #FDE68A 100%);
+}
+
+.table-light th {
+  color: #78350F;
+  font-weight: 700;
+}
+
+/* Badge Styling */
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bg-warning {
+  background-color: #F59E0B !important;
+  color: #78350F !important;
+}
+
+.bg-success {
+  background-color: #10B981 !important;
+}
+
+.bg-danger {
+  background-color: #EF4444 !important;
+}
+
+.bg-info {
+  background-color: #3B82F6 !important;
+}
+
+.bg-primary {
+  background-color: #8B5CF6 !important;
+}
+
+.bg-secondary {
+  background-color: #6B7280 !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .sales-metric {
+    border-right: none;
+    border-bottom: 1px solid #FDE68A;
+    margin-bottom: 1rem;
+  }
+
+  .sales-metric:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .sales-value {
+    font-size: 1.5rem;
+  }
+
+  .inventory-number {
+    font-size: 2rem;
+  }
+
+  canvas {
+    max-height: 300px !important;
+    height: 300px !important;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .stat-card .card-body {
+    padding: 1rem;
+  }
+
+  .stat-card h3 {
+    font-size: 1.5rem;
+  }
+
+  .inventory-icon {
+    font-size: 2rem;
+  }
+
+  .inventory-number {
+    font-size: 1.75rem;
+  }
+}
+
+/* Loading State */
+.card-body.loading {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+}
+
+.card-body.loading::after {
+  content: '';
+  width: 50px;
+  height: 50px;
+  border: 5px solid #FDE68A;
+  border-top: 5px solid #F59E0B;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.text-muted {
+  font-style: italic;
+  color: #92400E !important;
+}
+
+/* Scrollbar Styling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #FEF3C7;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #FBBF24;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #F59E0B;
+}
+
+/* Utility Classes */
+.text-yellow-dark {
+  color: #92400E !important;
+}
+
+.text-yellow {
+  color: #F59E0B !important;
+}
+
+.bg-yellow-light {
+  background-color: #FFFBEB !important;
+}
+
+.border-yellow {
+  border-color: #FCD34D !important;
+}
+
+/* Card Hover Effects */
+.card-hover-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.1),
+              0 10px 10px -5px rgba(245, 158, 11, 0.04);
+}
+
+/* Print Styles */
+@media print {
+  .page-fade {
+    animation: none;
+    opacity: 1;
+  }
+
+  .stat-card,
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
+  canvas {
+    max-height: 300px !important;
+  }
+}
