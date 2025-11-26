@@ -38,9 +38,7 @@ class OrderDAO {
         return $this->conn->insert_id;
     }
 
-    /*-----------------------------------------------------------
-        ADD ORDER ITEMS
-    ------------------------------------------------------------*/
+    /*ADD ORDER ITEMS*/
     public function addOrderItems($order_id, $cartItems) {
         $stmt = $this->conn->prepare("
             INSERT INTO order_items (order_id, product_id, quantity, price)
@@ -59,9 +57,7 @@ class OrderDAO {
         }
     }
 
-    /*-----------------------------------------------------------
-        CREATE PAYMENT
-    ------------------------------------------------------------*/
+    /*CREATE PAYMENT*/
     public function createPayment($order_id, $method, $ref, $amount, $status = 'Pending') {
         $stmt = $this->conn->prepare("
             INSERT INTO payments (order_id, payment_method, payment_ref, amount, payment_status)

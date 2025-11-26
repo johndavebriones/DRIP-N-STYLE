@@ -50,46 +50,7 @@ $title = "Order #" . $order_id;
 ob_start();
 ?>
 
-<style>
-.page-fade {
-    opacity: 0;
-    animation: fadeIn 0.6s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.order-detail-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-}
-
-.status-badge-large {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-}
-
-.product-item {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid #ffc107;
-}
-
-.product-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-</style>
+<link rel="stylesheet" href="assets/css/view_order.css">
 
 <div class="page-fade">
     <!-- Back Button -->
@@ -131,13 +92,44 @@ ob_start();
             </div>
         </div>
 
+        <!-- Order Status Flow -->
+        <?php if ($order['order_status'] !== 'Cancelled'): ?>
+        <div class="status-flow">
+            <div class="status-step <?= in_array($order['order_status'], ['Pending', 'Confirmed', 'Ready for Pickup', 'Completed']) ? 'completed' : '' ?>">
+                <div class="status-step-circle">1</div>
+                <div class="status-step-label">Pending</div>
+            </div>
+            <div class="status-step <?= in_array($order['order_status'], ['Confirmed', 'Ready for Pickup', 'Completed']) ? 'completed' : ($order['order_status'] === 'Pending' ? '' : '') ?>">
+                <div class="status-step-circle">2</div>
+                <div class="status-step-label">Confirmed</div>
+            </div>
+            <div class="status-step <?= in_array($order['order_status'], ['Ready for Pickup', 'Completed']) ? 'completed' : ($order['order_status'] === 'Confirmed' ? '' : '') ?>">
+                <div class="status-step-circle">3</div>
+                <div class="status-step-label">Ready for Pickup</div>
+            </div>
+            <div class="status-step <?= $order['order_status'] === 'Completed' ? 'completed' : ($order['order_status'] === 'Ready for Pickup' ? '' : '') ?>">
+                <div class="status-step-circle">4</div>
+                <div class="status-step-label">Completed</div>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <!-- Customer Info -->
         <div class="row mb-4">
             <div class="col-md-6">
                 <h5 class="fw-bold mb-3">Customer Information</h5>
-                <p class="mb-2"><strong>Name:</strong> <?= htmlspecialchars($order['customer_name'] ?? 'N/A') ?></p>
-                <p class="mb-2"><strong>Email:</strong> <?= htmlspecialchars($order['customer_email'] ?? 'N/A') ?></p>
-                <p class="mb-2"><strong>Contact:</strong> <?= htmlspecialchars($order['customer_contact'] ?? 'N/A') ?></p>
+                <p class="mb-2">
+                    <i class="bi bi-person-fill me-2 text-primary"></i>
+                    <strong>Name:</strong> <?= htmlspecialchars($order['customer_name'] ?? 'N/A') ?>
+                </p>
+                <p class="mb-2">
+                    <i class="bi bi-envelope-fill me-2 text-primary"></i>
+                    <strong>Email:</strong> <?= htmlspecialchars($order['customer_email'] ?? 'N/A') ?>
+                </p>
+                <p class="mb-2">
+                    <i class="bi bi-telephone-fill me-2 text-primary"></i>
+                    <strong>Phone:</strong> <?= htmlspecialchars($order['customer_phone'] ?? $order['customer_contact'] ?? 'N/A') ?>
+                </p>
             </div>
             <div class="col-md-6">
                 <h5 class="fw-bold mb-3">Order Details</h5>
@@ -145,7 +137,7 @@ ob_start();
                 <p class="mb-2"><strong>Payment Method:</strong> <?= htmlspecialchars($order['payment_method'] ?? 'N/A') ?></p>
                 <p class="mb-2">
                     <strong>Payment Status:</strong>
-                    <span class="badge bg-<?= $order['payment_status'] === 'Paid' ? 'success text-dark' : ($order['payment_status'] === 'Failed' ? 'danger text-dark' : 'warning text-dark') ?>">
+                    <span class="badge bg-<?= $order['payment_status'] === 'Paid' ? 'success' : ($order['payment_status'] === 'Failed' ? 'danger' : 'warning') ?> text-dark">
                         <?= htmlspecialchars($order['payment_status']) ?>
                     </span>
                 </p>
@@ -153,13 +145,14 @@ ob_start();
                     <strong>Order Status:</strong>
                     <span class="badge bg-<?php
                         echo match($order['order_status']) {
-                            'Pending' => 'warning text-dark',
-                            'Ready for Pickup' => 'primary text-dark',
-                            'Completed' => 'success text-dark',
-                            'Cancelled' => 'danger text-dark',
-                            default => 'secondary text-dark'
+                            'Pending' => 'warning',
+                            'Confirmed' => 'info',
+                            'Ready for Pickup' => 'primary',
+                            'Completed' => 'success',
+                            'Cancelled' => 'danger',
+                            default => 'secondary'
                         };
-                    ?>">
+                    ?> text-dark">
                         <?= htmlspecialchars($order['order_status']) ?>
                     </span>
                 </p>
@@ -240,6 +233,7 @@ ob_start();
                         <label class="form-label fw-semibold">Order Status</label>
                         <select name="order_status" class="form-select" required>
                             <option value="Pending" <?= $order['order_status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                            <option value="Confirmed" <?= $order['order_status'] === 'Confirmed' ? 'selected' : '' ?>>Confirmed</option>
                             <option value="Ready for Pickup" <?= $order['order_status'] === 'Ready for Pickup' ? 'selected' : '' ?>>Ready for Pickup</option>
                             <option value="Completed" <?= $order['order_status'] === 'Completed' ? 'selected' : '' ?>>Completed</option>
                             <option value="Cancelled" <?= $order['order_status'] === 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>
@@ -257,12 +251,27 @@ ob_start();
 
                 <div class="alert alert-info mt-3">
                     <i class="bi bi-info-circle me-2"></i>
+                    <strong>Order Status Flow:</strong>
+                    <div class="mt-2">
+                        <strong>Pending</strong> → <strong>Confirmed</strong> → <strong>Ready for Pickup</strong> → <strong>Completed</strong>
+                    </div>
+                    <ul class="mb-0 mt-2">
+                        <li><strong>Pending:</strong> Order received, awaiting confirmation</li>
+                        <li><strong>Confirmed:</strong> Order verified and being prepared</li>
+                        <li><strong>Ready for Pickup:</strong> Order is ready to be collected</li>
+                        <li><strong>Completed:</strong> Order fulfilled and payment received (reduces stock)</li>
+                        <li><strong>Cancelled:</strong> Order cancelled (payment set to Failed, order locked)</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
                     <strong>Stock Management Rules:</strong>
                     <ul class="mb-0 mt-2">
-                        <li>Setting Order Status to <strong>"Completed"</strong> and Payment Status to <strong>"Paid"</strong> will <strong>reduce stock</strong> for all items in this order.</li>
-                        <li>Setting Order Status to <strong>"Cancelled"</strong> will automatically set Payment Status to <strong>"Failed"</strong>.</li>
-                        <li><strong>Cancelled orders do NOT increase stock</strong> - items remain as-is.</li>
-                        <li><strong>Once cancelled with failed payment, the order becomes locked and cannot be modified.</strong></li>
+                        <li>Setting Order Status to <strong>"Completed"</strong> and Payment Status to <strong>"Paid"</strong> will <strong>reduce stock</strong> for all items.</li>
+                        <li>Setting Order Status to <strong>"Cancelled"</strong> will automatically set Payment Status to <strong>"Failed"</strong> and lock the order.</li>
+                        <li><strong>Cancelled orders do NOT restore stock</strong> - items remain as-is.</li>
+                        <li><strong>Once cancelled, the order cannot be modified.</strong></li>
                     </ul>
                 </div>
 
@@ -278,7 +287,7 @@ ob_start();
 </div>
 
 <script>
-// Confirmation before updating to Completed + Paid
+// Confirmation before updating status
 document.getElementById('updateStatusForm')?.addEventListener('submit', function(e) {
     const orderStatus = document.querySelector('select[name="order_status"]').value;
     const paymentStatus = document.querySelector('select[name="payment_status"]').value;
@@ -291,6 +300,12 @@ document.getElementById('updateStatusForm')?.addEventListener('submit', function
     
     if (orderStatus === 'Cancelled') {
         if (!confirm('This will cancel the order and mark payment as Failed. Stock will NOT be restored. Once cancelled, this order cannot be modified again. Continue?')) {
+            e.preventDefault();
+        }
+    }
+    
+    if (orderStatus === 'Confirmed') {
+        if (!confirm('This will confirm the order and notify the customer that their order is being prepared. Continue?')) {
             e.preventDefault();
         }
     }

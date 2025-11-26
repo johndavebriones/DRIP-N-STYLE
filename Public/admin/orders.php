@@ -29,6 +29,7 @@ ob_start();
         <select name="status" class="form-select shadow-sm">
           <option value="">All Status</option>
           <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
           <option value="Ready for Pickup">Ready for Pickup</option>
           <option value="Completed">Completed</option>
           <option value="Cancelled">Cancelled</option>
