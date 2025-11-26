@@ -74,7 +74,7 @@ $chartData = [
 ob_start();
 ?>
 
-<link rel="stylesheet" href="/public/css/dashboard.css">
+<link rel="stylesheet" href="assets/css/dashboard.css?v=2">
 
 <div class="page-fade">
   <h2 class="mb-4">Welcome, <?= htmlspecialchars($_SESSION['user_name'] ?? 'Admin') ?> 👋</h2>

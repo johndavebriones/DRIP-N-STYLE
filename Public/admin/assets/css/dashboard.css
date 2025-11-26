@@ -64,7 +64,7 @@
 }
 
 .stat-card h3 {
-  color: #F59E0B;
+  color: #000000;
   font-weight: 700;
   margin: 0;
 }
@@ -96,12 +96,12 @@
 .sales-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #F59E0B;
+  color: #64440d;
   margin: 0;
 }
 
 .sales-value.text-primary {
-  color: #F59E0B !important;
+  color: #64440d !important;
 }
 
 /* Cards */
@@ -117,19 +117,19 @@
 }
 
 .card-header {
-  border-bottom: 2px solid #FDE68A;
+  border-bottom: 2px solid #0d0b02;
   padding: 1rem 1.25rem;
   font-weight: 600;
 }
 
 .header-yellow {
-  background: linear-gradient(135deg, #FBBF24 0%, #FCD34D 100%);
-  border-bottom: 2px solid #F59E0B;
+  background: linear-gradient(135deg, #f3b310 0%, #ffe07b 100%);
+  border-bottom: 2px solid #d38600;
 }
 
 .header-yellow h5 {
   margin: 0;
-  color: #78350F;
+  color: #813a11;
 }
 
 .header-yellow small {
