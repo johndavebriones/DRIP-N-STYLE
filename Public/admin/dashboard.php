@@ -4,19 +4,24 @@ require_once __DIR__ . '/../../App/Helpers/SessionHelper.php';
 SessionHelper::requireAdminLogin();
 SessionHelper::preventCache();
 
-require_once __DIR__ . '/../../App/Controllers/AdminController.php';
-$admin = new AdminController();
+require_once __DIR__ . '/../../App/Config/database_connect.php';
+require_once __DIR__ . '/../../App/DAO/adminDAO.php';
 
 $title = "Dashboard";
 
-$stats = $admin->getDashboardStats();
-$recentOrders = $admin->getRecentOrders();
+// Initialize AdminDAO directly
+$db = new Database();
+$conn = $db->connect();
+$adminDAO = new AdminDAO($conn);
 
-// Extract values
-$totalProducts = $stats['totalProducts'];
-$totalOrders = $stats['totalOrders'];
-$totalCustomers = $stats['totalCustomers'];
-$totalRevenue = $stats['totalRevenue'];
+// Get dashboard statistics
+$totalProducts = $adminDAO->countProducts();
+$totalOrders = $adminDAO->countOrders();
+$totalCustomers = $adminDAO->countCustomers();
+$totalRevenue = $adminDAO->sumRevenue();
+
+// Get recent orders
+$recentOrders = $adminDAO->getRecentOrders(5);
 
 ob_start();
 ?>
@@ -88,10 +93,11 @@ ob_start();
               <td>
                 <?php
                   $badgeClass = match($order['order_status'] ?? '') {
-                      'Completed' => 'bg-success',
+                      'Completed' => 'bg-success text-dark',
                       'Pending' => 'bg-warning text-dark',
-                      'Cancelled' => 'bg-danger',
-                      default => 'bg-secondary'
+                      ''=> 'bg-warning text-dark',
+                      'Cancelled' => 'bg-danger text-dark',
+                      default => 'bg-secondary text-dark'
                   };
                 ?>
                 <span class="badge <?= $badgeClass ?>"><?= $order['order_status'] ?? 'Unknown' ?></span>
@@ -130,3 +136,4 @@ ob_start();
 <?php
 $content = ob_get_clean();
 include __DIR__ . '/layout/main.php';
+?>
