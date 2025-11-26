@@ -5,13 +5,11 @@ body {
   margin: 0;
 }
 
-/* Layout wrapper */
 .admin-layout {
   display: flex;
   min-height: 100vh;
 }
 
-/* Main content */
 .main-content {
   flex-grow: 1;
   margin-left: 240px; /* sidebar width */
@@ -21,14 +19,12 @@ body {
   overflow-x: hidden;
 }
 
-/* Sticky Filters */
 .sticky-filters {
   position: sticky;
   top: 75px; /* adjust based on your navbar height */
   z-index: 100;
 }
 
-/* Search / Filters Inputs */
 #searchBar,
 #filterCategory,
 #filterStatus {

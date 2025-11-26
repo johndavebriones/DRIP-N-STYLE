@@ -24,7 +24,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <a href="../../Public/admin/payments.php" class="nav-link <?= $currentPage === 'payments.php' ? 'active' : '' ?>">💳 Payments</a>
       </li>
       <li>
-        <a href="../../Public/admin/payments.php" class="nav-link <?= $currentPage === 'settings.php' ? 'active' : '' ?>">⚙️ Settings</a>
+        <a href="../../Public/admin/settings.php" class="nav-link <?= $currentPage === 'settings.php' ? 'active' : '' ?>">⚙️ Settings</a>
       </li>
     </ul>
   </div>

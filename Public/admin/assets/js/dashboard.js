@@ -1,22 +1,18 @@
-// dashboard.js - Dashboard Analytics Charts
 
-// Yellow monochromatic color palette
 const yellowColors = {
-  dark: '#F59E0B',      // amber-500
-  medium: '#FBBF24',    // amber-400
-  light: '#FCD34D',     // amber-300
-  lighter: '#FDE68A',   // amber-200
-  lightest: '#FEF3C7',  // amber-100
+  dark: '#F59E0B',    
+  medium: '#FBBF24',    
+  light: '#FCD34D',    
+  lighter: '#FDE68A',  
+  lightest: '#FEF3C7', 
   array: ['#F59E0B', '#FBBF24', '#FCD34D', '#FDE68A', '#FEF3C7', '#D97706', '#B45309', '#92400E']
 };
 
-// Common chart options
 const commonOptions = {
   responsive: true,
   maintainAspectRatio: false
 };
 
-// Initialize all charts when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   initRevenueChart();
   initTopProductsChart();
@@ -70,7 +66,6 @@ function initRevenueChart() {
   });
 }
 
-// Top Selling Products Bar Chart
 function initTopProductsChart() {
   const ctx = document.getElementById('topProductsChart');
   if (!ctx) return;
@@ -106,7 +101,6 @@ function initTopProductsChart() {
   });
 }
 
-// Sales by Category Pie Chart
 function initCategoryChart() {
   const ctx = document.getElementById('categoryChart');
   if (!ctx) return;
@@ -251,7 +245,6 @@ function initOrderCategoryChart() {
   });
 }
 
-// Inventory Turnover Rate Bar Chart
 function initTurnoverChart() {
   const ctx = document.getElementById('turnoverChart');
   if (!ctx) return;
@@ -295,7 +288,6 @@ function initTurnoverChart() {
   });
 }
 
-// Popular Sizes Doughnut Chart
 function initSizesChart() {
   const ctx = document.getElementById('sizesChart');
   if (!ctx) return;
@@ -331,7 +323,6 @@ function initSizesChart() {
   });
 }
 
-// Popular Colors Bar Chart
 function initColorsChart() {
   const ctx = document.getElementById('colorsChart');
   if (!ctx) return;
