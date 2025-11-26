@@ -29,6 +29,7 @@ foreach ($products as $product) {
             'price' => $product['price'],
             'image' => $product['image'],
             'description' => $product['description'] ?? '',
+            'is_featured' => $product['is_featured'] ?? 0,
             'variants' => []
         ];
     }
@@ -40,7 +41,8 @@ foreach ($products as $product) {
         'stock' => $product['stock'],
         'status' => $product['status'],
         'image' => $product['image'],
-        'description' => $product['description'] ?? ''
+        'description' => $product['description'] ?? '',
+        'is_featured' => $product['is_featured'] ?? 0
     ];
 }
 
@@ -56,6 +58,9 @@ ob_start();
         </div>
 
         <div class="d-flex gap-2">
+            <button class="btn btn-secondary fw-semibold" id="featured_modal_btn">
+                <i class="bi bi-star-fill me-1"></i> Manage Featured
+            </button>
             <button class="btn btn-success fw-semibold" id="history_modal_btn">
                 <i class="bi bi-clock-history me-1"></i> History
             </button>
@@ -118,6 +123,11 @@ ob_start();
                             <span class="badge bg-dark position-absolute top-0 end-0 m-2">
                                 <?= count($group['variants']) ?> variant(s)
                             </span>
+                            <?php if ($group['is_featured']): ?>
+                                <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">
+                                    <i class="bi bi-star-fill"></i> Featured
+                                </span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Product Info -->
@@ -200,7 +210,6 @@ ob_start();
                 <div class="modal-body py-4 px-5">
                     <input type="hidden" name="action" value="add">
                     <input type="hidden" name="product_id" id="product_id">
-                    <!-- SINGLE hidden field for image path (used in EDIT mode) -->
                     <input type="hidden" id="product_image_path" value="">
 
                     <div class="row g-4">
@@ -254,7 +263,6 @@ ob_start();
                                 placeholder="Enter product details..."></textarea>
                         </div>
 
-                        <!-- Section 1: For ADD mode (file upload) -->
                         <div class="col-12" id="add_image_section">
                             <label class="form-label fw-semibold">Upload Image <span class="text-danger">*</span></label>
                             <input type="file" name="image" id="product_image_file" class="form-control" accept="image/*" required>
@@ -264,7 +272,6 @@ ob_start();
                             </div>
                         </div>
 
-                        <!-- Section 2: For EDIT mode (just show image) -->
                         <div class="col-12" id="edit_image_section" style="display: none;">
                             <label class="form-label fw-semibold">Product Image</label>
                             <div class="mt-2 text-center">
@@ -302,7 +309,6 @@ ob_start();
                     <input type="hidden" name="name" id="variant_name">
                     <input type="hidden" name="price" id="variant_price">
                     <input type="hidden" name="category_id" id="variant_category">
-                    <!-- SINGLE hidden field for image path -->
                     <input type="hidden" id="variant_image_path" value="">
 
                     <div class="mb-3">
@@ -343,6 +349,41 @@ ob_start();
                     <button type="submit" class="btn btn-success fw-bold rounded-pill px-4">Add Variant</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Products Modal -->
+<div class="modal fade" id="featured_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+            <div class="modal-header bg-warning text-white rounded-top-4">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-star-fill me-2"></i>Manage Featured Products
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Featured products will be displayed on the homepage.</strong> 
+                    Select up to 6 products to feature. Click the star to toggle featured status.
+                </div>
+                
+                <div id="featured_products_container">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading products...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light rounded-bottom-4">
+                <button class="btn btn-secondary fw-semibold rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i>Close
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -395,7 +436,6 @@ ob_start();
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script src="assets/js/products.js?v=<?= time() ?>"></script>
 
 <?php

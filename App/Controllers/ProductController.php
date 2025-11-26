@@ -80,4 +80,24 @@ class ProductController {
     public function getDeletedProducts() {
         return $this->productDAO->getDeletedProducts();
     }
+
+    /*-----------------------------------------------------------
+        FEATURED PRODUCTS METHODS
+    ------------------------------------------------------------*/
+
+    public function getAllProductsForFeatured() {
+        return $this->productDAO->getAllProductsForFeatured();
+    }
+
+    public function toggleFeatured($productId) {
+        return $this->productDAO->toggleFeatured($productId);
+    }
+
+    public function getFeaturedCount() {
+        return $this->productDAO->getFeaturedCount();
+    }
+
+    public function getFeaturedProducts($limit = 6) {
+        return $this->productDAO->getFeaturedProducts($limit);
+    }
 }

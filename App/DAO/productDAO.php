@@ -43,7 +43,7 @@ class ProductDAO {
             $types .= 's';
         }
 
-        $query .= " ORDER BY p.name ASC, p.date_added DESC";
+        $query .= " ORDER BY p.is_featured DESC, p.name ASC, p.date_added DESC";
 
         $stmt = $this->conn->prepare($query);
         if ($params) $stmt->bind_param($types, ...$params);
@@ -56,7 +56,7 @@ class ProductDAO {
         $stmt = $this->conn->prepare("
             SELECT 
                 p.product_id, p.name, p.price, p.size, p.color, p.stock, 
-                p.status, p.category_id, p.image, p.description, 
+                p.status, p.category_id, p.image, p.description, p.is_featured,
                 c.category_name 
             FROM products p 
             LEFT JOIN categories c ON p.category_id = c.category_id 
@@ -71,6 +71,7 @@ class ProductDAO {
         if ($result && $row = $result->fetch_assoc()) {
             $row['description'] = $row['description'] ?? '';
             $row['color'] = $row['color'] ?? '';
+            $row['is_featured'] = $row['is_featured'] ?? 0;
             return $row;
         }
 
@@ -222,9 +223,7 @@ class ProductDAO {
         return $result['count'] > 0;
     }
 
-    /*-----------------------------------------------------------
-        REDUCE STOCK (For Completed Orders)
-    ------------------------------------------------------------*/
+    // Reduce stock (For Completed Orders)
     public function reduceStock($productId, $quantity) {
         // First, get current stock
         $stmt = $this->conn->prepare("SELECT stock, name FROM products WHERE product_id = ?");
@@ -284,5 +283,110 @@ class ProductDAO {
         ");
         $stmt->bind_param('i', $id);
         return $stmt->execute();
+    }
+
+    /*-----------------------------------------------------------
+        FEATURED PRODUCTS METHODS
+    ------------------------------------------------------------*/
+    
+    // Get all products for featured selection (active products only)
+    public function getAllProductsForFeatured() {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                p.product_id, 
+                p.name, 
+                p.price, 
+                p.size, 
+                p.color, 
+                p.stock, 
+                p.status,
+                p.image, 
+                p.is_featured,
+                c.category_name 
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            WHERE p.deleted_at IS NULL AND p.status = 'Available'
+            ORDER BY p.is_featured DESC, p.name ASC
+        ");
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // Toggle featured status for a product
+    public function toggleFeatured($productId) {
+        // First check current count of featured products
+        $countStmt = $this->conn->prepare("
+            SELECT COUNT(*) as count, 
+                   (SELECT is_featured FROM products WHERE product_id = ?) as current_status
+            FROM products 
+            WHERE is_featured = 1 AND deleted_at IS NULL
+        ");
+        $countStmt->bind_param('i', $productId);
+        $countStmt->execute();
+        $result = $countStmt->get_result()->fetch_assoc();
+        
+        $featuredCount = $result['count'];
+        $currentStatus = $result['current_status'];
+
+        // If trying to feature and already at limit (6)
+        if ($currentStatus == 0 && $featuredCount >= 6) {
+            return [
+                'success' => false,
+                'message' => 'Maximum of 6 featured products reached. Please unfeature another product first.'
+            ];
+        }
+
+        // Toggle the status
+        $newStatus = $currentStatus ? 0 : 1;
+        $stmt = $this->conn->prepare("UPDATE products SET is_featured = ? WHERE product_id = ?");
+        $stmt->bind_param('ii', $newStatus, $productId);
+        
+        if ($stmt->execute()) {
+            return [
+                'success' => true,
+                'new_status' => $newStatus,
+                'message' => $newStatus ? 'Product added to featured!' : 'Product removed from featured!'
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => 'Failed to update featured status'
+        ];
+    }
+
+    // Get count of featured products
+    public function getFeaturedCount() {
+        $stmt = $this->conn->prepare("
+            SELECT COUNT(*) as count 
+            FROM products 
+            WHERE is_featured = 1 AND deleted_at IS NULL
+        ");
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['count'];
+    }
+
+    // Get featured products for homepage
+    public function getFeaturedProducts($limit = 6) {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                p.product_id, 
+                p.name, 
+                p.price, 
+                p.image, 
+                p.description,
+                c.category_name 
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            WHERE p.is_featured = 1 
+              AND p.deleted_at IS NULL 
+              AND p.status = 'Available'
+            ORDER BY p.date_added DESC
+            LIMIT ?
+        ");
+        $stmt->bind_param('i', $limit);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }

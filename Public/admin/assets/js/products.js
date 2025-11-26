@@ -616,3 +616,163 @@ document.addEventListener('DOMContentLoaded', function() {
         if (variantDescEl) variantDescEl.value = '';
     }
 });
+
+document.getElementById('featured_modal_btn').addEventListener('click', function() {
+    const modal = new bootstrap.Modal(document.getElementById('featured_modal'));
+    modal.show();
+    loadFeaturedProducts();
+});
+
+// Load all products for featured selection
+function loadFeaturedProducts() {
+    const container = document.getElementById('featured_products_container');
+    
+    fetch('ajax_featured.php?action=get_products')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayFeaturedProducts(data.products, data.featured_count);
+            } else {
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Failed to load products
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Error loading products
+                </div>
+            `;
+        });
+}
+
+// Display products in featured modal
+function displayFeaturedProducts(products, featuredCount) {
+    const container = document.getElementById('featured_products_container');
+    
+    if (!products || products.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                <p class="mt-3">No products available</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = `
+        <div class="mb-3 text-end">
+            <span class="badge ${featuredCount >= 6 ? 'bg-danger' : 'bg-info'} fs-6">
+                Featured: ${featuredCount} / 6
+            </span>
+        </div>
+        <div class="row g-3">
+    `;
+
+    products.forEach(product => {
+        const isFeatured = product.is_featured == 1;
+        const featuredClass = isFeatured ? 'btn-warning' : 'btn-outline-warning';
+        const featuredIcon = isFeatured ? 'bi-star-fill' : 'bi-star';
+        const featuredText = isFeatured ? 'Featured' : 'Feature';
+
+        html += `
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm ${isFeatured ? 'border-warning' : ''}">
+                    ${isFeatured ? '<div class="position-absolute top-0 end-0 m-2"><span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Featured</span></div>' : ''}
+                    
+                    <img src="../../Public/${product.image || 'uploads/no-image.png'}" 
+                         class="card-img-top" 
+                         alt="${product.name}"
+                         style="height: 200px; object-fit: cover;">
+                    
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold text-truncate">${product.name}</h6>
+                        <p class="text-muted small mb-1">${product.category_name || 'Uncategorized'}</p>
+                        <p class="text-warning fw-bold mb-2">₱${parseFloat(product.price).toFixed(2)}</p>
+                        <div class="small text-muted mb-2">
+                            <span class="badge bg-secondary">${product.size}</span>
+                            <span class="badge bg-secondary">${product.color}</span>
+                            <span class="badge ${product.status === 'Available' ? 'bg-success' : 'bg-danger'}">${product.status}</span>
+                        </div>
+                        <button class="btn ${featuredClass} btn-sm w-100 toggle-featured-btn" 
+                                data-product-id="${product.product_id}"
+                                ${!isFeatured && featuredCount >= 6 ? 'disabled' : ''}>
+                            <i class="bi ${featuredIcon} me-1"></i>
+                            ${featuredText}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Attach event listeners to toggle buttons
+    document.querySelectorAll('.toggle-featured-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            toggleFeaturedStatus(this.dataset.productId, this);
+        });
+    });
+}
+
+// Toggle featured status
+function toggleFeaturedStatus(productId, button) {
+    const originalHTML = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Updating...';
+
+    const formData = new FormData();
+    formData.append('action', 'toggle_featured');
+    formData.append('product_id', productId);
+
+    fetch('ajax_featured.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+                timer: 1500,
+                showConfirmButton: false
+            });
+            
+            // Reload the featured products list
+            loadFeaturedProducts();
+            
+            // Optionally reload the main products page
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+            button.disabled = false;
+            button.innerHTML = originalHTML;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to update featured status'
+        });
+        button.disabled = false;
+        button.innerHTML = originalHTML;
+    });
+}

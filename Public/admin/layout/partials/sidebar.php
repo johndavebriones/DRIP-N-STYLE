@@ -21,10 +21,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <a href="../../Public/admin/orders.php" class="nav-link <?= $currentPage === 'orders.php' ? 'active' : '' ?>">📦 Orders</a>
       </li>
       <li>
-        <a href="../../Public/admin/customers.php" class="nav-link <?= $currentPage === 'customers.php' ? 'active' : '' ?>">👥 Customers</a>
+        <a href="../../Public/admin/payments.php" class="nav-link <?= $currentPage === 'payments.php' ? 'active' : '' ?>">💳 Payments</a>
       </li>
       <li>
-        <a href="../../Public/admin/payments.php" class="nav-link <?= $currentPage === 'payments.php' ? 'active' : '' ?>">💳 Payments</a>
+        <a href="../../Public/admin/payments.php" class="nav-link <?= $currentPage === 'settings.php' ? 'active' : '' ?>">⚙️ Settings</a>
       </li>
     </ul>
   </div>

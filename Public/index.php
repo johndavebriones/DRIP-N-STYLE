@@ -22,6 +22,11 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     }
 }
 
+// Fetch featured products using ProductController
+require_once __DIR__ . '/../App/Controllers/ProductController.php';
+$productController = new ProductController();
+$featuredProducts = $productController->getFeaturedProducts(6);
+
 $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
@@ -84,38 +89,56 @@ $currentPage = basename($_SERVER['PHP_SELF']);
   <section class="py-5 bg-light">
     <div class="container text-center">
       <h2 class="mb-4 fw-bold text-black">Featured Products</h2>
-      <div class="row g-4">
-        <!-- Product cards -->
-        <div class="col-md-4">
-          <div class="card product-card border-0 shadow-sm">
-            <img src="assets/images/565706852_1214219220724446_7902029893493702505_n.jpg" class="card-img-top" alt="Denim Shorts">
-            <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">Denim Shorts</h5>
-              <p class="card-text text-muted">₱600</p>
-              <button class="btn btn-warning text-black fw-semibold">View Details</button>
-            </div>
-          </div>
+      
+      <?php if (empty($featuredProducts)): ?>
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle me-2"></i>
+          No featured products available at the moment. Check back soon!
         </div>
-        <div class="col-md-4">
-          <div class="card product-card border-0 shadow-sm">
-            <img src="assets/images/564735523_1214149110731457_2363958690448676242_n.jpg" class="card-img-top" alt="Y2K Tops">
-            <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">Y2K Tops</h5>
-              <p class="card-text text-muted">₱450</p>
-              <button class="btn btn-warning text-black fw-semibold">View Details</button>
+      <?php else: ?>
+        <div class="row g-4">
+          <?php foreach ($featuredProducts as $product): ?>
+            <div class="col-md-6 col-lg-4">
+              <div class="card product-card border-0 shadow-sm h-100 position-relative">
+                <!-- Featured Badge -->
+                <div class="position-absolute top-0 end-0 m-2 z-index-1">
+                  <span class="badge bg-warning text-dark">
+                    <i class="bi bi-star-fill"></i> Featured
+                  </span>
+                </div>
+                
+                <img src="<?php echo htmlspecialchars($product['image']); ?>" 
+                     class="card-img-top" 
+                     alt="<?php echo htmlspecialchars($product['name']); ?>"
+                     style="height: 300px; object-fit: cover;">
+                
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title fw-bold text-dark"><?php echo htmlspecialchars($product['name']); ?></h5>
+                  <p class="text-muted small"><?php echo htmlspecialchars($product['category_name'] ?? 'Fashion'); ?></p>
+                  <p class="card-text text-warning fw-bold fs-5">₱<?php echo number_format($product['price'], 2); ?></p>
+                  
+                  <?php if (!empty($product['description'])): ?>
+                    <p class="card-text text-muted small flex-grow-1">
+                      <?php echo htmlspecialchars(substr($product['description'], 0, 80)) . '...'; ?>
+                    </p>
+                  <?php endif; ?>
+                  
+                  <a href="../Public/shop/product_details.php?id=<?php echo $product['product_id']; ?>" 
+                     class="btn btn-warning text-black fw-semibold mt-auto">
+                     <i class="bi bi-eye me-1"></i> View Details
+                  </a>
+                </div>
+              </div>
             </div>
-          </div>
+          <?php endforeach; ?>
         </div>
-        <div class="col-md-4">
-          <div class="card product-card border-0 shadow-sm">
-            <img src="assets/images/565639940_1214149134064788_3962912159579614764_n.jpg" class="card-img-top" alt="GAP Basic Tops">
-            <div class="card-body">
-              <h5 class="card-title fw-bold text-dark">GAP Basic Tops</h5>
-              <p class="card-text text-muted">₱850</p>
-              <button class="btn btn-warning text-black fw-semibold">View Details</button>
-            </div>
-          </div>
-        </div>
+      <?php endif; ?>
+      
+      <!-- View All Button -->
+      <div class="mt-4">
+        <a href="../Public/shop/shop.php" class="btn btn-outline-warning btn-lg fw-semibold">
+          <i class="bi bi-shop me-2"></i> View All Products
+        </a>
       </div>
     </div>
   </section>
@@ -131,7 +154,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
           <h2 class="fw-bold text-black mb-3">About Drip N' Style</h2>
           <p class="text-muted">
             Drip N' Style is your trusted online clothing store, offering a wide range of trendy,
-            high-quality apparel for all styles. Whether you're into casual, streetwear, or classy fits—we’ve got you covered.
+            high-quality apparel for all styles. Whether you're into casual, streetwear, or classy fits—we've got you covered.
           </p>
           <p class="text-muted">
             Our mission is to bring premium fashion closer to you with affordable prices,
@@ -148,7 +171,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <div class="container text-center">
       <h2 class="fw-bold text-black mb-4">Contact Us</h2>
       <p class="text-muted mb-5">
-        Got questions, concerns, or inquiries? We’re here to help anytime!
+        Got questions, concerns, or inquiries? We're here to help anytime!
       </p>
 
       <div class="row g-4">
