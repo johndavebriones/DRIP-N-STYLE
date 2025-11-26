@@ -28,7 +28,7 @@ if (isset($_SESSION['timeout_alert'])) {
 
   <!-- Left / Top Image -->
   <div class="auth-left" onclick="window.location.href='index.php'">
-      <img src="assets/images/dripnstylelogo.png" alt="Drip N Style Logo">
+      <img src="assets/images/dripnStylelogologinRegister.png" alt="Drip N Style Logo">
   </div>
 
   <!-- Right Form Panel -->

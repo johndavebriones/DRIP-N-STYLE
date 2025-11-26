@@ -23,22 +23,24 @@ body {
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
+  position: relative;
 }
 
 /* ---------- LEFT SIDE (60% - Image covers full left side) ---------- */
 .auth-left {
   width: 60%;
   min-height: 100vh;
-  background: #fedd57;
+  background: linear-gradient(135deg, #fedd57 0%, #f5c542 50%, #eeb20e 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px;
+  padding: 0;
   cursor: pointer;
   position: relative;
   overflow: hidden;
 }
 
+/* Animated gradient overlay */
 .auth-left::before {
   content: '';
   position: absolute;
@@ -46,88 +48,146 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(254, 221, 87, 0.1) 0%, rgba(238, 178, 14, 0.15) 100%);
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(238, 178, 14, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(254, 221, 87, 0.15) 0%, transparent 40%);
   pointer-events: none;
+  z-index: 1;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
 
 .auth-left img {
-  width: 85%;
-  max-width: 600px;
-  height: auto;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
-  transition: transform 0.3s ease;
   position: relative;
-  z-index: 1;
+  z-index: 0;
 }
 
-.auth-left:hover img {
-  transform: scale(1.05);
-}
-
-/* ---------- RIGHT SIDE (40% - Form covers full right side) ---------- */
+/* ---------- RIGHT SIDE (40% - Glassmorphism Form) ---------- */
 .auth-right {
   width: 40%;
   padding: 50px 45px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #ffffff;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   overflow-y: auto;
+  max-height: 100vh;
+  position: relative;
+}
+
+/* Decorative elements */
+.auth-right::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(254, 221, 87, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.auth-right::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -80px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(245, 180, 0, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .auth-right h3 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1e1e1e;
+  background: linear-gradient(135deg, #1e1e1e 0%, #333 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 8px;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .auth-right p {
   font-size: 15px;
-  color: #555;
-  margin-bottom: 25px;
+  color: #666;
+  margin-bottom: 30px;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
-/* ---------- FORM INPUTS ---------- */
+/* ---------- FORM INPUTS (Glass Effect) ---------- */
 .form-group-custom {
   position: relative;
   margin-bottom: 20px;
+  z-index: 1;
 }
 
 .form-group-custom label {
   display: block;
   font-size: 14px;
-  margin-bottom: 6px;
-  font-weight: 500;
+  margin-bottom: 8px;
+  font-weight: 600;
   color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 12px;
 }
 
 .input-custom {
   width: 100%;
-  padding: 12px 45px;
-  border: 1.6px solid #d9d9d9;
-  border-radius: 8px;
+  padding: 14px 45px;
+  border: 1.5px solid rgba(254, 221, 87, 0.3);
+  border-radius: 12px;
   font-size: 15px;
-  background: #ffffff;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .input-custom:focus {
-  border-color: #f1c232;
-  box-shadow: 0 0 0 3px rgba(241, 194, 50, 0.25);
+  border-color: #f5b400;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(245, 180, 0, 0.2), 0 0 0 3px rgba(254, 221, 87, 0.1);
   outline: none;
+  transform: translateY(-2px);
+}
+
+.input-custom::placeholder {
+  color: #999;
 }
 
 .icon-left {
   position: absolute;
-  left: 14px;
-  bottom: 13px;
-  color: #777;
+  left: 16px;
+  bottom: 15px;
+  color: #888;
   font-size: 16px;
   pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.form-group-custom:focus-within .icon-left {
+  color: #f5b400;
 }
 
 /* ---------- PASSWORD FIELDS ---------- */
@@ -141,45 +201,108 @@ body {
 
 .icon-right {
   position: absolute;
-  right: 14px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 17px;
-  color: #555;
+  color: #666;
   cursor: pointer;
   display: flex;
   align-items: center;
+  transition: color 0.3s ease;
+}
+
+.icon-right:hover {
+  color: #f5b400;
 }
 
 .icon-right i {
   pointer-events: none;
 }
 
-/* ---------- BUTTON ---------- */
+/* ---------- BUTTON (Glass Effect) ---------- */
 .auth-btn {
   width: 100%;
-  background: #f5b400;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #f5b400 0%, #f5c542 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 14px;
+  border-radius: 12px;
   font-size: 17px;
   font-weight: 600;
   margin-top: 10px;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: all 0.3s ease;
   color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(245, 180, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.auth-btn:hover::before {
+  left: 100%;
 }
 
 .auth-btn:hover {
-  background: #d99f00;
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f5c542 0%, #f5b400 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(245, 180, 0, 0.4);
+}
+
+.auth-btn:active {
+  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(245, 180, 0, 0.3);
 }
 
-/* Alert card styling */
+/* Alert card styling (Glass Effect) */
 .card.border-warning {
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
+  background: rgba(254, 221, 87, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(245, 180, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(245, 180, 0, 0.1);
+}
+
+/* Text styling */
+.text-center a {
+  color: #f5b400;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+}
+
+.text-center a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #f5b400;
+  transition: width 0.3s ease;
+}
+
+.text-center a:hover::after {
+  width: 100%;
+}
+
+.text-center a:hover {
+  color: #d99f00;
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -188,7 +311,6 @@ body {
 @media (max-width: 1024px) {
   .auth-left {
     width: 55%;
-    padding: 35px;
   }
 
   .auth-right {
@@ -198,10 +320,6 @@ body {
 
   .auth-right h3 {
     font-size: 1.85rem;
-  }
-
-  .auth-left img {
-    width: 80%;
   }
 }
 
@@ -229,19 +347,20 @@ body {
 
   .auth-left {
     width: 100%;
-    min-height: 45vh;
-    height: 45vh;
-    padding: 30px;
+    min-height: 40vh;
+    height: 40vh;
+    padding: 0;
   }
 
   .auth-left img {
-    width: 70%;
-    max-width: 350px;
+    width: 100%;
+    height: 100%;
   }
 
   .auth-right {
     width: 100%;
     padding: 35px 25px;
+    max-height: 60vh;
   }
 
   .auth-right h3 {
@@ -249,23 +368,20 @@ body {
   }
 
   .form-group-custom {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
 }
 
 /* Small Tablets & Large Phones */
 @media (max-width: 640px) {
   .auth-left {
-    height: 40vh;
-    min-height: 280px;
-  }
-
-  .auth-left img {
-    width: 65%;
+    height: 35vh;
+    min-height: 260px;
   }
 
   .auth-right {
     padding: 30px 20px;
+    max-height: 65vh;
   }
 
   .auth-right h3 {
@@ -274,32 +390,34 @@ body {
 
   .input-custom {
     font-size: 14px;
-    padding: 11px 42px;
+    padding: 12px 42px;
   }
 
   .auth-btn {
     font-size: 16px;
+    padding: 12px;
+  }
+
+  .form-group-custom {
+    margin-bottom: 14px;
   }
 }
 
 /* Extra Small Phones */
 @media (max-width: 480px) {
   .auth-left {
-    height: 35vh;
-    min-height: 240px;
-    padding: 25px;
-  }
-
-  .auth-left:hover img {
-    transform: scale(1.02);
-  }
-
-  .auth-left img {
-    width: 60%;
+    height: 32vh;
+    min-height: 220px;
   }
 
   .auth-right {
     padding: 25px 16px;
+    max-height: 68vh;
+  }
+
+  .auth-right::before,
+  .auth-right::after {
+    display: none;
   }
 
   .auth-right h3 {
@@ -313,33 +431,34 @@ body {
   }
 
   .form-group-custom {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .form-group-custom label {
-    font-size: 13px;
-    margin-bottom: 5px;
+    font-size: 11px;
+    margin-bottom: 6px;
   }
 
   .input-custom {
     font-size: 14px;
-    padding: 10px 40px;
+    padding: 11px 40px;
   }
 
   .icon-left {
-    left: 12px;
-    bottom: 11px;
+    left: 14px;
+    bottom: 12px;
     font-size: 15px;
   }
 
   .icon-right {
-    right: 12px;
+    right: 14px;
     font-size: 16px;
   }
 
   .auth-btn {
     font-size: 15px;
-    padding: 11px;
+    padding: 12px;
+    margin-top: 8px;
   }
 
   .text-center {
@@ -350,30 +469,48 @@ body {
 /* Very Small Phones (320px) */
 @media (max-width: 380px) {
   .auth-left {
-    height: 32vh;
-    min-height: 220px;
-    padding: 20px;
+    height: 30vh;
+    min-height: 200px;
   }
 
-  .auth-left img {
-    width: 55%;
+  .auth-right {
+    padding: 20px 14px;
+    max-height: 70vh;
   }
 
   .auth-right h3 {
     font-size: 1.35rem;
+    margin-bottom: 4px;
   }
 
   .auth-right p {
     font-size: 12px;
+    margin-bottom: 18px;
   }
 
   .input-custom {
     font-size: 13px;
-    padding: 9px 38px;
+    padding: 10px 38px;
+  }
+
+  .form-group-custom {
+    margin-bottom: 10px;
   }
 
   .form-group-custom label {
-    font-size: 12px;
+    font-size: 11px;
+    margin-bottom: 5px;
+  }
+
+  .auth-btn {
+    font-size: 14px;
+    padding: 11px;
+    margin-top: 6px;
+  }
+
+  .text-center {
+    font-size: 13px;
+    margin-top: 10px !important;
   }
 }
 

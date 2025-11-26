@@ -13,7 +13,7 @@ SessionHelper::redirectIfLoggedIn();
 
   <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/register.css">
+  <link rel="stylesheet" href="assets/css/register.css?v=2">
 </head>
 <body>
 
@@ -21,7 +21,7 @@ SessionHelper::redirectIfLoggedIn();
 
   <!-- LEFT: LOGO -->
   <div class="auth-left" onclick="window.location.href='index.php'">
-    <img src="assets/images/dripnstyleRegisterLogo.png" alt="Drip N Style Logo">
+    <img src="assets/images/dripnStylelogologinRegister.png" alt="Drip N Style Logo">
   </div>
 
   <!-- RIGHT: FORM -->
