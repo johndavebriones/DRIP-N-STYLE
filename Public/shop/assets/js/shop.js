@@ -74,8 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('detailPrice').textContent = '';
     document.getElementById('detailDescription').textContent = 'Please select size and color';
     document.getElementById('detailStock').textContent = '';
-    actionBtn.disabled = true;
-
     // Setup modal controls
     setupModalControls();
     modal.show();
@@ -272,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       qtyInput.style.display = 'none';
       actionBtn.textContent = 'Log in to Add to Cart';
+      actionBtn.disabled = false;
       modalControls.classList.add('justify-content-end');
       actionBtn.classList.remove('w-50');
       actionBtn.classList.add('w-auto');
@@ -401,6 +400,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       qtyInput.value = 1;
       setTimeout(() => modal.hide(), 1500);
+    } else if (result.need_login) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Login Required',
+        text: 'You need to log in to add items to your cart.',
+        confirmButtonText: 'Go to Login',
+        confirmButtonColor: '#ffc107'
+      }).then((r) => {
+        if (r.isConfirmed) {
+          window.location.href = '../LoginPage.php';
+        }
+      });
     } else {
       Swal.fire({
         icon: 'error',

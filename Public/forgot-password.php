@@ -1,7 +1,15 @@
 <?php
 session_start();
 
-$config = require __DIR__ . '/../App/Config/email_config.php';
+$emailConfigPath = __DIR__ . '/../App/Config/email_config.php';
+if (!file_exists($emailConfigPath)) {
+    $_SESSION['error'] = 'Server configuration error: email settings missing.';
+    header('Location: LoginPage.php');
+    exit;
+}
+
+$config = require $emailConfigPath;
+
 // Include database
 require __DIR__ . '/../App/Config/database_connect.php'; // correct relative path
 
@@ -41,7 +49,7 @@ if(isset($_POST['email'])) {
     $stmt->execute();
 
     // Prepare reset link
-    $resetLink = "http://localhost/Websites/DRIP-N-STYLE/Public/reset-password.php?token=$token";
+    $resetLink = "http://localhost/DRIP-N-STYLE/Public/reset-password.php?token=$token";
 
     // Send email
     $mail = new PHPMailer(true);
@@ -66,7 +74,7 @@ if(isset($_POST['email'])) {
         header("Location: LoginPage.php");
         exit;
     } catch (Exception $e) {
-        $_SESSION['error'] = "Email could not be sent. Error: {$mail->ErrorInfo}";
+        $_SESSION['error'] = "Email send failed: {$e->getMessage()}";
         header("Location: LoginPage.php");
         exit;
     }

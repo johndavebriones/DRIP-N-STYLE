@@ -7,6 +7,14 @@ class ShopDAO {
     public function __construct() {
         $database = new Database();
         $this->conn = $database->connect();
+        $this->ensureColorColumnExists();
+    }
+
+    private function ensureColorColumnExists() {
+        $result = $this->conn->query("SHOW COLUMNS FROM products LIKE 'color'");
+        if ($result && $result->num_rows === 0) {
+            $this->conn->query("ALTER TABLE products ADD COLUMN color VARCHAR(100) DEFAULT '' AFTER size");
+        }
     }
 
     // Fetch all categories

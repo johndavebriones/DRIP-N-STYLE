@@ -201,7 +201,9 @@ CREATE TABLE `products` (
   `price` decimal(10,2) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
   `size` enum('Small','Medium','Large') NOT NULL,
+  `color` varchar(100) DEFAULT '',
   `image` varchar(255) DEFAULT NULL,
+  `is_featured` tinyint(1) NOT NULL DEFAULT 0,
   `stock` int(11) DEFAULT 0,
   `date_added` datetime DEFAULT current_timestamp(),
   `status` enum('Available','Out of Stock') DEFAULT 'Available',
@@ -212,9 +214,9 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `category_id`, `size`, `image`, `stock`, `date_added`, `status`, `deleted_at`) VALUES
-(7, 'Y2K Tops', '', 150.00, 1, 'Medium', 'uploads/1762587441_564735523_1214149110731457_2363958690448676242_n.jpg', 1, '2025-11-08 15:37:21', 'Available', '2025-11-16 17:25:21'),
-(9, 'Y2K Tops', 'White Cotton', 150.00, 1, 'Small', 'uploads/1762603857_564735523_1214149110731457_2363958690448676242_n.jpg', 2, '2025-11-08 20:10:57', 'Available', NULL);
+INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `category_id`, `size`, `color`, `image`, `is_featured`, `stock`, `date_added`, `status`, `deleted_at`) VALUES
+(7, 'Y2K Tops', '', 150.00, 1, 'Medium', '', 'uploads/1762587441_564735523_1214149110731457_2363958690448676242_n.jpg', 0, 1, '2025-11-08 15:37:21', 'Available', '2025-11-16 17:25:21'),
+(9, 'Y2K Tops', 'White Cotton', 150.00, 1, 'Small', '', 'uploads/1762603857_564735523_1214149110731457_2363958690448676242_n.jpg', 0, 2, '2025-11-08 20:10:57', 'Available', NULL);
 
 -- --------------------------------------------------------
 

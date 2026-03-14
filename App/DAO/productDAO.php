@@ -11,6 +11,15 @@ class ProductDAO {
             $db = new Database();
             $this->conn = $db->connect();
         }
+
+        $this->ensureFeaturedColumnExists();
+    }
+
+    private function ensureFeaturedColumnExists() {
+        $result = $this->conn->query("SHOW COLUMNS FROM products LIKE 'is_featured'");
+        if ($result && $result->num_rows === 0) {
+            $this->conn->query("ALTER TABLE products ADD COLUMN is_featured TINYINT(1) NOT NULL DEFAULT 0 AFTER image");
+        }
     }
 
     // Fetch filtered products

@@ -42,7 +42,12 @@ class CartController {
         $quantity   = intval($_POST['quantity'] ?? 1);
         $price      = floatval($_POST['price'] ?? 0);
 
-        if (!$user_id || $product_id < 1 || $quantity < 1) {
+        if (!$user_id) {
+            echo json_encode(["success" => false, "need_login" => true, "message" => "Login required"]);
+            exit;
+        }
+
+        if ($product_id < 1 || $quantity < 1) {
             echo json_encode(["success" => false, "message" => "Invalid request"]);
             exit;
         }
