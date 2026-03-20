@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../DAO/ShopDAO.php';
+require_once __DIR__ . '/../DAO/shopDAO.php';
 
 class ShopController {
     private $dao;

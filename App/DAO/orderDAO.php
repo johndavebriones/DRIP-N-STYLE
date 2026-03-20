@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../Models/orderModel.php';
-require_once __DIR__ . '/ProductDAO.php';
+require_once __DIR__ . '/productDAO.php';
 
 class OrderDAO {
     public $conn;

@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -139,7 +144,7 @@ if (!empty($_SESSION['order_canceled'])) {
 
     <!-- Filters -->
     <section class="shop-filters container my-4">
-      <?php include '../Partials/shopfilters.php'; ?>
+      <?php include '../partials/shopFilters.php'; ?>
     </section>
 
     <!-- Product Grid -->
@@ -195,7 +200,7 @@ if (!empty($_SESSION['order_canceled'])) {
     </section>
   </main>
 
-  <?php include '../Partials/footer.php'; ?>
+  <?php include '../partials/footer.php'; ?>
 </div>
 
 <!-- Product Detail Modal -->

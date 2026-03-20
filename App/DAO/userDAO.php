@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config/database_connect.php';
+require_once __DIR__ . '/../Config/database_connect.php';
 require_once __DIR__ . '/../Models/userModel.php';
 
 class UserDAO {

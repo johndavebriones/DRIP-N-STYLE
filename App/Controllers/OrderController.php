@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../DAO/OrderDAO.php';
-require_once __DIR__ . '/../DAO/CartDAO.php';
+require_once __DIR__ . '/../DAO/orderDAO.php';
+require_once __DIR__ . '/../DAO/cartDAO.php';
 
 class OrderController {
     private $orderDAO;

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../../../App/config/auth.php';
+require_once __DIR__ . '/../../../../App/Config/auth.php';
 require_once __DIR__ . '/../../../../App/Helpers/SessionHelper.php';
 SessionHelper::requireAdminLogin();
 SessionHelper::preventCache();
@@ -18,7 +18,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <a href="../../Public/admin/products.php" class="nav-link <?= $currentPage === 'products.php' ? 'active' : '' ?>">🛍️ Products</a>
       </li>
       <li>
-        <a href="../../Public/admin/orders.php" class="nav-link <?= $currentPage === 'orders.php' ? 'active' : '' ?>">📦 Orders</a>
+        <a href="../../Public/admin/orders.php" class="nav-link <?= ($currentPage === 'orders.php' || $currentPage === 'view_order.php') ? 'active' : '' ?>">📦 Orders</a>
       </li>
       <li>
         <a href="../../Public/admin/payments.php" class="nav-link <?= $currentPage === 'payments.php' ? 'active' : '' ?>">💳 Payments</a>

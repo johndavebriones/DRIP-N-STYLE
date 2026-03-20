@@ -10,12 +10,10 @@ if (!file_exists($emailConfigPath)) {
 
 $config = require $emailConfigPath;
 
-// Include database
-require __DIR__ . '/../App/Config/database_connect.php'; // correct relative path
+require __DIR__ . '/../App/Config/database_connect.php';
 
-// Create a Database instance and get $conn
 $db = new Database();
-$conn = $db->connect(); // <- now $conn is defined
+$conn = $db->connect();
 
 // Include PHPMailer
 require __DIR__ . '/assets/PHPMailer-7.0.0/src/PHPMailer.php';
@@ -70,7 +68,7 @@ if(isset($_POST['email'])) {
         $mail->Body = "Hi,<br>Click this link to reset your password:<br><a href='$resetLink'>$resetLink</a>";
 
         $mail->send();
-        $_SESSION['success'] = "Reset link sent! Check your email.";
+        $_SESSION['error'] = 'Reset link sent to your email!';
         header("Location: LoginPage.php");
         exit;
     } catch (Exception $e) {
