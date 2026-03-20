@@ -73,6 +73,7 @@ class AuthController {
 
         if (!password_verify($password, $user['password'])) {
             $_SESSION['error'] = "Incorrect password. Please try again.";
+            $_SESSION['login_email'] = $email;
             header("Location: ../../Public/LoginPage.php");
             exit;
         }

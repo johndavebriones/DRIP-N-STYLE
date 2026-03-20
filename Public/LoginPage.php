@@ -4,12 +4,6 @@ require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::redirectIfLoggedIn();
 
-// Store timeout alert if exists
-$timeoutAlert = null;
-if (isset($_SESSION['timeout_alert'])) {
-    $timeoutAlert = $_SESSION['timeout_alert'];
-    unset($_SESSION['timeout_alert']);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,8 +35,13 @@ if (isset($_SESSION['timeout_alert'])) {
       <!-- EMAIL -->
       <div class="form-group-custom">
           <span class="icon-left"><i class="fa-regular fa-envelope"></i></span>
-          <input type="email" name="email" class="input-custom" placeholder="Enter your email" required>
+          <input type="email" name="email" class="input-custom" placeholder="Enter your email" value="<?= isset($_SESSION['login_email']) ? htmlspecialchars($_SESSION['login_email']) : '' ?>" required>
       </div>
+      <?php 
+        if (isset($_SESSION['login_email'])) {
+            unset($_SESSION['login_email']);
+        }
+      ?>
 
       <!-- PASSWORD -->
       <div class="form-group-custom position-relative">
