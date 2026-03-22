@@ -227,14 +227,17 @@ INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `category_
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `username` varchar(50) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `contact_number` varchar(20) DEFAULT NULL,
+  `birthdate` date DEFAULT NULL,
+  `gender` enum('male','female','other') DEFAULT NULL,
   `role` enum('admin','customer') NOT NULL DEFAULT 'customer',
   `status` enum('active','inactive') DEFAULT 'active',
   `date_created` datetime DEFAULT current_timestamp(),
   `reset_token` varchar(255) DEFAULT NULL,
-  `token_expiry` datetime DEFAULT NULL,
-  `contact_number` varchar(20) DEFAULT NULL
+  `token_expiry` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
