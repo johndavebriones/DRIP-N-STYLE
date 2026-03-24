@@ -13,5 +13,7 @@ class UserModel {
     public $date_created;
     public $reset_token;
     public $token_expiry;
+    public $failed_attempts;
+    public $locked_until;
 }
 ?>

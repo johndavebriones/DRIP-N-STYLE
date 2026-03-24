@@ -38,6 +38,10 @@ class UserDAO {
         return $this->fetchSingle("SELECT * FROM users WHERE email = ? AND status = 'active' LIMIT 1", "s", $email);
     }
 
+    public function findByEmailForLogin($email) {
+        return $this->fetchSingle("SELECT * FROM users WHERE email = ? LIMIT 1", "s", $email);
+    }
+
     public function findByEmailOrName($emailOrName) {
         return $this->fetchSingle(
             "SELECT * FROM users WHERE (email = ? OR name = ?) AND status = 'active' LIMIT 1",
@@ -82,5 +86,30 @@ class UserDAO {
 
     public function updatePassword($user_id, $hashedPassword) {
         return $this->updateUserFields($user_id, ['password' => $hashedPassword]);
+    }
+
+    public function incrementFailedAttempts($user_id) {
+        $user = $this->findById($user_id);
+        if (!$user) return false;
+        $attempts = $user['failed_attempts'] + 1;
+        return $this->updateUserFields($user_id, ['failed_attempts' => $attempts]);
+    }
+
+    public function resetFailedAttempts($user_id) {
+        return $this->updateUserFields($user_id, ['failed_attempts' => 0, 'locked_until' => null]);
+    }
+
+    public function lockAccount($user_id, $lockDurationMinutes = 12) {
+        $lockedUntil = date('Y-m-d H:i:s', strtotime("+{$lockDurationMinutes} minutes"));
+        return $this->updateUserFields($user_id, ['locked_until' => $lockedUntil]);
+    }
+
+    public function isAccountLocked($user_id) {
+        $user = $this->findById($user_id);
+        if (!$user) return false;
+        if ($user['locked_until'] && strtotime($user['locked_until']) > time()) {
+            return true;
+        }
+        return false;
     }
 }

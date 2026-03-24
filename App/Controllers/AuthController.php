@@ -63,7 +63,7 @@ class AuthController {
         $email = trim($email);
         $password = trim($password);
 
-        $user = $this->userDAO->findByEmail($email);
+        $user = $this->userDAO->findByEmailForLogin($email);
 
         if (!$user) {
             $_SESSION['error'] = "Account not found. Please check your email.";
@@ -71,11 +71,41 @@ class AuthController {
             exit;
         }
 
-        if (!password_verify($password, $user['password'])) {
-            $_SESSION['error'] = "Incorrect password. Please try again.";
+        if ($user['status'] !== 'active') {
+            $_SESSION['error'] = "Account is inactive. Please contact support.";
             header("Location: ../../Public/LoginPage.php");
             exit;
         }
+
+        // Check if account is locked
+        if ($this->userDAO->isAccountLocked($user['user_id'])) {
+            $lockedUntil = strtotime($user['locked_until']);
+            $remainingTime = $lockedUntil - time();
+            $minutes = ceil($remainingTime / 60);
+            $_SESSION['error'] = "Account is locked due to too many failed attempts. Try again in {$minutes} minute(s).";
+            header("Location: ../../Public/LoginPage.php");
+            exit;
+        }
+
+        if (!password_verify($password, $user['password'])) {
+            // Increment failed attempts
+            $this->userDAO->incrementFailedAttempts($user['user_id']);
+            
+            // Check if we need to lock the account
+            $updatedUser = $this->userDAO->findById($user['user_id']);
+            if ($updatedUser['failed_attempts'] >= 3) {
+                $this->userDAO->lockAccount($user['user_id']);
+                $_SESSION['error'] = "Account locked due to 3 failed login attempts. Please try again later.";
+            } else {
+                $remaining = 3 - $updatedUser['failed_attempts'];
+                $_SESSION['error'] = "Incorrect password. {$remaining} attempt(s) remaining.";
+            }
+            header("Location: ../../Public/LoginPage.php");
+            exit;
+        }
+
+        // Successful login - reset failed attempts
+        $this->userDAO->resetFailedAttempts($user['user_id']);
 
         $_SESSION['user_id']   = $user['user_id'];
         $_SESSION['user_name'] = $user['name'];
