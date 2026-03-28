@@ -3,7 +3,6 @@ ini_set('session.cookie_path', '/');
 require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::redirectIfLoggedIn();
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,118 +10,112 @@ SessionHelper::redirectIfLoggedIn();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drip N' Style | Login</title>
-
-  <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/login.css?v=11">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/login.css">
 </head>
 <body>
 
-<div class="auth-container">
-
-  <!-- Left / Top Image -->
-  <div class="auth-left" onclick="window.location.href='index.php'">
-      <img src="assets/images/dripnStylelogologinRegister.png" alt="Drip N Style Logo">
-  </div>
-
-  <!-- Right Form Panel -->
-  <div class="auth-right">
-
-    <h3>Welcome Back</h3>
-    <p>Start Your Drip with a Style</p>
-
-    <form method="POST" action="/DRIP-N-STYLE/App/Controllers/AuthController.php?action=login">
-      <!-- EMAIL -->
-      <div class="form-group-custom">
-          <span class="icon-left"><i class="fa-regular fa-envelope"></i></span>
-          <input type="email" name="email" class="input-custom" placeholder="Enter your email" value="<?= isset($_SESSION['login_email']) ? htmlspecialchars($_SESSION['login_email']) : '' ?>" required>
-      </div>
-      <?php 
-        if (isset($_SESSION['login_email'])) {
-            unset($_SESSION['login_email']);
-        }
-      ?>
-
-      <!-- PASSWORD -->
-      <div class="form-group-custom position-relative">
-          <span class="icon-left"><i class="fa-solid fa-lock"></i></span>
-
-          <input type="password" name="password" id="password" class="input-custom" placeholder="Enter your password" required>
-
-          <span class="icon-right" id="togglePassword">
-              <i class="fa-regular fa-eye"></i>
-          </span>
-      </div>
-
-      <?php if (isset($_SESSION['error'])): ?>
-          <div class="card border-warning bg-warning-subtle mb-3">
-              <div class="card-body p-2 text-center text-dark">
-                  <?= htmlspecialchars($_SESSION['error']) ?>
-              </div>
-          </div>
-          <?php unset($_SESSION['error']); ?>
-      <?php endif; ?>
-
-      <div class="d-flex justify-content-between mb-3">
-          <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" class="text-decoration-none text-dark fw-bold">Forgot Password?</a>
-      </div>
-
-      <button type="submit" class="btn btn-warning auth-btn">Login</button>
-
-      <div class="text-link">
-          <span>Don't have an account?</span>
-          <a href="RegisterPage.php" class="text-decoration-none text-dark fw-bold">Sign Up</a>
-      </div>
-
-    </form>
-  </div>
+<!-- Left Panel -->
+<div class="auth-left" onclick="window.location.href='index.php'" title="Go to homepage">
+  <img src="assets/images/dripnStylelogologinRegister.png" alt="Drip N Style">
 </div>
 
-<!-- Forgot Password Modal -->
-<div class="modal fade" id="forgotPasswordModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Forgot Password</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form method="POST" action="forgot-password.php">
-          <div class="mb-3">
-            <label>Email</label>
-            <input type="email" class="form-control" name="email" required>
-          </div>
-          <button type="submit" class="btn btn-warning w-100">Send Reset Link</button>
-        </form>
+<!-- Right Panel -->
+<div class="auth-right">
+  <div class="form-wrap">
+    <div class="bar"></div>
+    <div class="form-card">
+
+      <p class="form-title">Welcome <span>Back</span></p>
+      <p class="form-sub">Start your drip with a style</p>
+      <div class="divider"></div>
+
+      <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert-warn"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
+      <?php endif; ?>
+
+      <form method="POST" action="/DRIP-N-STYLE/App/Controllers/AuthController.php?action=login">
+
+        <label class="field-label" for="email">Email address</label>
+        <div class="field">
+          <span class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+          </span>
+          <input class="form-input" type="email" id="email" name="email"
+            placeholder="Enter your email"
+            value="<?= isset($_SESSION['login_email']) ? htmlspecialchars($_SESSION['login_email']) : '' ?>" required>
+        </div>
+        <?php if (isset($_SESSION['login_email'])) unset($_SESSION['login_email']); ?>
+
+        <label class="field-label" for="password">Password</label>
+        <div class="field">
+          <span class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input class="form-input" type="password" id="password" name="password"
+            placeholder="Enter your password" required>
+          <button class="eye-btn" type="button" id="togglePassword" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <div class="form-row">
+          <button type="button" class="forgot-btn" onclick="openModal()">Forgot password?</button>
+        </div>
+
+        <button type="submit" class="submit-btn">Login</button>
+      </form>
+
+      <div class="signup-link">
+        Don't have an account? <a href="RegisterPage.php">Sign up</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Forgot Password Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeOnBg(event)">
+  <div class="modal-box">
+    <div class="bar"></div>
+    <div class="modal-header">
+      <span class="modal-title">Forgot <span>Password</span></span>
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <form method="POST" action="forgot-password.php">
+        <label class="field-label" for="reset-email">Email address</label>
+        <div class="field">
+          <span class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+          </span>
+          <input class="form-input" type="email" id="reset-email" name="email"
+            placeholder="Enter your email" required>
+        </div>
+        <button type="submit" class="submit-btn" style="margin-bottom:0;">Send Reset Link</button>
+      </form>
+    </div>
+    <div class="bar-bottom"></div>
+  </div>
+</div>
+
 <script>
-// Session timeout alert
-<?php if ($timeoutAlert): ?>
+<?php if (!empty($timeoutAlert)): ?>
 window.addEventListener('DOMContentLoaded', function() {
-    alert(<?= json_encode($timeoutAlert) ?>);
+  alert(<?= json_encode($timeoutAlert) ?>);
 });
 <?php endif; ?>
 
 const toggle = document.getElementById('togglePassword');
-const input = document.getElementById('password');
-const icon = toggle.querySelector('i');
-
+const passInput = document.getElementById('password');
 toggle.addEventListener('click', () => {
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.replace("fa-eye", "fa-eye-slash");
-    } else {
-        input.type = "password";
-        icon.classList.replace("fa-eye-slash", "fa-eye");
-    }
+  const isText = passInput.type === 'text';
+  passInput.type = isText ? 'password' : 'text';
+  toggle.style.color = isText ? '#b0a090' : '#b8934a';
 });
+
+function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeOnBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 </script>
-
-<script src="assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

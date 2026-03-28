@@ -7,117 +7,107 @@ SessionHelper::redirectIfLoggedIn();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drip N' Style | Register</title>
-
-  <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/register.css?v=2">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/register.css">
 </head>
 <body>
 
-<div class="auth-container">
+<!-- Left Panel: image fills the panel, same as login -->
+<div class="auth-left" onclick="window.location.href='index.php'" title="Go to homepage">
+  <img src="assets/images/dripnStylelogologinRegister.png" alt="Drip N Style">
+</div>
 
-  <!-- LEFT: LOGO -->
-  <div class="auth-left" onclick="window.location.href='index.php'">
-    <img src="assets/images/dripnStylelogologinRegister.png" alt="Drip N Style Logo">
-  </div>
+<!-- Right Panel -->
+<div class="auth-right">
+  <div class="form-wrap">
+    <div class="bar"></div>
+    <div class="form-card">
 
-  <!-- RIGHT: FORM -->
-  <div class="auth-right">
-
-    <h3>Create Account</h3>
-    <p>Join the Drip N' Style family</p>
-
-    <form method="POST" action="/DRIP-N-STYLE/App/Controllers/AuthController.php?action=register">
-
-      <div class="form-group-custom">
-        <label>Full Name</label>
-        <span class="icon-left"><i class="fa-regular fa-user"></i></span>
-        <input type="text" name="name" class="input-custom" placeholder="Enter your full name" required>
-      </div>
-
-      <div class="form-group-custom">
-        <label>Email</label>
-        <span class="icon-left"><i class="fa-regular fa-envelope"></i></span>
-        <input type="email" name="email" class="input-custom" placeholder="Enter your email" required>
-      </div>
-
-      <div class="form-group-custom">
-        <label>Password</label>
-        <div class="password-card">
-          <input type="password" id="password" name="password" class="input-custom password-input" placeholder="Enter your password" required>
-          <span id="showPassIcon1" class="icon-right toggle-password"><i class="fa-regular fa-eye"></i></span>
-        </div>
-      </div>
-
-      <div class="form-group-custom">
-        <label>Confirm Password</label>
-        <div class="password-card">
-          <input type="password" id="confirm_password" name="confirm_password" class="input-custom password-input" placeholder="Confirm your password" required>
-          <span id="showPassIcon2" class="icon-right toggle-password"><i class="fa-regular fa-eye"></i></span>
-        </div>
-      </div>
+      <p class="form-title">Create <span>Account</span></p>
+      <p class="form-sub">Join the Drip N' Style family</p>
+      <div class="divider"></div>
 
       <?php if (isset($_SESSION['error'])): ?>
-        <div class="card border-warning bg-warning-subtle mb-3">
-          <div class="card-body p-2 text-center text-dark">
-            <?= htmlspecialchars($_SESSION['error']) ?>
-          </div>
-        </div>
-        <?php unset($_SESSION['error']); ?>
+        <div class="alert-warn"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
       <?php endif; ?>
 
-      <button type="submit" class="auth-btn">Sign Up</button>
+      <form method="POST" action="/DRIP-N-STYLE/App/Controllers/AuthController.php?action=register">
 
-      <div class="text-center mt-3">
-        <span class="opacity-75">Already have an account?</span>
-        <a href="LoginPage.php" class="text-decoration-none text-dark fw-bold">Login</a>
+        <label class="field-label" for="name">Full name</label>
+        <div class="field">
+          <span class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </span>
+          <input class="form-input" type="text" id="name" name="name" placeholder="Enter your full name" required>
+        </div>
+
+        <label class="field-label" for="email">Email address</label>
+        <div class="field">
+          <span class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+          </span>
+          <input class="form-input" type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+
+        <label class="field-label" for="password">Password</label>
+        <div class="field">
+          <span class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input class="form-input" type="password" id="password" name="password"
+            placeholder="Enter your password" oninput="checkMatch()" required>
+          <button class="eye-btn" type="button" onclick="toggleField('password', this)" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <label class="field-label" for="confirm_password">Confirm password</label>
+        <div class="field">
+          <span class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input class="form-input" type="password" id="confirm_password" name="confirm_password"
+            placeholder="Confirm your password" oninput="checkMatch()" required>
+          <button class="eye-btn" type="button" onclick="toggleField('confirm_password', this)" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="match-msg" id="match-msg"></div>
+
+        <button type="submit" class="submit-btn">Sign Up</button>
+      </form>
+
+      <div class="login-link">
+        Already have an account? <a href="LoginPage.php">Login</a>
       </div>
-
-    </form>
+    </div>
   </div>
-
 </div>
 
 <script>
-document.querySelectorAll('a[href]').forEach(link => {
-  link.addEventListener('click', function(e) {
-    if (this.getAttribute('href').endsWith('.php')) {
-      e.preventDefault();
-      document.body.classList.add('page-transition');
-      setTimeout(() => {
-        window.location.href = this.getAttribute('href');
-      }, 300);
+  function toggleField(id, btn) {
+    const input = document.getElementById(id);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.style.color = isText ? '#b0a090' : '#b8934a';
+  }
+
+  function checkMatch() {
+    const p1  = document.getElementById('password').value;
+    const p2  = document.getElementById('confirm_password').value;
+    const msg = document.getElementById('match-msg');
+    if (!p2) { msg.textContent = ''; return; }
+    if (p1 === p2) {
+      msg.style.color = '#3a8a50';
+      msg.textContent = '✓ Passwords match';
+    } else {
+      msg.style.color = '#d85a30';
+      msg.textContent = '✗ Passwords do not match';
     }
-  });
-});
-
-function bindHoldToShow(iconId, inputId) {
-  const icon = document.getElementById(iconId);
-  const input = document.getElementById(inputId);
-  const eye = icon.querySelector("i");
-
-  icon.addEventListener("mousedown", () => {
-    input.type = "text";
-    eye.classList.replace("fa-eye", "fa-eye-slash");
-  });
-
-  icon.addEventListener("mouseup", () => {
-    input.type = "password";
-    eye.classList.replace("fa-eye-slash", "fa-eye");
-  });
-
-  icon.addEventListener("mouseleave", () => {
-    input.type = "password";
-    eye.classList.replace("fa-eye-slash", "fa-eye");
-  });
-}
-
-bindHoldToShow("showPassIcon1", "password");
-bindHoldToShow("showPassIcon2", "confirm_password");
+  }
 </script>
-
 </body>
 </html>
