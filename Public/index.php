@@ -1,38 +1,30 @@
 <?php
-
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
-
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::preventCache();
 
-// Load user name if not already in session
 if (isset($_SESSION['user_id']) && !isset($_SESSION['user_name'])) {
     require_once __DIR__ . '/../App/Config/database_connect.php';
     $db = new Database();
     $conn = $db->connect();
-
     $stmt = $conn->prepare("SELECT name FROM users WHERE user_id = ?");
     if ($stmt) {
         $stmt->bind_param("i", $_SESSION['user_id']);
         $stmt->execute();
         $res = $stmt->get_result();
-        if ($row = $res->fetch_assoc()) {
-            $_SESSION['user_name'] = $row['name'];
-        }
+        if ($row = $res->fetch_assoc()) $_SESSION['user_name'] = $row['name'];
         $stmt->close();
     }
 }
 
-// Fetch featured products using ProductController
 require_once __DIR__ . '/../App/Controllers/ProductController.php';
 $productController = new ProductController();
-$featuredProducts = $productController->getFeaturedProducts(6);
-
-$currentPage = basename($_SERVER['PHP_SELF']);
+$featuredProducts  = $productController->getFeaturedProducts(6);
+$currentPage       = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,196 +32,189 @@ $currentPage = basename($_SERVER['PHP_SELF']);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Drip N' Style | Home</title>
-
-  <!-- Bootstrap CSS CDN -->
-  <link href="assets/vendor/bootstrap5/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/home.css">
-  <link rel="stylesheet" href="assets/css/navbar.css">
-  <link rel="stylesheet" href="assets/css/footer.css">
 </head>
 <body>
-  <!-- Navbar -->
-  <?php include '../Public/partials/navbar.php'; ?>
 
-  <!-- Hero Section -->
-  <section class="hero d-flex align-items-center justify-content-center">
-    <div class="hero-content text-center text-white">
-      <h1 class="display-4 fw-bold hero-title text-warning">Discover Your Style</h1>
-      <p class="lead text-light">— Grab What You Desire 💫</p>
-      <a href="../Public/shop/shop.php" class="btn btn-warning btn-lg fw-semibold mt-3">Shop Now</a>
-    </div>
-  </section>
+<div class="gold-bar"></div>
 
-  <!-- Clothing Brands Section -->
-  <section class="brands-section py-4">
-    <div class="container text-center mb-3">
-      <h2 class="fw-bold text-black">Brands We Have</h2>
-    </div>
-    <div class="brands-slider">
-      <div class="brands-track">
-        <img src="assets/images/brands/ck.png" alt="Calvin Klein">
-        <img src="assets/images/brands/essentials-removebg-preview.png" alt="Essentials">
-        <img src="assets/images/brands/uniqlo-removebg-preview.png" alt="Uniqlo">
-        <img src="assets/images/brands/zara-removebg-preview.png" alt="Zara">
-        <img src="assets/images/brands/gap-removebg-preview.png" alt="GAP">
-        <img src="assets/images/brands/polo.png" alt="Polo">
-        <img src="assets/images/brands/new era.png" alt="New Era">
-        <img src="assets/images/brands/alo.jpg" alt="alo" style="height: 40px;">
-        <img src="assets/images/brands/ck.png" alt="Calvin Klein">
-        <img src="assets/images/brands/essentials-removebg-preview.png" alt="Essentials">
-        <img src="assets/images/brands/uniqlo-removebg-preview.png" alt="Uniqlo">
-        <img src="assets/images/brands/zara-removebg-preview.png" alt="Zara">
-        <img src="assets/images/brands/gap-removebg-preview.png" alt="GAP">
-        <img src="assets/images/brands/polo.png" alt="Polo">
-        <img src="assets/images/brands/new era.png" alt="New Era">
-        <img src="assets/images/brands/alo.jpg" alt="alo" style="height: 40px;">
-      </div>
-    </div>
-  </section>
+<!-- Navbar -->
+<nav class="dns-nav">
+  <a href="index.php" class="nav-logo">Drip N' Style</a>
+  <div class="nav-links">
+    <a href="#about" class="hide-mobile">About</a>
+    <a href="#contact" class="hide-mobile">Contact</a>
+    <a href="../Public/shop/shop.php">Shop</a>
+    <?php if (isset($_SESSION['user_id'])): ?>
+      <a href="dashboard.php" class="nav-btn">My Account</a>
+    <?php else: ?>
+      <a href="LoginPage.php" class="nav-btn">Login</a>
+    <?php endif; ?>
+  </div>
+</nav>
 
-  <!-- Featured Products -->
-  <section class="py-5 bg-light">
-    <div class="container text-center">
-      <h2 class="mb-4 fw-bold text-black">Featured Products</h2>
-      
-      <?php if (empty($featuredProducts)): ?>
-        <div class="alert alert-info">
-          <i class="bi bi-info-circle me-2"></i>
-          No featured products available at the moment. Check back soon!
-        </div>
-      <?php else: ?>
-        <div class="row g-4">
-          <?php foreach ($featuredProducts as $product): ?>
-            <div class="col-md-6 col-lg-4">
-              <div class="card product-card border-0 shadow-sm h-100 position-relative">
-                <!-- Featured Badge -->
-                <div class="position-absolute top-0 end-0 m-2 z-index-1">
-                  <span class="badge bg-warning text-dark">
-                    <i class="bi bi-star-fill"></i> Featured
-                  </span>
-                </div>
-                
-                <img src="<?php echo htmlspecialchars($product['image']); ?>" 
-                     class="card-img-top" 
-                     alt="<?php echo htmlspecialchars($product['name']); ?>"
-                     style="height: 300px; object-fit: cover;">
-                
-                <div class="card-body d-flex flex-column">
-                  <h5 class="card-title fw-bold text-dark"><?php echo htmlspecialchars($product['name']); ?></h5>
-                  <p class="text-muted small"><?php echo htmlspecialchars($product['category_name'] ?? 'Fashion'); ?></p>
-                  <p class="card-text text-warning fw-bold fs-5">₱<?php echo number_format($product['price'], 2); ?></p>
-                  
-                  <?php if (!empty($product['description'])): ?>
-                    <p class="card-text text-muted small flex-grow-1">
-                      <?php echo htmlspecialchars(substr($product['description'], 0, 80)) . '...'; ?>
-                    </p>
-                  <?php endif; ?>
-                  
-                  <a href="../Public/shop/product_details.php?id=<?php echo $product['product_id']; ?>" 
-                     class="btn btn-warning text-black fw-semibold mt-auto">
-                     <i class="bi bi-eye me-1"></i> View Details
-                  </a>
-                </div>
-              </div>
+<!-- Hero -->
+<section class="hero">
+  <img src="assets/images/dripnstyleAbout.png" alt="" class="hero-img">
+  <div class="hero-content">
+    <p class="hero-eyebrow">New Season Collection</p>
+    <h1 class="hero-title">Discover Your<br><span>Style</span></h1>
+    <p class="hero-sub">— Grab What You Desire</p>
+    <a href="../Public/shop/shop.php" class="hero-cta">Shop Now</a>
+  </div>
+  <div class="hero-deco"><span></span><span></span><span></span></div>
+</section>
+
+<!-- Brands -->
+<div class="brands-section">
+  <p class="brands-label">Brands We Carry</p>
+  <div class="brands-row">
+    <span class="brand-pill">Calvin Klein</span>
+    <span class="brand-pill">Essentials</span>
+    <span class="brand-pill">Uniqlo</span>
+    <span class="brand-pill">Zara</span>
+    <span class="brand-pill">GAP</span>
+    <span class="brand-pill">Polo</span>
+    <span class="brand-pill">New Era</span>
+    <span class="brand-pill">Alo</span>
+  </div>
+</div>
+
+<!-- Featured Products -->
+<section class="dns-section products-section">
+  <div style="max-width:1100px;margin:0 auto;">
+    <p class="section-eyebrow">Handpicked for You</p>
+    <h2 class="section-title">Featured <span>Products</span></h2>
+
+    <?php if (empty($featuredProducts)): ?>
+      <p style="color:var(--text-muted);font-size:14px;margin-top:32px;">No featured products available at the moment. Check back soon!</p>
+    <?php else: ?>
+      <div class="products-grid">
+        <?php foreach ($featuredProducts as $product): ?>
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+            <span class="product-badge">Featured</span>
+          </div>
+          <div class="product-body">
+            <p class="product-cat"><?= htmlspecialchars($product['category_name'] ?? 'Fashion') ?></p>
+            <p class="product-name"><?= htmlspecialchars($product['name']) ?></p>
+            <?php if (!empty($product['description'])): ?>
+              <p class="product-desc"><?= htmlspecialchars(substr($product['description'], 0, 80)) ?>...</p>
+            <?php endif; ?>
+            <div class="product-footer">
+              <span class="product-price">₱<?= number_format($product['price'], 2) ?></span>
+              <a href="../Public/shop/product_details.php?id=<?= $product['product_id'] ?>" class="product-link">View Details</a>
             </div>
-          <?php endforeach; ?>
-        </div>
-      <?php endif; ?>
-      
-      <!-- View All Button -->
-      <div class="mt-4">
-        <a href="../Public/shop/shop.php" class="btn btn-outline-warning btn-lg fw-semibold">
-          <i class="bi bi-shop me-2"></i> View All Products
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- About Section -->
-  <section id="about" class="about-section py-5 bg-white">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6 mb-4 mb-md-0">
-          <img src="assets/images/dripnstyleAbout.png" class="img-fluid rounded shadow" alt="About Drip N' Style">
-        </div>
-        <div class="col-md-6">
-          <h2 class="fw-bold text-black mb-3">About Drip N' Style</h2>
-          <p class="text-muted">
-            Drip N' Style is your trusted online clothing store, offering a wide range of trendy,
-            high-quality apparel for all styles. Whether you're into casual, streetwear, or classy fits—we've got you covered.
-          </p>
-          <p class="text-muted">
-            Our mission is to bring premium fashion closer to you with affordable prices,
-            a personalized in-store shopping experience, and friendly customer service.
-          </p>
-          <a href="../Public/shop/shop.php" class="btn btn-warning fw-semibold text-black mt-2">Shop Now</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact" class="contact-section py-5 bg-light">
-    <div class="container text-center">
-      <h2 class="fw-bold text-black mb-4">Contact Us</h2>
-      <p class="text-muted mb-5">
-        Got questions, concerns, or inquiries? We're here to help anytime!
-      </p>
-
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="p-4 bg-white rounded shadow-sm">
-            <h5 class="fw-semibold text-black">📍 Address</h5>
-            <p class="text-muted mb-0">Damballelos, Street, Barangay 4, Balayan, Philippines, 4213</p>
           </div>
         </div>
-
-        <div class="col-md-4">
-          <div class="p-4 bg-white rounded shadow-sm">
-            <h5 class="fw-semibold text-black">📞 Phone</h5>
-            <p class="text-muted mb-4">+63 965 327 9916</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="p-4 bg-white rounded shadow-sm">
-            <h5 class="fw-semibold text-black">📧 Email</h5>
-            <p class="text-muted mb-4">dripnstyle.shop@gmail.com</p>
-          </div>
-        </div>
+        <?php endforeach; ?>assets/images/dripnstyleAbout.png
       </div>
+    <?php endif; ?>
 
-      <!-- Optional Contact Form -->
-      <div class="row mt-5 justify-content-center">
-        <div class="col-md-8">
-          <form class="p-4 bg-white rounded shadow-sm">
-            <div class="mb-3">
-              <input type="text" class="form-control" placeholder="Your Name" required>
-            </div>
-            <div class="mb-3">
-              <input type="email" class="form-control" placeholder="Your Email" required>
-            </div>
-            <div class="mb-3">
-              <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-warning fw-semibold text-black w-100">Send Message</button>
-          </form>
-        </div>
+    <div class="view-all-wrap">
+      <a href="../Public/shop/shop.php" class="btn-outline-gold">View All Products</a>
+    </div>
+  </div>
+</section>
+
+<div class="dns-divider"></div>
+
+<!-- About -->
+<section id="about" class="dns-section about-section">
+  <div class="about-grid">
+    <div>
+      <img src="assets/images/dripnstyleAbout.png" alt="About Drip N' Style" class="about-img">
+    </div>
+    <div class="about-text">
+      <p class="section-eyebrow">Our Story</p>
+      <h2 class="section-title">About Drip<br><span>N' Style</span></h2>
+      <div style="height:1px;background:var(--border-inner);margin:20px 0 24px;width:60px;"></div>
+      <p>Drip N' Style is your trusted online clothing store, offering a wide range of trendy, high-quality apparel for all styles. Whether you're into casual, streetwear, or classy fits — we've got you covered.</p>
+      <p>Our mission is to bring premium fashion closer to you with affordable prices, a personalized shopping experience, and friendly customer service.</p>
+      <a href="../Public/shop/shop.php" class="hero-cta" style="margin-top:8px;display:inline-block;">Shop Now</a>
+    </div>
+  </div>
+</section>
+
+<div class="dns-divider"></div>
+
+<!-- Contact -->
+<section id="contact" class="dns-section contact-section">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:8px;">
+      <p class="section-eyebrow">Get In Touch</p>
+      <h2 class="section-title">Contact <span>Us</span></h2>
+      <p class="section-sub" style="margin:8px auto 0;">Got questions, concerns, or inquiries? We're here to help anytime.</p>
+    </div>
+
+    <div class="contact-info-grid">
+      <div class="contact-card">
+        <div class="contact-icon">📍</div>
+        <p class="contact-card-label">Address</p>
+        <p>Damballelos Street, Barangay 4,<br>Balayan, Philippines 4213</p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📞</div>
+        <p class="contact-card-label">Phone</p>
+        <p>+63 965 327 9916</p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📧</div>
+        <p class="contact-card-label">Email</p>
+        <p>dripnstyle.shop@gmail.com</p>
       </div>
     </div>
-  </section>
 
-  <!-- Footer -->
-  <?php include '../Public/partials/footer.php'; ?>
+    <div class="contact-form-wrap">
+      <div class="gold-bar"></div>
+      <div class="contact-form-inner">
+        <p class="section-eyebrow" style="margin-bottom:16px;">Send a Message</p>
+        <form>
+          <div class="form-field">
+            <input class="form-input" type="text" placeholder="Your name" required>
+          </div>
+          <div class="form-field">
+            <input class="form-input" type="email" placeholder="Your email" required>
+          </div>
+          <div class="form-field">
+            <textarea class="form-input" placeholder="Your message" required></textarea>
+          </div>
+          <button type="submit" class="hero-cta" style="width:100%;text-align:center;display:block;">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Scroll to Top Button -->
-  <button id="scrollTop">↑</button>
+<!-- Footer -->
+<footer class="dns-footer">
+  <div class="footer-top">
+    <div>
+      <p class="footer-logo">Drip N' Style</p>
+      <p class="footer-tagline">Wear Your Confidence</p>
+    </div>
+    <div class="footer-links">
+      <a href="index.php">Home</a>
+      <a href="#about">About</a>
+      <a href="../Public/shop/shop.php">Shop</a>
+      <a href="#contact">Contact</a>
+      <a href="LoginPage.php">Login</a>
+    </div>
+  </div>
+  <p class="footer-bottom">&copy; <?= date('Y') ?> Drip N' Style. All rights reserved.</p>
+</footer>
+<div class="gold-bar"></div>
 
-  <!-- Bootstrap JS Bundle CDN (includes Popper) -->
-  <script src="assets/vendor/bootstrap5/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/js/scroll-up.js"></script>
+<button id="scrollTop">↑</button>
+
+<script>
+  const scrollBtn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    scrollBtn.classList.toggle('visible', window.scrollY > 300);
+  });
+  scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
 </body>
 </html>
