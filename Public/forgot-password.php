@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$emailConfigPath = __DIR__ . '/../App/Config/email_config.php';
+$emailConfigPath = __DIR__ . '/../App/Config/email_auth.php';
 if (!file_exists($emailConfigPath)) {
     $_SESSION['error'] = 'Server configuration error: email settings missing.';
     header('Location: LoginPage.php');
@@ -53,19 +53,20 @@ if(isset($_POST['email'])) {
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = $config['email'];
-        $mail->Password = $config['password'];
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
+        $mail->Host = $config['smtp']['host'];
+        $mail->SMTPAuth = $config['smtp']['auth'];
+        $mail->Username = $config['smtp']['username'];
+        $mail->Password = $config['smtp']['password'];
+        $mail->SMTPSecure = $config['smtp']['encryption'];
+        $mail->Port = $config['smtp']['port'];
 
-        $mail->setFrom('johndavealdaybriones009@gmail.com', 'Drip N Style');
+        $mail->setFrom($config['from']['email'], $config['from']['name']);
         $mail->addAddress($email);
 
         $mail->isHTML(true);
-        $mail->Subject = 'Password Reset Request';
-        $mail->Body = "Hi,<br>Click this link to reset your password:<br><a href='$resetLink'>$resetLink</a>";
+        $mail->Subject = $config['forgot_password']['subject'];
+        $body = str_replace('{reset_link}', $resetLink, $config['forgot_password']['body']);
+        $mail->Body = $body;
 
         $mail->send();
         $_SESSION['error'] = 'Reset link sent to your email!';

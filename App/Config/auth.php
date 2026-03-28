@@ -1,6 +1,6 @@
 <?php
 if (!defined('BASE_URL')) {
-    define('BASE_URL', '/Websites/DRIP-N-STYLE/'); // or '/DRIP-N-STYLE/' if directly under htdocs
+    define('BASE_URL', '/DRIP-N-STYLE/');
 }
 
 return [
@@ -17,10 +17,10 @@ return [
     // PATH REDIRECT
     'redirects' => [
         'after_login_admin'    => '../../admin/dashboard.php',
-        'after_login_customer' => '../../public/shop.php',
-        'after_register'       => '../../public/auth.php',
-        'after_logout'         => '../../public/index.php',
-        'on_error'             => '../../public/auth.php',
+        'after_login_customer' => '../../Public/shop.php',
+        'after_register'       => '../../Public/auth.php',
+        'after_logout'         => '../../Public/index.php',
+        'on_error'             => '../../Public/auth.php',
     ],
 
     // PASSWORD HASHING
