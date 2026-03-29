@@ -40,20 +40,7 @@ $currentPage       = basename($_SERVER['PHP_SELF']);
 <div class="gold-bar"></div>
 
 <!-- Navbar -->
-<nav class="dns-nav">
-  <a href="index.php" class="nav-logo">Drip N' Style</a>
-  <div class="nav-links">
-    <a href="#about" class="hide-mobile">About</a>
-    <a href="#contact" class="hide-mobile">Contact</a>
-    <a href="../Public/shop/shop.php">Shop</a>
-    <?php if (isset($_SESSION['user_id'])): ?>
-      <a href="dashboard.php" class="nav-btn">My Account</a>
-    <?php else: ?>
-      <a href="LoginPage.php" class="nav-btn">Login</a>
-    <?php endif; ?>
-  </div>
-</nav>
-
+<?php include '../Public/partials/navbar.php'; ?>
 <!-- Hero -->
 <section class="hero">
   <img src="assets/images/dripnstyleAbout.png" alt="" class="hero-img">
