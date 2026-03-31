@@ -2,7 +2,6 @@
 class UserModel {
     public $user_id;
     public $name;
-    public $username;
     public $email;
     public $password;
     public $contact_number;
