@@ -20,11 +20,25 @@ class AuthController {
     }
 
 
-    public function register($name, $email, $password, $confirmPassword) {
+    public function register($name, $email, $password, $confirmPassword, $dob = null, $parentalConsent = null) {
         $name  = trim($name);
         $email = trim($email);
         $password = trim($password);
         $confirmPassword = trim($confirmPassword);
+        $dob = trim((string)($dob ?? ''));
+        $consentGiven = ($parentalConsent === 'on' || $parentalConsent === '1' || $parentalConsent === 1 || $parentalConsent === true);
+
+        if (empty($name) || empty($email) || empty($password) || empty($confirmPassword) || empty($dob)) {
+            $_SESSION['error'] = "Please fill in all required fields.";
+            header("Location: ../../Public/RegisterPage.php");
+            exit;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = "Please enter a valid email address.";
+            header("Location: ../../Public/RegisterPage.php");
+            exit;
+        }
 
         if ($password !== $confirmPassword) {
             $_SESSION['error'] = "Passwords do not match.";
@@ -38,6 +52,30 @@ class AuthController {
             exit;
         }
 
+        try {
+            $birth = new DateTime($dob);
+            $formattedDob = $birth->format('Y-m-d');
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Invalid date of birth.";
+            header("Location: ../../Public/RegisterPage.php");
+            exit;
+        }
+
+        $today = new DateTime();
+        $age = $today->diff($birth)->y;
+
+        if ($age < 13) {
+            $_SESSION['error'] = "You must be at least 13 years old to create an account.";
+            header("Location: ../../Public/RegisterPage.php");
+            exit;
+        }
+
+        if ($age < 18 && !$consentGiven) {
+            $_SESSION['error'] = "Parental consent is required for users under 18.";
+            header("Location: ../../Public/RegisterPage.php");
+            exit;
+        }
+
         $user = new UserModel();
         $user->name = $name;
         $user->email = $email;
@@ -45,6 +83,7 @@ class AuthController {
         $user->role = 'customer';
         $user->status = 'active';
         $user->contact_number = null;
+        $user->birthdate = $formattedDob;
 
         if ($this->userDAO->registerUser($user)) {
             $_SESSION['user_id'] = $this->userDAO->findByEmail($email)['user_id'];
@@ -57,7 +96,6 @@ class AuthController {
         }
         exit;
     }
-
 
     public function login($email, $password) {
         $email = trim($email);
@@ -148,7 +186,9 @@ if (isset($_GET['action'])) {
                     $_POST['name'],
                     $_POST['email'],
                     $_POST['password'],
-                    $_POST['confirm_password']
+                    $_POST['confirm_password'],
+                    $_POST['dob'] ?? null,
+                    $_POST['parental_consent'] ?? null
                 );
             }
             break;

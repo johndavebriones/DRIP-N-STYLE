@@ -52,15 +52,17 @@ class UserDAO {
     }
 
     public function registerUser(UserModel $user) {
-        $query = "INSERT INTO users (name, email, password, role, status) VALUES (?, ?, ?, ?, ?)";
+        $query = "INSERT INTO users (name, email, password, role, status, birthdate, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->prepareAndExecute(
             $query,
-            "sssss",
+            "sssssss",
             $user->name,
             $user->email,
             $user->password,
             $user->role,
-            $user->status
+            $user->status,
+            $user->birthdate,
+            $user->contact_number
         );
         return $stmt !== false;
     }
