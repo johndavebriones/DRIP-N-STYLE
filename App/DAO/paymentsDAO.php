@@ -54,7 +54,7 @@ class PaymentDAO {
                     o.order_status,
                     o.order_date,
                     u.user_id,
-                    u.username,
+                    u.name,
                     u.email,
                     CONCAT(u.first_name, ' ', u.last_name) AS customer_name
                   FROM {$this->table} p
@@ -143,13 +143,13 @@ class PaymentDAO {
                     p.payment_date,
                     o.order_number,
                     CONCAT(u.first_name,' ',u.last_name) AS customer_name,
-                    u.username,
+                    u.name,
                     u.email
                   FROM {$this->table} p
                   INNER JOIN orders o ON p.order_id = o.order_id
                   INNER JOIN users u ON o.user_id = u.user_id
                   WHERE o.order_number LIKE ?
-                     OR u.username LIKE ?
+                     OR u.name LIKE ?
                      OR u.email LIKE ?
                      OR p.payment_ref LIKE ?
                      OR CONCAT(u.first_name,' ',u.last_name) LIKE ?
@@ -170,7 +170,7 @@ class PaymentDAO {
                     p.*,
                     o.order_number,
                     CONCAT(u.first_name,' ',u.last_name) AS customer_name,
-                    u.username
+                    u.name
                   FROM {$this->table} p
                   INNER JOIN orders o ON p.order_id = o.order_id
                   INNER JOIN users u ON o.user_id = u.user_id
@@ -191,7 +191,7 @@ class PaymentDAO {
                     p.*,
                     o.order_number,
                     CONCAT(u.first_name,' ',u.last_name) AS customer_name,
-                    u.username
+                    u.name
                   FROM {$this->table} p
                   INNER JOIN orders o ON p.order_id = o.order_id
                   INNER JOIN users u ON o.user_id = u.user_id
