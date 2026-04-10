@@ -2,12 +2,14 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body { min-height: 100vh; display: flex; font-family: 'DM Sans', Arial, sans-serif; }
+    body { height: 100vh; overflow: hidden; display: flex; font-family: 'DM Sans', Arial, sans-serif; align-items: stretch; }
 
     /* ── LEFT PANEL ── */
     .auth-left {
       flex: 1;
-      position: relative;
+      position: sticky;
+      top: 0;
+      height: 100vh;
       overflow: hidden;
       cursor: pointer;
     }
@@ -25,12 +27,14 @@
     /* ── RIGHT PANEL ── */
     .auth-right {
       flex: 1;
+      height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 48px 40px;
       background: #f5f0eb;
       overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .form-wrap { width: 100%; max-width: 400px; }
@@ -169,10 +173,12 @@
     .login-link a { color: #b8934a; font-weight: 500; text-decoration: none; }
 
     @media (max-width: 640px) {
-      body { flex-direction: column; }
+      body { flex-direction: column; height: auto; overflow: auto; }
       .auth-left { flex: none; height: 220px; }
-      .auth-right { padding: 36px 20px; }
+      .auth-right { height: auto; align-items: center; padding: 36px 20px; overflow-y: visible; }
     }
+
+    
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1024px) {
