@@ -109,11 +109,11 @@
     .dns-footer { background: #111008; border-top: 1px solid #2a2218; padding: 40px 48px 24px; }
     .footer-top { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 28px; border-bottom: 1px solid #2a2218; margin-bottom: 20px; }
     .footer-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 700; letter-spacing: 6px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
-    .footer-tagline { font-size: 11px; color: #3a2e20; letter-spacing: 2px; text-transform: uppercase; font-weight: 300; }
+    .footer-tagline { font-size: 11px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; font-weight: 300; }
     .footer-links { display: flex; gap: 28px; align-items: center; }
-    .footer-links a { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #4a3c28; text-decoration: none; font-weight: 500; transition: color .2s; }
+    .footer-links a { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #ffffff; text-decoration: none; font-weight: 500; transition: color .2s; }
     .footer-links a:hover { color: var(--gold); }
-    .footer-bottom { font-size: 11px; color: #3a2e20; }
+    .footer-bottom { font-size: 11px; color: #ffffff; }
 
     #scrollTop { position: fixed; bottom: 32px; right: 32px; width: 40px; height: 40px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: 2px; color: #fff; font-size: 16px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 200; }
     #scrollTop.visible { display: flex; }

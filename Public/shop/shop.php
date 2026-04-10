@@ -66,7 +66,7 @@ $productsWithStock = array_filter($groupedProducts, fn($p) => $p['total_stock'] 
   <title>Shop | Drip N' Style</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="assets/css/shop.css?v=5"/>
+  <link rel="stylesheet" href="assets/css/shop.css?v=6"/>
 </head>
 <body>
 
