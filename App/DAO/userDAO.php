@@ -90,10 +90,11 @@ class UserDAO {
         return $this->updateUserFields($user_id, ['password' => $hashedPassword]);
     }
 
-    public function incrementFailedAttempts($user_id) {
+    public function incrementFailedAttempts($user_id, $max = 3) {
         $user = $this->findById($user_id);
         if (!$user) return false;
-        $attempts = $user['failed_attempts'] + 1;
+        // Cap at max so failed_attempts never stacks beyond the lock threshold
+        $attempts = min($user['failed_attempts'] + 1, $max);
         return $this->updateUserFields($user_id, ['failed_attempts' => $attempts]);
     }
 
@@ -109,9 +110,49 @@ class UserDAO {
     public function isAccountLocked($user_id) {
         $user = $this->findById($user_id);
         if (!$user) return false;
+
         if ($user['locked_until'] && strtotime($user['locked_until']) > time()) {
+            // Lock is still active
             return true;
         }
+
+        // Lock has expired (or was never set) — clear it so failed_attempts resets
+        if ($user['locked_until']) {
+            $this->updateUserFields($user_id, ['failed_attempts' => 0, 'locked_until' => null]);
+        }
+
         return false;
+    }
+
+    // ── OTP / Password Reset ──────────────────────────────────────────────
+
+    public function saveOTP($user_id, $otp, $expiryMinutes = 10) {
+        $expiry = date('Y-m-d H:i:s', strtotime("+{$expiryMinutes} minutes"));
+        return $this->updateUserFields($user_id, [
+            'reset_token'  => $otp,
+            'token_expiry' => $expiry,
+        ]);
+    }
+
+    public function verifyOTP($email, $otp) {
+        $user = $this->fetchSingle(
+            "SELECT * FROM users WHERE email = ? AND reset_token = ? LIMIT 1",
+            "ss", $email, $otp
+        );
+
+        if (!$user) return ['valid' => false, 'reason' => 'incorrect'];
+
+        if (strtotime($user['token_expiry']) < time()) {
+            return ['valid' => false, 'reason' => 'expired'];
+        }
+
+        return ['valid' => true, 'user' => $user];
+    }
+
+    public function clearOTP($user_id) {
+        return $this->updateUserFields($user_id, [
+            'reset_token'  => null,
+            'token_expiry' => null,
+        ]);
     }
 }

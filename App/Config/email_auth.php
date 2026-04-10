@@ -8,7 +8,7 @@ return [
         'host'     => 'smtp.gmail.com', // Replace with your SMTP host (e.g., smtp.gmail.com for Gmail)
         'port'     => 587,              // 587 for TLS, 465 for SSL
         'username' => 'johndavealdaybriones009@gmail.com', // Your email address
-        'password' => 'ncko vorv chhs dmwt',    // Your email password or app-specific password
+        'password' => 'nbof lycd wbec gomc',    // Your email password or app-specific password
         'encryption' => 'tls',          // 'tls' or 'ssl'
         'auth'     => true,             // Enable SMTP authentication
     ],

@@ -60,7 +60,7 @@ SessionHelper::redirectIfLoggedIn();
         </div>
 
         <div class="form-row">
-          <button type="button" class="forgot-btn" onclick="openModal()">Forgot password?</button>
+          <a href="forgot-password.php" class="forgot-btn">Forgot password?</a>
         </div>
 
         <button type="submit" class="submit-btn">Login</button>
@@ -73,30 +73,6 @@ SessionHelper::redirectIfLoggedIn();
   </div>
 </div>
 
-<!-- Forgot Password Modal -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeOnBg(event)">
-  <div class="modal-box">
-    <div class="bar"></div>
-    <div class="modal-header">
-      <span class="modal-title">Forgot <span>Password</span></span>
-      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
-    </div>
-    <div class="modal-body">
-      <form method="POST" action="forgot-password.php">
-        <label class="field-label" for="reset-email">Email address</label>
-        <div class="field">
-          <span class="field-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
-          </span>
-          <input class="form-input" type="email" id="reset-email" name="email"
-            placeholder="Enter your email" required>
-        </div>
-        <button type="submit" class="submit-btn" style="margin-bottom:0;">Send Reset Link</button>
-      </form>
-    </div>
-    <div class="bar-bottom"></div>
-  </div>
-</div>
 
 <script>
 <?php if (!empty($timeoutAlert)): ?>
@@ -112,10 +88,6 @@ toggle.addEventListener('click', () => {
   passInput.type = isText ? 'password' : 'text';
   toggle.style.color = isText ? '#b0a090' : '#b8934a';
 });
-
-function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-function closeOnBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 </script>
 </body>
 </html>
