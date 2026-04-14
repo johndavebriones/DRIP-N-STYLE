@@ -66,7 +66,7 @@ $productsWithStock = array_filter($groupedProducts, fn($p) => $p['total_stock'] 
   <title>Shop | Drip N' Style</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="assets/css/shop.css?v=6"/>
+  <link rel="stylesheet" href="assets/css/shop.css?v=7"/>
 </head>
 <body>
 
@@ -237,22 +237,15 @@ $productsWithStock = array_filter($groupedProducts, fn($p) => $p['total_stock'] 
   </div>
 </div>
 
-<script src="assets/js/shop.js?v=5"></script>
+<script src="assets/js/shop.js?v=6"></script>
 <script>
+  // Scroll-to-top button
   const scrollBtn = document.getElementById('scrollTop');
-  window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 300));
-  scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-  function closeModal() { document.getElementById('productModalOverlay').classList.remove('open'); }
-  function closeOnBg(e) { if (e.target === document.getElementById('productModalOverlay')) closeModal(); }
-
-  // Wire product cards to open the modal (your existing shop.js handles the data population)
-  document.querySelectorAll('.product-clickable').forEach(card => {
-    card.addEventListener('click', () => {
-      document.getElementById('productModalOverlay').classList.add('open');
-      // shop.js populates the modal fields using data attributes
-    });
-  });
+  window.addEventListener('scroll', () =>
+    scrollBtn.classList.toggle('visible', window.scrollY > 300));
+  scrollBtn.addEventListener('click', () =>
+    window.scrollTo({ top: 0, behavior: 'smooth' }));
 </script>
+
 </body>
 </html>
