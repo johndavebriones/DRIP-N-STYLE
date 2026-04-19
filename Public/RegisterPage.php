@@ -126,12 +126,14 @@ $pending = $_SESSION['reg_pending'] ?? [];
 
         <!-- Email -->
         <label class="field-label" for="email">Email address</label>
-        <div class="field">
+        <div class="field" id="email-field">
           <span class="field-icon">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
           </span>
-          <input class="form-input" type="email" id="email" name="email" placeholder="Enter your email" required>
+          <input class="form-input" type="text" id="email" name="email" placeholder="Enter your email"
+            oninput="validateEmailInline()" onblur="validateEmailInline(true)" required>
         </div>
+        <div class="match-msg" id="email-msg"></div>
 
         <!-- Password -->
         <label class="field-label" for="password">Password</label>
@@ -224,7 +226,7 @@ $pending = $_SESSION['reg_pending'] ?? [];
       </div>
 
       <label class="field-label" for="reg-otp">Verification code</label>
-      <div class="field">
+      <div class="field" id="otp-field-wrap">
         <span class="field-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </span>
@@ -234,7 +236,7 @@ $pending = $_SESSION['reg_pending'] ?? [];
           onkeydown="if(event.key==='Enter') verifyOTP()">
       </div>
 
-      <div class="fp-resend">
+      <div class="fp-resend" id="resend-wrap">
         Didn't receive it?
         <button type="button" class="resend-btn" id="resend-btn" onclick="resendOTP()">Resend code</button>
         <span id="resend-timer" style="color:#b0a090;font-size:12px;"></span>
@@ -242,7 +244,30 @@ $pending = $_SESSION['reg_pending'] ?? [];
 
       <button type="button" class="submit-btn" id="btn-verify" onclick="verifyOTP()">Verify &amp; Create Account</button>
 
-      <a class="back-link" href="RegisterPage.php?reset=1">&#8592; Use a different email</a>
+      <!-- Success state (hidden until OTP verified) -->
+      <div id="otp-success" style="display:none; text-align:center; padding:10px 0 6px;">
+        <p style="font-family:'Playfair Display',Georgia,serif; font-size:20px; color:#2d2520; margin:0 0 6px; font-weight:700;">Account Created!</p>
+        <p style="font-size:13px; color:#6b5e54; margin:0 0 22px; line-height:1.6;">
+          Welcome to the Drip N' Style family.<br>You can now log in with your new account.
+        </p>
+        <a href="LoginPage.php" style="
+          display:inline-block;
+          background:linear-gradient(135deg,#b8934a,#d4a84b);
+          color:#fff;
+          font-size:13px;
+          font-weight:600;
+          letter-spacing:.06em;
+          text-transform:uppercase;
+          text-decoration:none;
+          padding:13px 32px;
+          border-radius:2px;
+          transition:opacity .2s;
+        " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+          Go to Login &rarr;
+        </a>
+      </div>
+
+      <a class="back-link" id="back-link" href="RegisterPage.php?reset=1">&#8592; Use a different email</a>
 
       <script>
       const CONTROLLER = '/DRIP-N-STYLE/App/Controllers/RegisterController.php';
@@ -297,7 +322,13 @@ $pending = $_SESSION['reg_pending'] ?? [];
         });
         const data = await res.json();
         if (data.success) {
-          window.location.href = 'RegisterPage.php'; // server will redirect to login
+          // Hide OTP input & buttons, show success message with login redirect
+          document.getElementById('otp-field-wrap').style.display = 'none';
+          document.getElementById('resend-wrap').style.display    = 'none';
+          document.getElementById('btn-verify').style.display     = 'none';
+          document.getElementById('back-link').style.display      = 'none';
+          document.getElementById('js-error').style.display       = 'none';
+          document.getElementById('otp-success').style.display    = 'block';
         } else {
           showError(data.message || 'Invalid code.');
           btn.disabled = false; btn.textContent = 'Verify & Create Account';
@@ -356,18 +387,44 @@ const STRENGTH_META = [
   { label:'Good',   color:'#b8934a' },
   { label:'Strong', color:'#3a8a50' },
 ];
-function checkStrength(val) {
-  const bar   = document.getElementById('strength-bar');
-  const label = document.getElementById('strength-label');
+
+function getPasswordScore(val) {
   let score = 0;
   if (val.length >= 8 && val.length <= 12)           score++;
   if (/[A-Z]/.test(val) && /[a-z]/.test(val))       score++;
   if (/[0-9]/.test(val))                             score++;
   if (/[^A-Za-z0-9]/.test(val))                      score++;
+  return score;
+}
+
+function checkStrength(val) {
+  const bar   = document.getElementById('strength-bar');
+  const label = document.getElementById('strength-label');
+  const score = getPasswordScore(val);
   bar.className = 'strength-bar-wrap str-' + (val.length ? score : 0);
   const meta = STRENGTH_META[val.length ? score : 0];
   label.textContent = val.length ? meta.label : '';
   label.style.color = meta.color;
+}
+
+function validateEmailInline(force) {
+  const email = document.getElementById('email').value.trim();
+  const msg   = document.getElementById('email-msg');
+  const field = document.getElementById('email-field');
+  if (!email && !force) { msg.textContent = ''; return; }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && !emailRegex.test(email)) {
+    msg.style.color = '#d85a30';
+    msg.textContent = '✗ Invalid email format (e.g. name@example.com)';
+    field.style.borderColor = '#d85a30';
+  } else if (email) {
+    msg.style.color = '#3a8a50';
+    msg.textContent = '✓ Email looks good';
+    field.style.borderColor = '';
+  } else {
+    msg.textContent = '';
+    field.style.borderColor = '';
+  }
 }
 
 function handleDobInput(el, nextId, min, max) {
@@ -437,8 +494,23 @@ async function submitForm() {
   const cb      = document.getElementById('parental_consent');
 
   if (!name || !email || !pass || !dob) return showError('Please fill in all required fields.');
+
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    validateEmailInline(true);
+    return showError('Please enter a valid email address (e.g. name@example.com).');
+  }
+
   if (pass.length < 8 || pass.length > 12) return showError('Password must be between 8 and 12 characters.');
   if (pass !== confirm) return showError('Passwords do not match.');
+
+  // Weak password check — must be at least "Fair" (score >= 2)
+  const pwScore = getPasswordScore(pass);
+  if (pwScore < 2) {
+    document.getElementById('password').focus();
+    return showError('Your password is too weak. Use a mix of uppercase, lowercase, numbers, or symbols.');
+  }
   if (pw.classList.contains('visible') && !cb.checked) {
     pw.style.borderColor = '#d85a30'; pw.style.background = '#fff5f2';
     setTimeout(() => { pw.style.borderColor=''; pw.style.background=''; }, 1800);
