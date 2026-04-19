@@ -63,7 +63,19 @@ class SessionHelper {
             header("Location: /DRIP-N-STYLE/Public/LoginPage.php");
             exit;
         }
+
+        // Help Desk: if account was restored, force password change before any other page
+        if (!empty($_SESSION['force_password_change'])) {
+            $currentScript = basename($_SERVER['PHP_SELF'] ?? '');
+            if ($currentScript !== 'helpdesk_reset.php') {
+                header("Location: /DRIP-N-STYLE/Public/helpdesk_reset.php");
+                exit;
+            }
+        }
     }
+
+
+
 
     public static function redirectIfLoggedIn() {
         // Check timeout but don't show error message if redirecting from login page

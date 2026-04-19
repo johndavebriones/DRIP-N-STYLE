@@ -150,6 +150,15 @@ class AuthController {
         $_SESSION['role']      = $user['role'];
         $_SESSION['last_activity'] = time(); // Set initial activity timestamp
 
+        // ── Help Desk: force password change check ───────────────────────
+        // If a help desk agent restored this account, the user must set a new
+        // password before accessing any other page.
+        if (!empty($user['force_password_change']) && $user['role'] === 'customer') {
+            $_SESSION['force_password_change'] = true;
+            header("Location: ../../Public/helpdesk_reset.php");
+            exit;
+        }
+
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
             header("Location: ../../Public/admin/dashboard.php");
         } else {
