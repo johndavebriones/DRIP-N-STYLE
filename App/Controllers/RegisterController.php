@@ -133,6 +133,12 @@ switch ($action) {
         if (strlen($password) < 8 || strlen($password) > 12) {
             json_out(false, 'Password must be between 8 and 12 characters.');
         }
+        if (!preg_match('/[A-Z]/', $password)) {
+            json_out(false, 'Password must contain at least one uppercase letter (A–Z).');
+        }
+        if (!preg_match('/[^A-Za-z0-9]/', $password)) {
+            json_out(false, 'Password must contain at least one special character (e.g. @, #, !, $).');
+        }
         if ($userDAO->findByEmail($email)) {
             json_out(false, 'That email address is already registered.');
         }

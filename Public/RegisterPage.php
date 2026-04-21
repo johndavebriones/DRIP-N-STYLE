@@ -78,6 +78,12 @@ $pending = $_SESSION['reg_pending'] ?? [];
     .back-link { display:block; text-align:center; font-size:12px; color:#9a8a7c; margin-top:16px; text-decoration:none; cursor:pointer; }
     .back-link:hover { color:#b8934a; }
 
+    /* ── Password Rules Checklist ── */
+    .pw-rule { font-size:11px; color:#a89880; display:flex; align-items:center; gap:6px; margin-bottom:4px; transition:color .2s; }
+    .pw-rule.ok { color:#3a8a50; }
+    .pw-rule.fail { color:#d85a30; }
+    .pw-rule-icon { font-size:12px; font-weight:700; width:12px; flex-shrink:0; }
+
     /* ── JS error ── */
     .js-error { background:#fff3f3; border-left:3px solid #e57373; color:#c62828; font-size:12px; padding:9px 12px; margin-bottom:14px; border-radius:2px; display:none; }
 
@@ -153,6 +159,13 @@ $pending = $_SESSION['reg_pending'] ?? [];
           <div class="strength-seg"></div><div class="strength-seg"></div>
         </div>
         <div class="strength-label" id="strength-label" style="color:#b0a090;"></div>
+
+        <!-- Password Requirements Checklist -->
+        <div id="pw-rules" style="margin-bottom:12px; display:none;">
+          <div id="rule-length"  class="pw-rule"><span class="pw-rule-icon">✗</span> At least 8 characters</div>
+          <div id="rule-upper"   class="pw-rule"><span class="pw-rule-icon">✗</span> At least one uppercase letter (A–Z)</div>
+          <div id="rule-special" class="pw-rule"><span class="pw-rule-icon">✗</span> At least one special character (@, #, !, $…)</div>
+        </div>
 
         <!-- Confirm Password -->
         <label class="field-label" for="confirm_password">Confirm password</label>
@@ -397,6 +410,22 @@ function getPasswordScore(val) {
   return score;
 }
 
+function updatePwRules(val) {
+  const wrap    = document.getElementById('pw-rules');
+  const rLen    = document.getElementById('rule-length');
+  const rUpper  = document.getElementById('rule-upper');
+  const rSpec   = document.getElementById('rule-special');
+  if (!val) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  function setRule(el, pass) {
+    el.className = 'pw-rule ' + (pass ? 'ok' : 'fail');
+    el.querySelector('.pw-rule-icon').textContent = pass ? '✓' : '✗';
+  }
+  setRule(rLen,   val.length >= 8 && val.length <= 12);
+  setRule(rUpper, /[A-Z]/.test(val));
+  setRule(rSpec,  /[^A-Za-z0-9]/.test(val));
+}
+
 function checkStrength(val) {
   const bar   = document.getElementById('strength-bar');
   const label = document.getElementById('strength-label');
@@ -405,6 +434,7 @@ function checkStrength(val) {
   const meta = STRENGTH_META[val.length ? score : 0];
   label.textContent = val.length ? meta.label : '';
   label.style.color = meta.color;
+  updatePwRules(val);
 }
 
 function validateEmailInline(force) {
@@ -502,15 +532,24 @@ async function submitForm() {
     return showError('Please enter a valid email address (e.g. name@example.com).');
   }
 
-  if (pass.length < 8 || pass.length > 12) return showError('Password must be between 8 and 12 characters.');
-  if (pass !== confirm) return showError('Passwords do not match.');
-
-  // Weak password check — must be at least "Fair" (score >= 2)
-  const pwScore = getPasswordScore(pass);
-  if (pwScore < 2) {
+  // ── Password rule checks (specific messages per failed rule) ─────────
+  if (pass.length < 8) {
     document.getElementById('password').focus();
-    return showError('Your password is too weak. Use a mix of uppercase, lowercase, numbers, or symbols.');
+    return showError('Password is too short — it must be at least 8 characters.');
   }
+  if (pass.length > 12) {
+    document.getElementById('password').focus();
+    return showError('Password is too long — maximum 12 characters allowed.');
+  }
+  if (!/[A-Z]/.test(pass)) {
+    document.getElementById('password').focus();
+    return showError('Password must contain at least one uppercase letter (A–Z).');
+  }
+  if (!/[^A-Za-z0-9]/.test(pass)) {
+    document.getElementById('password').focus();
+    return showError('Password must contain at least one special character (e.g. @, #, !, $).');
+  }
+  if (pass !== confirm) return showError('Passwords do not match.');
   if (pw.classList.contains('visible') && !cb.checked) {
     pw.style.borderColor = '#d85a30'; pw.style.background = '#fff5f2';
     setTimeout(() => { pw.style.borderColor=''; pw.style.background=''; }, 1800);
