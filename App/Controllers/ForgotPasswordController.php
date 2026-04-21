@@ -23,7 +23,7 @@ if (isset($_GET['reset'])) {
         $_SESSION['fp_otp_sent_at'],
         $_SESSION['fp_verified_email']
     );
-    header('Location: ../../Public/ForgotPasswordPage.php');
+    header('Location: ../../Public/forgot-password.php');
     exit;
 }
 

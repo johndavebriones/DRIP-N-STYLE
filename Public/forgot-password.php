@@ -109,7 +109,7 @@ unset($_SESSION['fp_error']);
         <button type="submit" class="submit-btn" id="btn-verify">Verify Code</button>
       </form>
 
-      <a class="back-link" href="ForgotPasswordPage.php?reset=1">&#8592; Use a different email</a>
+      <a class="back-link" href="../App/Controllers/ForgotPasswordController.php?reset=1">&#8592; Use a different email</a>
 
       <?php endif; ?>
 
