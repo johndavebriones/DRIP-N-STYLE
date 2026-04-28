@@ -4,9 +4,28 @@ require_once __DIR__ . '/../App/Helpers/SessionHelper.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 SessionHelper::redirectIfLoggedIn();
 
-// Determine current step from session
-$step = $_SESSION['fp_step'] ?? 'email';
-$fpEmail = $_SESSION['fp_email'] ?? '';
+// Prevent browser from caching this page so back-button never shows a stale step
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+
+// If arriving at the success step, clear session immediately so that
+// pressing Back and revisiting this page starts fresh at the email step.
+if (($_SESSION['fp_step'] ?? '') === 'success') {
+    // Show success once, then wipe so next visit starts at email
+    $step = 'success';
+    unset(
+        $_SESSION['fp_step'],
+        $_SESSION['fp_email'],
+        $_SESSION['fp_otp_sent_at'],
+        $_SESSION['fp_verified_email']
+    );
+} else {
+    // Determine current step from session
+    $step = $_SESSION['fp_step'] ?? 'email';
+}
+
+$fpEmail  = $_SESSION['fp_email'] ?? '';
 $otpError = $_SESSION['fp_error'] ?? '';
 unset($_SESSION['fp_error']);
 ?>
@@ -249,7 +268,7 @@ async function sendOTP(e) {
     const data = await res.json();
 
     if (data.success) {
-      window.location.reload(); // Server already set session fp_step = otp
+      window.location.replace(window.location.pathname + '?t=' + Date.now()); // Server already set session fp_step = otp
     } else {
       showError(data.message || 'Something went wrong.');
       btn.disabled = false;
@@ -300,7 +319,7 @@ async function verifyOTP(e) {
     const data = await res.json();
 
     if (data.success) {
-      window.location.reload();
+      window.location.replace(window.location.pathname + '?t=' + Date.now());
     } else {
       showError(data.message || 'Invalid code.');
       btn.disabled = false;
@@ -368,7 +387,8 @@ async function resetPassword(e) {
     const data = await res.json();
 
     if (data.success) {
-      window.location.reload();
+      // replace() removes the newpass step from history so Back skips it
+      window.location.replace(window.location.pathname + '?t=' + Date.now());
     } else {
       showError(data.message || 'Could not reset password.');
       btn.disabled = false;
