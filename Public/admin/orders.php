@@ -19,7 +19,7 @@ ob_start();
 
 <div class="page-fade">
   <div class="page-header d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0">📦 Orders Management</h2>
+    <h2 class="fw-bold mb-0 text-white">📦 Orders Management</h2>
   </div>
 
   <!-- 🔹 Filters -->
