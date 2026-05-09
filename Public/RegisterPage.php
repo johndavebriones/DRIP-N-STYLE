@@ -92,8 +92,18 @@ $pending = $_SESSION['reg_pending'] ?? [];
     .step-dot { height:3px; flex:1; border-radius:2px; background:#e8e0d8; transition:background .3s; }
     .step-dot.active { background:#b8934a; }
   </style>
+  <link rel="stylesheet" href="assets/css/page-loader.css">
 </head>
-<body>
+<body class="dns-loading">
+
+<!-- ── PAGE LOADER ── -->
+<div id="dns-loader" aria-hidden="true">
+  <p class="loader-brand">Drip N' <span>Style</span></p>
+  <div class="loader-line"></div>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
+  <p class="loader-tag">Create Your Account</p>
+</div><!-- END LOADER -->
+
 
 <!-- Left Panel -->
 <div class="auth-left" onclick="window.location.href='index.php'" title="Go to homepage">
@@ -584,5 +594,22 @@ async function submitForm() {
 }
 </script>
 <?php endif; ?>
+
+<script>
+/* ── Page Loader Logic ── */
+(function () {
+  var loader = document.getElementById('dns-loader');
+  function hideLoader() {
+    loader.classList.add('loader-hidden');
+    document.body.classList.remove('dns-loading');
+  }
+  var minDelay = new Promise(function(res){ setTimeout(res, 1200); });
+  var pageReady = new Promise(function(res){
+    if (document.readyState === 'complete') res();
+    else window.addEventListener('load', res);
+  });
+  Promise.all([minDelay, pageReady]).then(hideLoader);
+})();
+</script>
 </body>
 </html>

@@ -12,8 +12,18 @@ SessionHelper::redirectIfLoggedIn();
   <title>Drip N' Style | Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="stylesheet" href="assets/css/page-loader.css">
 </head>
-<body>
+<body class="dns-loading">
+
+<!-- ── PAGE LOADER ── -->
+<div id="dns-loader" aria-hidden="true">
+  <p class="loader-brand">Drip N' <span>Style</span></p>
+  <div class="loader-line"></div>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
+  <p class="loader-tag">Welcome Back</p>
+</div><!-- END LOADER -->
+
 
 <!-- Left Panel -->
 <div class="auth-left" onclick="window.location.href='index.php'" title="Go to homepage">
@@ -88,6 +98,23 @@ toggle.addEventListener('click', () => {
   passInput.type = isText ? 'password' : 'text';
   toggle.style.color = isText ? '#b0a090' : '#b8934a';
 });
+</script>
+
+<script>
+/* ── Page Loader Logic ── */
+(function () {
+  var loader = document.getElementById('dns-loader');
+  function hideLoader() {
+    loader.classList.add('loader-hidden');
+    document.body.classList.remove('dns-loading');
+  }
+  var minDelay = new Promise(function(res){ setTimeout(res, 1200); });
+  var pageReady = new Promise(function(res){
+    if (document.readyState === 'complete') res();
+    else window.addEventListener('load', res);
+  });
+  Promise.all([minDelay, pageReady]).then(hideLoader);
+})();
 </script>
 </body>
 </html>

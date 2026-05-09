@@ -34,8 +34,20 @@ $currentPage       = basename($_SERVER['PHP_SELF']);
   <title>Drip N' Style | Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/home.css">
+  <link rel="stylesheet" href="assets/css/page-loader.css">
 </head>
-<body>
+<body class="dns-loading">
+
+<!-- ── PAGE LOADER ── -->
+<div id="dns-loader" aria-hidden="true">
+  <p class="loader-brand">Drip N' <span>Style</span></p>
+  <div class="loader-line"></div>
+  <div class="loader-dots">
+    <span></span><span></span><span></span>
+  </div>
+  <p class="loader-tag">Wear Your Confidence</p>
+</div>
+<!-- ── END LOADER ── -->
 
 <div class="gold-bar"></div>
 
@@ -205,3 +217,19 @@ $currentPage       = basename($_SERVER['PHP_SELF']);
 </script>
 </body>
 </html>
+<script>
+/* ── Page Loader Logic ── */
+(function () {
+  var loader = document.getElementById('dns-loader');
+  function hideLoader() {
+    loader.classList.add('loader-hidden');
+    document.body.classList.remove('dns-loading');
+  }
+  var minDelay = new Promise(function(res){ setTimeout(res, 1400); });
+  var pageReady = new Promise(function(res){
+    if (document.readyState === 'complete') res();
+    else window.addEventListener('load', res);
+  });
+  Promise.all([minDelay, pageReady]).then(hideLoader);
+})();
+</script>
