@@ -1,6 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
    Drip N' Style — Admin Sidebar
-   Matches the dark footer/navbar aesthetic from index.php
 ═══════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
@@ -10,198 +9,131 @@
   width: 250px;
   background: #111008;
   border-right: 1px solid #2a2218;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
   justify-content: space-between;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  padding: 0;
-  z-index: 1000;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  padding: 0; z-index: 1000;
   transition: transform 0.3s ease;
 }
 
-/* Gold accent bar at top */
+/* Gold top bar */
 .sidebar::before {
-  content: '';
-  display: block;
-  height: 3px;
+  content: ''; display: block; height: 3px;
   background: linear-gradient(135deg, #b8934a 0%, #d4a84b 50%, #c9a96e 100%);
   flex-shrink: 0;
 }
 
 .sidebar-inner {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 28px 0 24px;
+  display: flex; flex-direction: column;
+  height: 100%; padding: 28px 0 24px;
 }
 
-/* Brand */
+/* ── BRAND ── */
 .sidebar .brand,
 .sidebar [class*="brand"] {
   font-family: 'Playfair Display', Georgia, serif !important;
-  font-size: 14px !important;
-  letter-spacing: 6px !important;
-  text-transform: uppercase !important;
-  color: #b8934a !important;
-  font-weight: 700 !important;
-  text-align: center;
+  font-size: 14px !important; letter-spacing: 6px !important;
+  text-transform: uppercase !important; color: #b8934a !important;
+  font-weight: 700 !important; text-align: center;
   padding: 0 24px 28px;
-  border-bottom: 1px solid #2a2218;
-  margin-bottom: 16px;
+  border-bottom: 1px solid #2a2218; margin-bottom: 16px;
 }
-
-/* Bootstrap .fs-4 .fw-bold .text-warning brand override */
 .sidebar .fs-4.fw-bold.text-warning {
   font-family: 'Playfair Display', Georgia, serif !important;
-  font-size: 14px !important;
-  letter-spacing: 6px !important;
-  text-transform: uppercase;
-  color: #b8934a !important;
+  font-size: 14px !important; letter-spacing: 6px !important;
+  text-transform: uppercase; color: #b8934a !important;
 }
 
-/* Nav links */
+/* ── NAV LINKS ── */
 .sidebar .nav-link {
   display: block;
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: #9a8a7c;
-  text-decoration: none;
-  padding: 12px 24px;
-  border-radius: 0;
-  margin: 0;
+  font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; font-weight: 500;
+  color: #9a8a7c; text-decoration: none;
+  padding: 12px 24px; border-radius: 0; margin: 0;
   transition: color 0.2s, background 0.2s, border-color 0.2s;
-  border-left: 2px solid transparent;
-  position: relative;
+  border-left: 2px solid transparent; position: relative;
 }
-
 .sidebar .nav-link:hover {
   color: #b8934a;
-  background: rgba(184, 147, 74, 0.06);
-  border-left-color: rgba(184, 147, 74, 0.4);
+  background: rgba(184,147,74,0.06);
+  border-left-color: rgba(184,147,74,0.4);
 }
-
-.sidebar .nav-link.active {
+.sidebar .nav-link.active,
+.sidebar .nav-link.active:hover {
   color: #b8934a !important;
-  background: rgba(184, 147, 74, 0.1);
+  background-color: rgba(184,147,74,0.1) !important;
   border-left: 2px solid #b8934a;
 }
 
-/* Remove Bootstrap background override */
-.sidebar .nav-link.active,
-.sidebar .nav-link:hover {
-  background-color: rgba(184, 147, 74, 0.1) !important;
-  color: #b8934a !important;
-}
-
-/* Logout button */
+/* ── LOGOUT BUTTON ── */
 .sidebar .btn-logout,
 .sidebar .btn-warning {
   display: block;
-  width: calc(100% - 48px);
-  margin: 0 24px;
+  width: calc(100% - 48px); margin: 0 24px;
   padding: 11px 20px;
   background: transparent !important;
   border: 1px solid #b8934a !important;
   border-radius: 2px !important;
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 11px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: #b8934a !important;
-  text-align: center;
-  text-decoration: none;
+  font-size: 11px; letter-spacing: 2.5px;
+  text-transform: uppercase; font-weight: 500;
+  color: #b8934a !important; text-align: center;
+  text-decoration: none; cursor: pointer;
   transition: background 0.2s, color 0.2s;
-  cursor: pointer;
 }
-
 .sidebar .btn-logout:hover,
 .sidebar .btn-warning:hover {
-  background: #b8934a !important;
-  color: #fff !important;
+  background: #b8934a !important; color: #fff !important;
 }
 
-/* Sidebar bottom divider */
 .sidebar > div:last-child,
 .sidebar .mt-auto {
-  padding-top: 16px;
-  border-top: 1px solid #2a2218;
-  margin: 0;
-  padding-bottom: 8px;
+  padding-top: 16px; border-top: 1px solid #2a2218;
+  margin: 0; padding-bottom: 8px;
 }
 
 /* ── TOPBAR (mobile) ── */
 .topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1100;
-  height: 60px;
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1100; height: 60px;
   background: #111008 !important;
-  border-bottom: 1px solid #2a2218;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 16px;
+  border-bottom: 1px solid rgba(184,147,74,0.2);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 16px;
 }
-
+/* Gold line under topbar */
+.topbar::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #b8934a, #d4a84b, #c9a96e);
+}
 .topbar .fw-bold {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 14px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  color: #b8934a !important;
-  font-weight: 700;
+  font-size: 14px; letter-spacing: 5px;
+  text-transform: uppercase; color: #b8934a !important; font-weight: 700;
 }
-
-/* Burger button */
-#sidebarToggle,
-.topbar .btn {
+#sidebarToggle, .topbar .btn {
   background: transparent !important;
   border: 1px solid #b8934a !important;
-  border-radius: 2px !important;
-  color: #b8934a !important;
-  font-size: 16px;
-  padding: 6px 12px;
-  transition: background 0.2s;
+  border-radius: 2px !important; color: #b8934a !important;
+  font-size: 16px; padding: 6px 12px; transition: background 0.2s;
 }
-
-#sidebarToggle:hover,
-.topbar .btn:hover {
-  background: #b8934a !important;
-  color: #fff !important;
+#sidebarToggle:hover, .topbar .btn:hover {
+  background: #b8934a !important; color: #fff !important;
 }
 
 /* ── BACKDROP ── */
 .sidebar-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 900;
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6); z-index: 900;
 }
-
 .sidebar-backdrop.active { display: block; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 992px) {
-  .sidebar {
-    transform: translateX(-260px);
-  }
-
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    margin-left: 0 !important;
-    padding-top: 72px !important;
-  }
+  .sidebar { transform: translateX(-260px); }
+  .sidebar.active { transform: translateX(0); }
+  .main-content { margin-left: 0 !important; padding-top: 72px !important; }
 }

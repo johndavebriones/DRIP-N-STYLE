@@ -2,58 +2,78 @@
    Drip N' Style — Admin Payments Styles
 ═══════════════════════════════════════════════════════════ */
 
-/* Payment status badges */
-.payment-paid     { background: #3d8c5a !important; color: #fff !important; }
-.payment-pending  { background: linear-gradient(135deg, #b8934a, #d4a84b) !important; color: #fff !important; }
-.payment-failed   { background: #a03030 !important; color: #fff !important; }
-.payment-refunded { background: #3a6b8a !important; color: #fff !important; }
-
-/* Payment method icons */
-.payment-method {
-  font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 12px;
-  color: #6b5e54;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* ── TABLE WRAPPER ── */
+.table-wrapper {
+  border: 1px solid #e8e0d8; border-radius: 6px;
+  overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
 
-/* Amount column */
+/* ── TABLE HEAD — dark ── */
+.table thead th {
+  background: #1a1a2e !important;
+  color: rgba(255,255,255,0.7) !important;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; font-weight: 500;
+  border-bottom: 1px solid rgba(184,147,74,0.2) !important;
+  padding: 14px 16px;
+}
+
+/* ── FILTER CARD ── */
+.filter-card {
+  background: #faf8f5; border: 1px solid #e8e0d8;
+  border-left: 3px solid #b8934a;
+  border-radius: 6px; padding: 18px 22px;
+}
+
+/* ── PAYMENT STATUS BADGES ── */
+.payment-paid     { background: #3d8c5a !important; color:#fff !important; }
+.payment-pending  { background: linear-gradient(135deg,#b8934a,#d4a84b) !important; color:#fff !important; }
+.payment-failed   { background: #a03030 !important; color:#fff !important; }
+.payment-refunded { background: #3a6b8a !important; color:#fff !important; }
+
+/* ── TYPOGRAPHY ── */
+.payment-method {
+  font-family: 'DM Sans', Arial, sans-serif; font-size: 12px;
+  color: #6b5e54; display: flex; align-items: center; gap: 8px;
+}
 .payment-amount {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 15px;
-  color: #b8934a;
-  font-weight: 700;
+  font-size: 15px; color: #b8934a; font-weight: 700;
 }
 
-/* ── PAYMENT SUMMARY CARDS ── */
+/* ── ROW HOVER ── */
+.payment-row:hover td { background: rgba(184,147,74,0.05) !important; }
+
+/* ── SUMMARY CARDS ── */
 .payment-summary-card {
-  background: #faf8f5;
-  border: 1px solid #e8e0d8;
-  border-top: 2px solid #b8934a;
-  border-radius: 3px;
-  padding: 20px 24px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: #faf8f5; border: 1px solid #e8e0d8;
+  border-top: 3px solid #b8934a; border-radius: 6px;
+  padding: 20px 24px; transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .payment-summary-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(184, 147, 74, 0.12);
+  box-shadow: 0 6px 20px rgba(184,147,74,0.12);
 }
-
 .payment-summary-label {
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #9a8a7c;
-  font-weight: 500;
-  margin-bottom: 8px;
+  font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; color: #9a8a7c;
+  font-weight: 500; margin-bottom: 8px;
 }
-
 .payment-summary-value {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #b8934a;
+  font-size: 22px; font-weight: 700; color: #b8934a;
+}
+
+/* ── MODAL HEADER (payment details) — dark ── */
+.modal-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%) !important;
+  border-bottom: 1px solid rgba(184,147,74,0.25) !important;
+  position: relative; overflow: hidden;
+}
+.modal-header::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #b8934a, #d4a84b, #c9a96e);
 }

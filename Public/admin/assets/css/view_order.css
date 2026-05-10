@@ -2,12 +2,11 @@
    Drip N' Style — Admin View Order Styles
 ═══════════════════════════════════════════════════════════ */
 
-/* ── ORDER HEADER ── */
+/* ── ORDER HEADER — dark banner ── */
 .order-header {
-  background: #faf8f5;
-  border: 1px solid #e8e0d8;
-  border-top: 2px solid #b8934a;
-  border-radius: 3px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%);
+  border: 1px solid rgba(184,147,74,0.2);
+  border-radius: 10px;
   padding: 24px 28px;
   margin-bottom: 24px;
   display: flex;
@@ -15,120 +14,112 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+
+/* Gold top accent line */
+.order-header::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #b8934a, #d4a84b, #c9a96e, #b8934a);
+  background-size: 200% 100%;
+  animation: shimmerGold 3s linear infinite;
+}
+
+@keyframes shimmerGold {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Subtle glow bg */
+.order-header::after {
+  content: ''; position: absolute;
+  inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 80% 50%, rgba(184,147,74,0.08) 0%, transparent 65%);
 }
 
 .order-title {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 22px;
-  font-weight: 400;
-  color: #2d2520;
-  margin: 0;
+  font-size: 22px; font-weight: 700;
+  color: #ffffff; margin: 0;
+  position: relative; z-index: 1;
 }
 
 .order-id-label {
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 2px;
+  font-size: 10px; letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: #9a8a7c;
-  font-weight: 500;
-  margin-bottom: 4px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 500; margin-bottom: 4px;
+  position: relative; z-index: 1;
 }
 
-/* ── ORDER INFO GRID ── */
+/* ── ORDER INFO CARDS ── */
 .order-info-card {
   background: #faf8f5;
   border: 1px solid #e8e0d8;
-  border-radius: 3px;
-  padding: 20px 24px;
+  border-top: 3px solid #b8934a;
+  border-radius: 6px; padding: 20px 24px;
+  transition: box-shadow 0.2s;
+}
+.order-info-card:hover {
+  box-shadow: 0 4px 16px rgba(184,147,74,0.1);
 }
 
 .order-info-label {
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #9a8a7c;
-  font-weight: 500;
-  margin-bottom: 4px;
+  font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: #9a8a7c;
+  font-weight: 500; margin-bottom: 4px;
 }
+.order-info-value { font-size: 13px; color: #2d2520; font-weight: 400; }
 
-.order-info-value {
-  font-size: 13px;
-  color: #2d2520;
-  font-weight: 400;
-}
-
-/* ── ORDER ITEMS TABLE ── */
+/* ── ORDER ITEMS TABLE HEAD — dark ── */
 .order-items-table th {
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: #9a8a7c;
-  background: #f5f0eb;
-  border-bottom: 1px solid #e8e0d8;
+  font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; font-weight: 500;
+  color: rgba(255,255,255,0.7) !important;
+  background: #1a1a2e !important;
+  border-bottom: 1px solid rgba(184,147,74,0.2) !important;
   padding: 13px 16px;
 }
-
 .order-items-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #ede8e2;
-  color: #2d2520;
-  font-size: 13px;
-  vertical-align: middle;
+  padding: 14px 16px; border-bottom: 1px solid #ede8e2;
+  color: #2d2520; font-size: 13px; vertical-align: middle;
 }
-
 .order-items-table tr:last-child td { border-bottom: none; }
-.order-items-table tr:hover td { background: rgba(184, 147, 74, 0.04); }
+.order-items-table tr:hover td      { background: rgba(184,147,74,0.04); }
 
-/* Product name in order */
 .order-product-name {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 14px;
-  color: #2d2520;
+  font-size: 14px; color: #2d2520;
 }
-
-/* Order total row */
 .order-total-row td {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #b8934a;
+  font-size: 16px; font-weight: 700; color: #b8934a;
   border-top: 2px solid #e8e0d8 !important;
   padding-top: 16px !important;
 }
 
-/* ── STATUS UPDATE ── */
+/* ── STATUS UPDATE CARD ── */
 .status-update-card {
-  background: #faf8f5;
-  border: 1px solid #e8e0d8;
-  border-radius: 3px;
+  background: #faf8f5; border: 1px solid #e8e0d8;
+  border-top: 3px solid #b8934a; border-radius: 6px;
   padding: 20px 24px;
 }
 
 /* ── BACK BUTTON ── */
 .btn-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: 1px solid #e8e0d8;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border: 1px solid #e8e0d8;
   border-radius: 2px;
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: #6b5e54;
-  text-decoration: none;
-  background: #faf8f5;
+  font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; font-weight: 500;
+  color: #6b5e54; text-decoration: none; background: #faf8f5;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-
-.btn-back:hover {
-  border-color: #b8934a;
-  color: #b8934a;
-  background: rgba(184, 147, 74, 0.05);
-}
+.btn-back:hover { border-color: #b8934a; color: #b8934a; background: rgba(184,147,74,0.05); }

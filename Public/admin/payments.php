@@ -12,10 +12,25 @@ $title = "Payments Management";
 ob_start();
 ?>
 <link rel="stylesheet" href="assets/css/payments.css">
+<link rel="stylesheet" href="assets/css/admin-page-header.css">
 
 <div class="page-fade">
-  <div class="page-header d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0">💰 Payments Management</h2>
+  <!-- ── Page Header ── -->
+  <div class="admin-page-header mb-4">
+    <div class="admin-page-header-inner d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="admin-page-icon">
+          <i class="bi bi-credit-card-2-front"></i>
+        </div>
+        <div>
+          <h2 class="admin-page-title mb-0">Payments Management</h2>
+          <p class="admin-page-sub mb-0">Monitor transactions, statuses, and payment records.</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="admin-page-badge"><i class="bi bi-calendar3 me-1"></i><?= date('F j, Y') ?></span>
+      </div>
+    </div>
   </div>
 
   <!-- 🔹 Filters -->

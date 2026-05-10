@@ -79,9 +79,27 @@ ob_start();
 ?>
 
 <link rel="stylesheet" href="assets/css/dashboard.css?v=2">
+<link rel="stylesheet" href="assets/css/admin-page-header.css">
 
 <div class="page-fade">
-  <h2 class="mb-4">Welcome, <?= htmlspecialchars($_SESSION['user_name'] ?? 'Admin') ?> 👋</h2>
+
+  <!-- ── Page Header ── -->
+  <div class="admin-page-header mb-4">
+    <div class="admin-page-header-inner d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="admin-page-icon">
+          <i class="bi bi-speedometer2"></i>
+        </div>
+        <div>
+          <h2 class="admin-page-title mb-0">Dashboard</h2>
+          <p class="admin-page-sub mb-0 text-dark">Welcome back, <strong><?= htmlspecialchars($_SESSION['user_name'] ?? 'Admin') ?></strong> — here's what's happening today.</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="admin-page-badge text-dark"><i class="bi bi-calendar3 me-1"></i><?= date('F j, Y') ?></span>
+      </div>
+    </div>
+  </div>
 
   <!-- Top Stats Row -->
   <div class="row g-4 mb-5">

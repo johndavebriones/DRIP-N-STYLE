@@ -2,106 +2,79 @@
    Drip N' Style — Admin Orders Styles
 ═══════════════════════════════════════════════════════════ */
 
-/* ── ORDERS TABLE ── */
-.orders-table-wrap {
-  border: 1px solid #e8e0d8;
-  border-radius: 3px;
-  overflow: hidden;
+/* ── TABLE WRAPPER ── */
+.table-wrapper {
+  border: 1px solid #e8e0d8; border-radius: 6px;
+  overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.orders-table-wrap { border: 1px solid #e8e0d8; border-radius: 6px; overflow: hidden; }
+
+/* ── TABLE HEAD — dark ── */
+.table thead th {
+  background: #1a1a2e !important;
+  color: rgba(255,255,255,0.7) !important;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; font-weight: 500;
+  border-bottom: 1px solid rgba(184,147,74,0.2) !important;
+  padding: 14px 16px;
 }
 
-/* Filter bar */
-.orders-filters {
+/* ── FILTER CARD ── */
+.filter-card {
   background: #faf8f5;
   border: 1px solid #e8e0d8;
-  border-radius: 3px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
+  border-left: 3px solid #b8934a;
+  border-radius: 6px; padding: 18px 22px;
 }
 
+.orders-filters {
+  background: #faf8f5; border: 1px solid #e8e0d8;
+  border-radius: 6px; padding: 20px 24px; margin-bottom: 24px;
+}
 .orders-filters label {
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #9a8a7c;
-  font-weight: 500;
-  display: block;
-  margin-bottom: 6px;
+  font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: #9a8a7c;
+  font-weight: 500; display: block; margin-bottom: 6px;
 }
 
-/* Status badges for orders */
-.status-pending   { background: linear-gradient(135deg, #b8934a, #d4a84b) !important; color: #fff !important; }
-.status-processing{ background: #3a6b8a !important; color: #fff !important; }
-.status-shipped   { background: #5a4a3a !important; color: #fff !important; }
-.status-delivered { background: #3d8c5a !important; color: #fff !important; }
-.status-cancelled { background: #a03030 !important; color: #fff !important; }
+/* ── STATUS BADGES ── */
+.status-pending   { background: linear-gradient(135deg,#b8934a,#d4a84b) !important; color:#fff !important; }
+.status-processing{ background: #3a6b8a !important; color:#fff !important; }
+.status-shipped   { background: #5a4a3a !important; color:#fff !important; }
+.status-delivered { background: #3d8c5a !important; color:#fff !important; }
+.status-cancelled { background: #a03030 !important; color:#fff !important; }
 
-/* Order ID styling */
-.order-id {
-  font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  color: #9a8a7c;
-  font-weight: 500;
-}
+/* ── TYPOGRAPHY ── */
+.order-id       { font-family:'DM Sans',Arial,sans-serif; font-size:10px; letter-spacing:1.5px; color:#9a8a7c; font-weight:500; }
+.order-customer { font-family:'Playfair Display',Georgia,serif; font-size:14px; color:#2d2520; }
+.order-amount   { font-family:'Playfair Display',Georgia,serif; font-size:15px; color:#b8934a; font-weight:700; }
 
-/* Customer name */
-.order-customer {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 14px;
-  color: #2d2520;
-}
+/* ── ROW HOVER ── */
+.order-row:hover td { background: rgba(184,147,74,0.05) !important; }
 
-/* Amount */
-.order-amount {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 15px;
-  color: #b8934a;
-  font-weight: 700;
-}
-
-/* Action buttons in table */
+/* ── VIEW BUTTON ── */
 .btn-view-order {
-  display: inline-block;
-  padding: 7px 16px;
-  border: 1px solid #2d2520;
-  border-radius: 2px;
+  display: inline-block; padding: 7px 16px;
+  border: 1px solid #2d2520; border-radius: 2px;
   font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: #2d2520;
-  text-decoration: none;
-  background: transparent;
+  font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; font-weight: 500;
+  color: #2d2520; text-decoration: none; background: transparent;
   transition: background 0.2s, color 0.2s;
 }
-
-.btn-view-order:hover {
-  background: #2d2520;
-  color: #f5f0eb;
-}
+.btn-view-order:hover { background: #2d2520; color: #f5f0eb; }
 
 /* ── PAGINATION ── */
 .pagination .page-link {
-  font-family: 'DM Sans', Arial, sans-serif;
-  font-size: 11px;
-  letter-spacing: 1px;
-  background: #faf8f5;
-  border-color: #e8e0d8;
-  color: #6b5e54;
-  padding: 8px 14px;
+  font-family: 'DM Sans', Arial, sans-serif; font-size: 11px;
+  letter-spacing: 1px; background: #faf8f5;
+  border-color: #e8e0d8; color: #6b5e54; padding: 8px 14px;
   transition: background 0.2s, color 0.2s;
 }
-
-.pagination .page-link:hover {
-  background: rgba(184, 147, 74, 0.08);
-  border-color: #b8934a;
-  color: #b8934a;
-}
-
+.pagination .page-link:hover { background: rgba(184,147,74,0.08); border-color: #b8934a; color: #b8934a; }
 .pagination .page-item.active .page-link {
-  background: linear-gradient(135deg, #b8934a, #d4a84b);
-  border-color: #b8934a;
-  color: #fff;
+  background: linear-gradient(135deg,#b8934a,#d4a84b);
+  border-color: #b8934a; color: #fff;
 }

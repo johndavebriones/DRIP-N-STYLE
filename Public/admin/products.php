@@ -50,24 +50,33 @@ $title = "Products";
 ob_start();
 ?>
 <link rel="stylesheet" href="assets/css/products.css">
+<link rel="stylesheet" href="assets/css/admin-page-header.css">
 <!-- Header Bar -->
 <div class="page-fade">
-    <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h2 class="fw-bold text-light mb-0">🛍️ Product Management</h2>
+    <!-- ── Page Header ── -->
+    <div class="admin-page-header mb-4">
+      <div class="admin-page-header-inner d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="admin-page-icon">
+            <i class="bi bi-bag-heart"></i>
+          </div>
+          <div>
+            <h2 class="admin-page-title mb-0">Product Management</h2>
+            <p class="admin-page-sub mb-0">Add, edit, and manage your product catalog and inventory.</p>
+          </div>
         </div>
-
-        <div class="d-flex gap-2">
-            <button class="btn btn-secondary fw-semibold" id="featured_modal_btn">
-                <i class="bi bi-star-fill me-1"></i> Manage Featured
-            </button>
-            <button class="btn btn-success fw-semibold" id="history_modal_btn">
-                <i class="bi bi-clock-history me-1"></i> History
-            </button>
-            <button class="btn btn-warning fw-semibold shadow-sm" id="product_modal_btn">
-                <i class="bi bi-plus-lg me-1"></i> Add Product
-            </button>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button class="btn btn-outline-light btn-sm fw-semibold" id="featured_modal_btn">
+            <i class="bi bi-star-fill me-1 text-warning"></i> Manage Featured
+          </button>
+          <button class="btn btn-outline-light btn-sm fw-semibold" id="history_modal_btn">
+            <i class="bi bi-clock-history me-1"></i> History
+          </button>
+          <button class="btn btn-warning btn-sm fw-semibold shadow-sm" id="product_modal_btn">
+            <i class="bi bi-plus-lg me-1"></i> Add Product
+          </button>
         </div>
+      </div>
     </div>
 
     <!-- Filters -->

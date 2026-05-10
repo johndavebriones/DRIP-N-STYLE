@@ -50,6 +50,7 @@ $title = 'Help Desk — Account Recovery';
     .security-banner { background:#fff8e6; border:1px solid #f0d080; border-radius:8px; padding:12px 18px;
                         font-size:.83rem; color:#7a5800; margin-bottom:22px; }
   </style>
+  <link rel="stylesheet" href="assets/css/admin-page-header.css">
 </head>
 <body>
 
@@ -65,10 +66,21 @@ $title = 'Help Desk — Account Recovery';
 <div class="main-content">
   <div class="hd-wrap">
 
-    <div class="d-flex align-items-center mb-4">
-      <div>
-        <h2 class="fw-bold mb-0" style="color:#2d2520;">🛡️ Help Desk — Account Recovery</h2>
-        <p class="text-muted mb-0 mt-1" style="font-size:.9rem;">Restricted to Status Management actions only. All actions are audited.</p>
+    <!-- ── Page Header ── -->
+    <div class="admin-page-header mb-4">
+      <div class="admin-page-header-inner d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="admin-page-icon">
+            <i class="bi bi-shield-lock"></i>
+          </div>
+          <div>
+            <h2 class="admin-page-title mb-0">Help Desk — Account Recovery</h2>
+            <p class="admin-page-sub mb-0">Restricted to Status Management only. All actions are audited and logged.</p>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="admin-page-badge badge-danger-soft"><i class="bi bi-lock-fill me-1"></i>Admin Restricted</span>
+        </div>
       </div>
     </div>
 
